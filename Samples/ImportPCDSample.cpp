@@ -8,8 +8,6 @@ using namespace std;
 int main() {
     cout << "Hello World!" << endl;
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-fskgnf
-dfnjgkjnfdg
 
     if (pcl::io::loadPCDFile<pcl::PointXYZ> ("test.pcd", *cloud) == -1) //* load the file
     {
