@@ -1,0 +1,11 @@
+{
+"rules": [
+{
+"primary-output": "CMakeFiles/src1.dir/Samples/ImportPCDSample.cpp.o",
+"requires": [
+]
+}
+],
+"version": 0,
+"revision": 0
+}
