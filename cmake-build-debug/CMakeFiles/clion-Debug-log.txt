@@ -1,4 +1,16 @@
-/home/kristof/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/home/kristof/.local/share/JetBrains/Toolbox/apps/clion/bin/ninja/linux/x64/ninja -G Ninja -S /home/kristof/Iskola/Szakdoga/src -B /home/kristof/Iskola/Szakdoga/src/cmake-build-debug
+/home/kristof/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/home/kristof/.local/share/JetBrains/Toolbox/apps/clion/bin/ninja/linux/x64/ninja -G Ninja -S /home/kristof/Iskola/src -B /home/kristof/Iskola/src/cmake-build-debug
+-- The C compiler identification is GNU 14.2.1
+-- The CXX compiler identification is GNU 14.2.1
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
 CMake Warning (dev) at /usr/share/pcl-1.15/Modules/FindFLANN.cmake:45 (find_package):
   Policy CMP0144 is not set: find_package uses upper-case <PACKAGENAME>_ROOT
   variables.  Run "cmake --help-policy CMP0144" for policy details.  Use the
@@ -20,13 +32,47 @@ This warning is for project developers.  Use -Wno-dev to suppress it.
 -- Found flann version 1.9.2
 -- Found OpenMP_CXX: -fopenmp (found version "4.5")
 -- Found OpenMP: TRUE (found version "4.5") found components: CXX
+-- Found Pcap: /usr/lib/libpcap.so
+-- Found ZLIB: /usr/lib/libz.so (found version "1.3.1")
+-- Found PNG: /usr/lib/libpng.so (found version "1.6.47")
 -- Found OpenMP_C: -fopenmp (found version "4.5")
 -- Found OpenMP: TRUE (found version "4.5")
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Found MPI_C: /usr/lib/libmpi.so (found version "3.1")
+-- Found MPI_CXX: /usr/lib/libmpi.so (found version "3.1")
 -- Found MPI: TRUE (found version "3.1")
 -- Found MPI: TRUE (found version "3.1") found components: C
+-- Found X11: /usr/include
+-- Looking for XOpenDisplay in /usr/lib/libX11.so;/usr/lib/libXext.so
+-- Looking for XOpenDisplay in /usr/lib/libX11.so;/usr/lib/libXext.so - found
+-- Looking for gethostbyname
+-- Looking for gethostbyname - found
+-- Looking for connect
+-- Looking for connect - found
+-- Looking for remove
+-- Looking for remove - found
+-- Looking for shmat
+-- Looking for shmat - found
+-- Looking for IceConnectionNumber in ICE
+-- Looking for IceConnectionNumber in ICE - found
+-- Found EXPAT: /usr/lib/libexpat.so (found version "2.6.4")
+-- Found LZMA: /usr/lib/liblzma.so (found version "5.6.4")
+-- Found LZ4: /usr/lib/liblz4.so (found version "1.10.0")
+-- Found Eigen3: /usr/include/eigen3 (found version "3.4.0")
+-- Found TIFF: /usr/lib/libtiff.so (found version "4.7.0")
+-- Found JPEG: /usr/lib/libjpeg.so (found version "80")
+-- Found utf8cpp: /usr/include/utf8cpp
 -- Could NOT find freetype (missing: freetype_DIR)
+-- Found Freetype: /usr/lib/libfreetype.so (found version "2.13.3")
 -- Found OpenMP_C: -fopenmp (found version "4.5")
 -- Found OpenMP_CXX: -fopenmp (found version "4.5")
+-- Found double-conversion: /usr/lib/libdouble-conversion.so
+-- Found nlohmann_json: /usr/share/cmake/nlohmann_json/nlohmann_jsonConfig.cmake (found version "3.11.3")
+-- Checking for module 'libusb-1.0'
+--   Found libusb-1.0, version 1.0.27
+-- Found libusb: /usr/lib/libusb-1.0.so
 -- Found OpenMP_CXX: -fopenmp (found version "4.5")
 -- Found OpenMP: TRUE (found version "4.5") found components: CXX
 -- Found OpenMP_C: -fopenmp (found version "4.5")
@@ -47,32 +93,61 @@ This warning is for project developers.  Use -Wno-dev to suppress it.
 -- Could NOT find freetype (missing: freetype_DIR)
 -- Found OpenMP_C: -fopenmp (found version "4.5")
 -- Found OpenMP_CXX: -fopenmp (found version "4.5")
+-- Found OpenGL: /usr/lib/libOpenGL.so
+-- Found GLEW: /usr/include (found version "2.2.0")
 -- looking for PCL_COMMON
+-- Found PCL_COMMON: /usr/lib/libpcl_common.so
 -- looking for PCL_KDTREE
+-- Found PCL_KDTREE: /usr/lib/libpcl_kdtree.so
 -- looking for PCL_OCTREE
+-- Found PCL_OCTREE: /usr/lib/libpcl_octree.so
 -- looking for PCL_SEARCH
+-- Found PCL_SEARCH: /usr/lib/libpcl_search.so
 -- looking for PCL_SAMPLE_CONSENSUS
+-- Found PCL_SAMPLE_CONSENSUS: /usr/lib/libpcl_sample_consensus.so
 -- looking for PCL_FILTERS
+-- Found PCL_FILTERS: /usr/lib/libpcl_filters.so
 -- looking for PCL_2D
+-- Found PCL_2D: /usr/include/pcl-1.15
 -- looking for PCL_GEOMETRY
+-- Found PCL_GEOMETRY: /usr/include/pcl-1.15
 -- looking for PCL_IO_PLY
+-- Found PCL_IO_PLY: /usr/lib/libpcl_io_ply.so
 -- looking for PCL_IO
+-- Found PCL_IO: /usr/lib/libpcl_io.so
 -- looking for PCL_FEATURES
+-- Found PCL_FEATURES: /usr/lib/libpcl_features.so
 -- looking for PCL_ML
+-- Found PCL_ML: /usr/lib/libpcl_ml.so
 -- looking for PCL_SEGMENTATION
+-- Found PCL_SEGMENTATION: /usr/lib/libpcl_segmentation.so
 -- looking for PCL_VISUALIZATION
+-- Found PCL_VISUALIZATION: /usr/lib/libpcl_visualization.so
 -- looking for PCL_SURFACE
+-- Found PCL_SURFACE: /usr/lib/libpcl_surface.so
 -- looking for PCL_REGISTRATION
+-- Found PCL_REGISTRATION: /usr/lib/libpcl_registration.so
 -- looking for PCL_KEYPOINTS
+-- Found PCL_KEYPOINTS: /usr/lib/libpcl_keypoints.so
 -- looking for PCL_TRACKING
+-- Found PCL_TRACKING: /usr/lib/libpcl_tracking.so
 -- looking for PCL_RECOGNITION
+-- Found PCL_RECOGNITION: /usr/lib/libpcl_recognition.so
 -- looking for PCL_STEREO
+-- Found PCL_STEREO: /usr/lib/libpcl_stereo.so
 -- looking for PCL_APPS
+-- Found PCL_APPS: /usr/lib/libpcl_apps.so
 -- looking for PCL_CLOUD_COMPOSER
+-- Found PCL_CLOUD_COMPOSER: /usr/include/pcl-1.15
 -- looking for PCL_MODELER
+-- Found PCL_MODELER: /usr/include/pcl-1.15
 -- looking for PCL_POINT_CLOUD_EDITOR
+-- Found PCL_POINT_CLOUD_EDITOR: /usr/include/pcl-1.15
 -- looking for PCL_PEOPLE
+-- Found PCL_PEOPLE: /usr/lib/libpcl_people.so
 -- looking for PCL_SIMULATION
--- Configuring done (8.3s)
+-- Found PCL_SIMULATION: /usr/lib/libpcl_simulation.so
+-- Found PCL: pcl_common;pcl_kdtree;pcl_octree;pcl_search;pcl_sample_consensus;pcl_filters;pcl_io_ply;pcl_io;pcl_features;pcl_ml;pcl_segmentation;pcl_visualization;pcl_surface;pcl_registration;pcl_keypoints;pcl_tracking;pcl_recognition;pcl_stereo;pcl_apps;pcl_people;pcl_simulation;Boost::system;Boost::iostreams;Boost::filesystem;Boost::serialization;VTK::ChartsCore;VTK::CommonColor;VTK::CommonComputationalGeometry;VTK::CommonCore;VTK::CommonDataModel;VTK::CommonExecutionModel;VTK::CommonMath;VTK::CommonMisc;VTK::CommonTransforms;VTK::FiltersCore;VTK::FiltersExtraction;VTK::FiltersGeneral;VTK::FiltersGeometry;VTK::FiltersModeling;VTK::FiltersSources;VTK::ImagingCore;VTK::ImagingSources;VTK::InteractionImage;VTK::InteractionStyle;VTK::InteractionWidgets;VTK::IOCore;VTK::IOGeometry;VTK::IOImage;VTK::IOLegacy;VTK::IOPLY;VTK::RenderingAnnotation;VTK::RenderingCore;VTK::RenderingContext2D;VTK::RenderingLOD;VTK::RenderingFreeType;VTK::ViewsCore;VTK::ViewsContext2D;VTK::RenderingOpenGL2;VTK::RenderingContextOpenGL2;VTK::GUISupportQt;FLANN::FLANN;QHULL::QHULL
+-- Configuring done (7.4s)
 -- Generating done (0.1s)
--- Build files have been written to: /home/kristof/Iskola/Szakdoga/src/cmake-build-debug
+-- Build files have been written to: /home/kristof/Iskola/src/cmake-build-debug

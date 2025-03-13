@@ -5,10 +5,10 @@
 	"compiler-simulate-id" : "",
 	"config" : "Debug",
 	"cxx-modules" : {},
-	"dir-cur-bld" : "/home/kristof/Iskola/Szakdoga/src/cmake-build-debug",
-	"dir-cur-src" : "/home/kristof/Iskola/Szakdoga/src",
-	"dir-top-bld" : "/home/kristof/Iskola/Szakdoga/src/cmake-build-debug",
-	"dir-top-src" : "/home/kristof/Iskola/Szakdoga/src",
+	"dir-cur-bld" : "/home/kristof/Iskola/src/cmake-build-debug",
+	"dir-cur-src" : "/home/kristof/Iskola/src",
+	"dir-top-bld" : "/home/kristof/Iskola/src/cmake-build-debug",
+	"dir-top-src" : "/home/kristof/Iskola/src",
 	"exports" : [],
 	"forward-modules-from-target-dirs" : [],
 	"include-dirs" : 
@@ -29,5 +29,5 @@
 	],
 	"language" : "CXX",
 	"linked-target-dirs" : [],
-	"module-dir" : "/home/kristof/Iskola/Szakdoga/src/cmake-build-debug/CMakeFiles/src1.dir"
+	"module-dir" : "/home/kristof/Iskola/src/cmake-build-debug/CMakeFiles/src1.dir"
 }

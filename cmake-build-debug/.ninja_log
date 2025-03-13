@@ -1,11 +1,13 @@
 # ninja log v6
-2911	12803	1741872565817535790	CMakeFiles/src1.dir/Samples/ImportPCDSample.cpp.o	2e7b3346f5c29f10
-2905	2911	1741872565811535704	CMakeFiles/src1.dir/Samples/ImportPCDSample.cpp.o.modmap	60038270b5f43c2
-5202	5213	1741872939618991900	/home/kristof/Iskola/Szakdoga/src/cmake-build-debug/CMakeFiles/src1.dir/CXXModules.json	e65b3f2db3a1f46d
-20	2905	1741872562926494706	CMakeFiles/src1.dir/Samples/ImportPCDSample.cpp.o.ddi	c752f89f3c2b7fb5
 16	1195	1741872770539546034	src1	6e8d10eac32bd063
 4084	19430	1741872465963111481	CMakeFiles/src1.dir/main.cpp.o	6689aab731224604
-5	4606	1741886074814570047	build.ninja	7c2e07835a291c78
+5	4606	1741887904001508893	build.ninja	7c2e07835a291c78
 5202	5213	1741872939618991900	CMakeFiles/src1.dir/main.cpp.o.modmap	e65b3f2db3a1f46d
 5202	5213	1741872939618991900	CMakeFiles/src1.dir/CXX.dd	e65b3f2db3a1f46d
 20	5202	1741872934437757218	CMakeFiles/src1.dir/main.cpp.o.ddi	84ff59cc0758bf2f
+30	342	1741888111175133700	CMakeFiles/src1.dir/main.cpp.o.ddi	8f1dffbe0dfb54d7
+342	355	1741888111498564918	CMakeFiles/src1.dir/CXX.dd	e65b3f2db3a1f46d
+342	355	1741888111498564918	/home/kristof/Iskola/src/cmake-build-debug/CMakeFiles/src1.dir/CXXModules.json	e65b3f2db3a1f46d
+342	355	1741888111498564918	CMakeFiles/src1.dir/main.cpp.o.modmap	e65b3f2db3a1f46d
+357	1377	1741888111502140008	CMakeFiles/src1.dir/main.cpp.o	eff9be4d12ce509c
+1377	2722	1741888112522159683	src1	6e8d10eac32bd063
