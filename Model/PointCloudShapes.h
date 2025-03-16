@@ -5,19 +5,19 @@
 #ifndef POINTCLOUDSHAPES_H
 #define POINTCLOUDSHAPES_H
 
-#include <iostream>
-#include <pcl/point_types.h>
+#inclide "PointTypes.h"
+
 #include <pcl/io/pcd_io.h>
 
 template <typename PointT>
 class PointCloudShape {
 protected:
-    pcl::PointCloud<pcl::PCLPointField> shape;
+    pcl::PointCloud<PointT> shape;
     std::string id;
     PointCloudShape(const std::string&);
 public:
     virtual void generateShape();
-    PointT getShape();
+    pcl::PointCloud<PointT> getShape();
 };
 
 template <typename PointT>

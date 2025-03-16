@@ -10,7 +10,7 @@ PointCloudShape<PointT>::PointCloudShape(const std::string& id_) :
 { }
 
 template<typename PointT>
-PointT PointCloudShape<PointT>::getShape() {
+pcl::PointCloud<PointT> PointCloudShape<PointT>::getShape() {
     return shape;
 }
 
