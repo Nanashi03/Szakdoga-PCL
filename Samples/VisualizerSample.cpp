@@ -12,8 +12,7 @@ using namespace std::chrono_literals;
 // --------------
 // -----Help-----
 // --------------
-void
-printUsage (const char* progName)
+void printUsage (const char* progName)
 {
   std::cout << "\n\nUsage: "<<progName<<" [options]\n\n"
             << "Options:\n"

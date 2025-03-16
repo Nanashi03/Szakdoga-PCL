@@ -10,7 +10,14 @@ add_definitions(${PCL_DEFINITIONS})
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(src1 main.cpp)
+add_executable(src1 main.cpp
+        Model/PointCloudShapes.cpp
+        Model/PointCloudShapes.h
+        Controller/Controller.cpp
+        Controller/Controller.h
+        Model/Model.cpp
+        Model/Model.h
+)
 
 target_link_libraries(src1 ${PCL_LIBRARIES})
 #include_directories(/home/linuxbrew/.linuxbrew/Cellar)
