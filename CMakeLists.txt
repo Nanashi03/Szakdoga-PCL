@@ -11,7 +11,6 @@ add_definitions(${PCL_DEFINITIONS})
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(src1 main.cpp
-        Model/PointCloudShapes.cpp
         Model/PointCloudShapes.h
         Controller/Controller.cpp
         Controller/Controller.h

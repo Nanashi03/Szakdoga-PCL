@@ -6,6 +6,7 @@
 #define CONTROLLER_H
 
 #include "../Model/Model.h"
+#include "../Model/PointCloudShapes.h"
 
 class Controller {
     private:
