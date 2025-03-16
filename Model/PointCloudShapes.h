@@ -1,28 +1,26 @@
-//
-// Created by kristof on 2025.03.13..
-//
-
 #ifndef POINTCLOUDSHAPES_H
 #define POINTCLOUDSHAPES_H
 
 #include <pcl/io/pcd_io.h>
 
-template <typename PointT>
-class PointCloudShape {
+class IPointCloudShape {
 protected:
-    pcl::PointCloud<PointT> shape;
     std::string id;
-    PointCloudShape(const std::string&);
+    explicit IPointCloudShape(const std::string& id_) : id(id_) {}
 public:
+    std::string getId() { return id; }
     virtual void generateShape();
-    pcl::PointCloud<PointT> getShape();
+    virtual ~IPointCloudShape() = default;
 };
 
 template <typename PointT>
-class ImportedPointCloudShape : public PointCloudShape<PointT> {
+class ImportedPointCloudShape : public IPointCloudShape {
+private:
+    pcl::PointCloud<PointT> shape;
 public:
-    ImportedPointCloudShape(const std::string&);
+    explicit ImportedPointCloudShape(const std::string&);
     void generateShape(const std::string&);
+    pcl::PointCloud<PointT> getShape();
 };
 
 #endif //POINTCLOUDSHAPES_H

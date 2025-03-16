@@ -6,19 +6,19 @@
 #define MODEL_H
 
 #include <vector>
+#include <memory>
 #include <algorithm>
 
 #include "PointCloudShapes.h"
 
-template<typename PointT>
 class Model {
     private:
-        std::pmr::vector<PointCloudShape<PointT>> clouds;
+        std::pmr::vector<std::shared_ptr<IPointCloudShape>> clouds;
     public:
         Model();
-        void addCloud(const PointCloudShape<PointT>&);
-        void updateCloud(const PointCloudShape<PointT>&);
-        void removeCloud(const PointCloudShape<PointT>&);
+        void addCloud(std::shared_ptr<IPointCloudShape>);
+        void updateCloud(std::shared_ptr<IPointCloudShape>);
+        void removeCloud(std::shared_ptr<IPointCloudShape>);
 };
 
 #endif //MODEL_H

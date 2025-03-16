@@ -1,23 +1,12 @@
-//
-// Created by kristof on 2025.03.13..
-//
-
 #include "PointCloudShapes.h"
 
 template<typename PointT>
-PointCloudShape<PointT>::PointCloudShape(const std::string& id_) :
-    id {id_}
-{ }
+ImportedPointCloudShape<PointT>::ImportedPointCloudShape(const std::string & id) : IPointCloudShape(id) {}
 
 template<typename PointT>
-pcl::PointCloud<PointT> PointCloudShape<PointT>::getShape() {
+pcl::PointCloud<PointT> ImportedPointCloudShape<PointT>::getShape() {
     return shape;
 }
-
-template<typename PointT>
-ImportedPointCloudShape<PointT>::ImportedPointCloudShape(const std::string & id) :
-    PointCloudShape<PointT>(id) {}
-
 
 template<typename PointT>
 void ImportedPointCloudShape<PointT>::generateShape(const std::string& filePath) {

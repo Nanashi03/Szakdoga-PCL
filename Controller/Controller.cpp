@@ -4,12 +4,11 @@
 
 #include "Controller.h"
 
-template<typename PointT>
-Controller<PointT>::Controller() {}
+Controller::Controller() {}
 
-template<typename PointT>
-void Controller<PointT>::importCloud(const std::string& filePath) {
-    ImportedPointCloudShape<PointT> cloud("id");
-    cloud.generateShape(filePath);
+void Controller::importCloud(const std::string& filePath) {
+    std::shared_ptr<ImportedPointCloudShape<pcl::PointXYZ>> cloud = std::make_shared<ImportedPointCloudShape<pcl::PointXYZ>>("id1");
+    cloud->generateShape(filePath);
+    model.addCloud(cloud);
 }
 

@@ -7,10 +7,9 @@
 
 #include "../Model/Model.h"
 
-template<typename PointT>
 class Controller {
     private:
-        Model<PointT> model;
+        Model model;
     public:
         Controller();
         void importCloud(const std::string&);
