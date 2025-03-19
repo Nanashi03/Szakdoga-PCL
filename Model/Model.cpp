@@ -6,16 +6,16 @@
 
 Model::Model() {}
 
-void Model::addCloud(std::shared_ptr<IPointCloudShape> cloud_shape) {
-    if (std::ranges::find(clouds.begin(), clouds.end(), cloud_shape) == clouds.end()) return; //RAISE ERROR
+void Model::addCloud(const IPointCloudShape& cloud_shape) {
+    //if (std::ranges::find(clouds.begin(), clouds.end(), cloud_shape) == clouds.end()) return; //RAISE ERROR
 
     clouds.push_back(cloud_shape);
 }
 
-void Model::updateCloud(std::shared_ptr<IPointCloudShape> cloud_shape) {
+void Model::updateCloud(const IPointCloudShape& cloud_shape) {
     return;
 }
 
-void Model::removeCloud(std::shared_ptr<IPointCloudShape> cloud_shape) {
+void Model::removeCloud(const IPointCloudShape& cloud_shape) {
     return;
 }

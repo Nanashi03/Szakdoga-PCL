@@ -13,12 +13,12 @@
 
 class Model {
     private:
-        std::pmr::vector<std::shared_ptr<IPointCloudShape>> clouds;
+        std::pmr::vector<IPointCloudShape> clouds;
     public:
         Model();
-        void addCloud(std::shared_ptr<IPointCloudShape>);
-        void updateCloud(std::shared_ptr<IPointCloudShape>);
-        void removeCloud(std::shared_ptr<IPointCloudShape>);
+        void addCloud(const IPointCloudShape&);
+        void updateCloud(const IPointCloudShape&);
+        void removeCloud(const IPointCloudShape&);
 };
 
 #endif //MODEL_H

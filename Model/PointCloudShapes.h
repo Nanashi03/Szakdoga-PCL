@@ -6,26 +6,27 @@
 class IPointCloudShape {
 protected:
     std::string id;
+    pcl::PointCloud<pcl::PointXYZRGBNormal> shape;
     explicit IPointCloudShape(const std::string& id_) : id(id_) { }
 public:
     std::string getId() { return id; }
+    virtual pcl::PointCloud<pcl::PointXYZRGBNormal> getShape() { return shape; }
     virtual void generateShape() { }
     virtual ~IPointCloudShape() = default;
 };
 
-template <typename PointT>
 class ImportedPointCloudShape : public IPointCloudShape {
 private:
-    pcl::PointCloud<PointT> shape;
     std::string filePath;
 public:
     ImportedPointCloudShape(const std::string& id, const std::string& filePath) : IPointCloudShape(id), filePath {filePath} {}
-    pcl::PointCloud<PointT> getShape() { return shape; }
     void generateShape() override {
-        if (pcl::io::loadPCDFile<PointT> (filePath, this->shape) == -1) //* load the file
+        pcl::PointCloud<pcl::PointXYZ> tmp;
+        if (pcl::io::loadPCDFile<pcl::PointXYZ> (filePath, tmp) == -1) //* load the file
         {
             PCL_ERROR("Couldn't read file test_pcd.pcd \n");
         }
+        pcl::copyPointCloud(tmp, shape);
     }
 };
 
