@@ -6,9 +6,15 @@
 
 Controller::Controller() {}
 
+void Controller::start() {
+    viewer.run();
+}
+
 void Controller::importCloud(const std::string& filePath) {
-    std::shared_ptr<ImportedPointCloudShape<pcl::PointXYZ>> cloud = std::make_shared<ImportedPointCloudShape<pcl::PointXYZ>>("id1", filePath);
-    cloud->generateShape();
+    ImportedPointCloudShape cloud{"id1", filePath};
+    cloud.generateShape();
+
     model.addCloud(cloud);
+    viewer.addCloud(cloud.getId(), cloud.getShape());
 }
 

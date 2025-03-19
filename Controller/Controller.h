@@ -7,13 +7,16 @@
 
 #include "../Model/Model.h"
 #include "../Model/PointCloudShapes.h"
+#include "../View/Viewer.h"
 
 class Controller {
-    private:
-        Model model;
-    public:
-        Controller();
-        void importCloud(const std::string&);
+private:
+    Model model;
+    Viewer viewer;
+public:
+    Controller();
+    void start();
+    void importCloud(const std::string&);
 };
 
 #endif //CONTROLLER_H

@@ -16,6 +16,8 @@ add_executable(src1 main.cpp
         Controller/Controller.h
         Model/Model.cpp
         Model/Model.h
+        View/Viewer.cpp
+        View/Viewer.h
 )
 
 target_link_libraries(src1 ${PCL_LIBRARIES})
