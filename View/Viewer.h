@@ -9,6 +9,9 @@
 #include <thread>
 #include <memory>
 
+typedef pcl::PointXYZRGBNormal PointType;
+typedef pcl::PointCloud<PointType> PointCloudT;
+
 using namespace std::chrono_literals;
 
 class Viewer {
@@ -17,7 +20,7 @@ private:
 public:
     Viewer();
     void run();
-    void addCloud(const std::string&, const pcl::PointCloud<pcl::PointXYZRGBNormal>&);
+    void addCloud(const std::string&, const PointCloudT&);
 };
 
 #endif //VIEWER_H

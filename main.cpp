@@ -1,12 +1,12 @@
 #include <iostream>
-#include <pcl/point_types.h>
-
+#include <thread>
 #include "Controller/Controller.h"
 
 int main (int argc, char** argv) {
-  //Model model;
-  //std::shared_ptr<ImportedPointCloudShape<pcl::PointXYZ>> cloud {new ImportedPointCloudShape<pcl::PointXYZ>("id1")};
   Controller controller;
+
+  controller.importCloud("bunny.pcd");
+  controller.start();
 
   return 0;
 }
