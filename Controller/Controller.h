@@ -17,6 +17,10 @@ public:
     Controller();
     void start();
     void importCloud(const std::string&);
+    void generateRectangle(const std::string&, float, float, float);
+    void generateCircle(const std::string&, float, float);
+    void generateCube(const std::string&, float, float, float, float);
+    void generateSphere(const std::string&, float, float);
 };
 
 #endif //CONTROLLER_H

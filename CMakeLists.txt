@@ -24,6 +24,7 @@ add_executable(src1 main.cpp
         Model/Model.h
         View/Viewer.cpp
         View/Viewer.h
+        Model/PointCloudShapes.cpp
 )
 
 target_link_libraries(src1 ${PCL_LIBRARIES} ${QTX}::Widgets)
