@@ -1,13 +1,21 @@
-//
+//asdasd
 // Created by kristof on 2025.03.16..
 //
 
 #include "Controller.h"
 
-Controller::Controller() {}
+Controller::Controller() {
+    Viewer::cloudSelectedEventListener = [this](const string& name) { this->selectCloud(name); };
+}
 
 void Controller::start() {
     viewer.run();
+}
+
+void Controller::selectCloud(const string& cloudName) {
+    cout << "I SELECTED A CLOUD: " << cloudName << endl;
+
+    viewer.updateCloud(cloudName, model.selectCloud(cloudName).getShape());
 }
 
 void Controller::importCloud(const std::string& filePath) {

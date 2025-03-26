@@ -19,6 +19,7 @@ class IPointCloudShape {
     public:
         string getId();
         PointCloudT getShape();
+        void setColor(pcl::RGB);
         virtual void generateShape();
         virtual ~IPointCloudShape() = default;
 };

@@ -1,4 +1,4 @@
-//
+//asd
 // Created by kristof on 2025.03.23..
 //
 
@@ -18,6 +18,14 @@ string IPointCloudShape::getId() { return id; }
 PointCloudT IPointCloudShape::getShape() { return shape; }
 
 void IPointCloudShape::generateShape() { }
+
+void IPointCloudShape::setColor(pcl::RGB color) {
+    for (int i=0; i<shape.size(); i++) {
+        shape[i].r = color.r;
+        shape[i].g = color.g;
+        shape[i].b = color.b;
+    }
+}
 /*********************************************IMPORTED_CLOUD***********************************************************/
 ImportedPointCloudShape::ImportedPointCloudShape(const string& id, const string& filePath) :
     IPointCloudShape(id),
