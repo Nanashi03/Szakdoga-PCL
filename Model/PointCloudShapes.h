@@ -12,13 +12,13 @@ using namespace std;
 class IPointCloudShape {
     protected:
         string id;
-        PointCloudT shape;
+        PointCloudT::Ptr shapePtr;
         float intensity;
-        IPointCloudShape(const string&);
         IPointCloudShape(const string&,float);
     public:
         string getId();
-        PointCloudT getShape();
+        PointCloudT::Ptr getShape();
+        void setColor(pcl::RGB);
         virtual void generateShape();
         virtual ~IPointCloudShape() = default;
 };
