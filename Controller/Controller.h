@@ -18,10 +18,12 @@ public:
     void selectCloud(const string&);
 
     void importCloud(const string&);
-    void generateRectangle(const string&, float, float, float);
-    void generateCircle(const string&, float, float);
-    void generateCube(const string&, float, float, float, float);
-    void generateSphere(const string&, float, float);
+    void generateRectangle(const string&, bool, float, float, float);
+    void generateCircle(const string&, bool, float, float);
+    void generateCube(const string&, bool, float, float, float, float);
+    void generateSphere(const string&, bool, float, float);
+    void generateCylinder(const string&, bool, float, float, float);
+    void generateCone(const string&, bool, float, float, float);
 
     void tmp();
 };

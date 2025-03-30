@@ -12,9 +12,10 @@ using namespace std;
 class IPointCloudShape {
     protected:
         string id;
+        bool isFilled;
         PointCloudT::Ptr shapePtr;
         float intensity;
-        IPointCloudShape(const string&,float);
+        IPointCloudShape(const string&,bool,float);
     public:
         string getId();
         PointCloudT::Ptr getShape();
@@ -35,7 +36,7 @@ class RectanglePointCloudShape : public IPointCloudShape {
     private:
         float width, height;
     public:
-        RectanglePointCloudShape(const string&, float,float,float);
+        RectanglePointCloudShape(const string&, bool,float,float,float);
         void generateShape() override;
 };
 
@@ -43,7 +44,7 @@ class CuboidPointCloudShape : public IPointCloudShape {
     private:
         float width, height, length;
     public:
-        CuboidPointCloudShape(const string&, float,float,float,float);
+        CuboidPointCloudShape(const string&, bool,float,float,float,float);
         void generateShape() override;
 };
 
@@ -51,7 +52,7 @@ class CirclePointCloudShape : public IPointCloudShape {
     private:
         float radius;
     public:
-        CirclePointCloudShape(const string&, float,float);
+        CirclePointCloudShape(const string&, bool,float,float);
         void generateShape() override;
 };
 
@@ -59,8 +60,24 @@ class SpherePointCloudShape : public IPointCloudShape {
     private:
         float radius;
     public:
-        SpherePointCloudShape(const string&, float,float);
+        SpherePointCloudShape(const string&, bool,float,float);
         void generateShape() override;
+};
+
+class CylinderPointCloudShape : public IPointCloudShape {
+private:
+    float radius, height;
+public:
+    CylinderPointCloudShape(const string&, bool,float,float,float);
+    void generateShape() override;
+};
+
+class ConePointCloudShape : public IPointCloudShape {
+private:
+    float radius, height;
+public:
+    ConePointCloudShape(const string&, bool,float,float,float);
+    void generateShape() override;
 };
 
 #endif //POINTCLOUDSHAPES_H
