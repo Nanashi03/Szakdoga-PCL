@@ -26,52 +26,52 @@ void Controller::importCloud(const std::string& filePath) {
     ImportedPointCloudShape cloud{"id1", filePath};
     cloud.generateShape();
 
-    model.addCloud(cloud);
-    viewer.addCloud(cloud.getId(), cloud.getShape());
+    /*model.addCloud(cloud);
+    viewer.addCloud(cloud.getId(), cloud.getShape());*/
 }
 
-void Controller::generateRectangle(const std::string& id, bool isFilled, float width, float height, float intensity) {
-    RectanglePointCloudShape cloud {id, isFilled, width, height, intensity};
+void Controller::generateRectangle(const std::string& id, bool isFilled, float width, float height, float density) {
+    RectanglePointCloudShape cloud {id, isFilled, width, height, density};
     cloud.generateShape();
 
     model.addCloud(cloud);
     viewer.addCloud(cloud.getId(), cloud.getShape());
 }
 
-void Controller::generateCircle(const std::string& id, bool isFilled, float radius, float intensity) {
-    CirclePointCloudShape cloud {id, isFilled, radius, intensity};
+void Controller::generateCircle(const std::string& id, bool isFilled, float radius, float density) {
+    CirclePointCloudShape cloud {id, isFilled, radius, density};
     cloud.generateShape();
 
     model.addCloud(cloud);
     viewer.addCloud(cloud.getId(), cloud.getShape());
 }
 
-void Controller::generateCube(const std::string & id, bool isFilled, float width, float height, float length, float intensity) {
-    CuboidPointCloudShape cloud {id, isFilled, width, height, length, intensity};
+void Controller::generateCube(const std::string & id, bool isFilled, float width, float height, float length, float density) {
+    CuboidPointCloudShape cloud {id, isFilled, width, height, length, density};
     cloud.generateShape();
 
     model.addCloud(cloud);
     viewer.addCloud(cloud.getId(), cloud.getShape());
 }
 
-void Controller::generateSphere(const std::string& id, bool isFilled, float radius, float intensity) {
-    SpherePointCloudShape cloud {id, isFilled, radius, intensity};
+void Controller::generateSphere(const std::string& id, bool isFilled, float radius, float density) {
+    SpherePointCloudShape cloud {id, isFilled, radius, density};
     cloud.generateShape();
 
     model.addCloud(cloud);
     viewer.addCloud(cloud.getId(), cloud.getShape());
 }
 
-void Controller::generateCylinder(const std::string& id, bool isFilled, float radius, float height, float intensity) {
-    CylinderPointCloudShape cloud {id, isFilled, radius, height, intensity};
+void Controller::generateCylinder(const std::string& id, bool isFilled, float radius, float height, float density) {
+    CylinderPointCloudShape cloud {id, isFilled, radius, height, density};
     cloud.generateShape();
 
     model.addCloud(cloud);
     viewer.addCloud(cloud.getId(), cloud.getShape());
 }
 
-void Controller::generateCone(const string& id, bool isFilled, float radius, float height, float intensity) {
-    ConePointCloudShape cloud {id, isFilled, radius, height, intensity};
+void Controller::generateCone(const string& id, bool isFilled, float radius, float height, float density) {
+    ConePointCloudShape cloud {id, isFilled, radius, height, density};
     cloud.generateShape();
 
     model.addCloud(cloud);

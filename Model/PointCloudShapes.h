@@ -2,6 +2,7 @@
 #define POINTCLOUDSHAPES_H
 
 #include <pcl/io/pcd_io.h>
+#include <pcl/PCLPointCloud2.h>
 #include <cmath>
 
 typedef pcl::PointXYZRGBNormal PointType;
@@ -14,7 +15,7 @@ class IPointCloudShape {
         string id;
         bool isFilled;
         PointCloudT::Ptr shapePtr;
-        float intensity;
+        float density;
         IPointCloudShape(const string&,bool,float);
     public:
         string getId();
