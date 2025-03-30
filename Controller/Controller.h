@@ -17,7 +17,7 @@ public:
     void start();
     void selectCloud(const string&);
 
-    void importCloud(const string&);
+    void importCloud(const string&, const string&);
     void generateRectangle(const string&, bool, float, float, float);
     void generateCircle(const string&, bool, float, float);
     void generateCube(const string&, bool, float, float, float, float);

@@ -8,3 +8,6 @@
 /dataSources.local.xml
 
 /../cmake-build-debug
+/../.idea
+/../.idea/
+/../.idea/editor.xml

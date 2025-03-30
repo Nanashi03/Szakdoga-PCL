@@ -31,12 +31,31 @@ ImportedPointCloudShape::ImportedPointCloudShape(const string& id, const string&
 {}
 
 void ImportedPointCloudShape::generateShape() {
-    pcl::PointCloud<pcl::PointXYZ> tmp;
-    if (pcl::io::loadPCDFile<pcl::PointXYZ> (filePath, tmp) == -1) //* load the file
-    {
+    pcl::PCLPointCloud2 cloud2;
+    pcl::PCDReader reader;
+    if (reader.readHeader(filePath, cloud2) != 0) {
         PCL_ERROR("Couldn't read file test_pcd.pcd \n");
     }
-    pcl::copyPointCloud(tmp, *shapePtr);
+    bool constainRGB { false };
+    bool constainNormals {false};
+    for (auto field : cloud2.fields) {
+        if (field.name == "rgb") constainRGB = true;
+        if (field.name == "normal_x") constainNormals = true;
+    }
+
+    if (constainRGB && constainNormals) {
+        pcl::io::loadPCDFile<PointType>(filePath, *shapePtr);
+    } else if (constainRGB) {
+        pcl::PointCloud<pcl::PointXYZRGB> tmp;
+        pcl::io::loadPCDFile<pcl::PointXYZRGB>(filePath, tmp);
+        pcl::copyPointCloud(tmp, *shapePtr);
+    } else {
+        cout << "IM HERE" << endl;
+        pcl::PointCloud<pcl::PointXYZ> tmp;
+        pcl::io::loadPCDFile<pcl::PointXYZ> (filePath, tmp);
+        pcl::copyPointCloud(tmp, *shapePtr);
+        setColor({ 255, 255, 255 });
+    }
 }
 /******************************************RECTANGLE*******************************************************************/
 RectanglePointCloudShape::RectanglePointCloudShape(const string& id, bool iF, float w, float h, float d) :
@@ -49,10 +68,10 @@ void RectanglePointCloudShape::generateShape() {
     for (float i = 0; i <= width; i += density) {
         for (float j = 0; j <= height; j += density) {
             if (!isFilled && (i==0 || i>width-density || j==0 || j>height-density)) {
-                PointType point {i, j, 0};
+                PointType point {i, j, 0, 255, 255, 255};
                 shapePtr->points.push_back(point);
             } else if (isFilled) {
-                PointType point {i, j, 0};
+                PointType point {i, j, 0, 255, 255, 255};
                 shapePtr->points.push_back(point);
             }
         }
@@ -71,10 +90,10 @@ void CuboidPointCloudShape::generateShape() {
         for (float j = 0; j <= height; j += density) {
             for (float k = 0; k <= length; k += density) {
                 if (i==0 || i>width-density || j==0 || j>height-density || k==0 || k>length-density) {
-                    PointType point {i, j, k};
+                    PointType point {i, j, k, 255, 255, 255};
                     shapePtr->points.push_back(point);
                 } else if (isFilled) {
-                    PointType point {i, j, k};
+                    PointType point {i, j, k, 255, 255, 255};
                     shapePtr->points.push_back(point);
                 }
             }
@@ -95,11 +114,11 @@ void CirclePointCloudShape::generateShape() {
 
     for (float i = 0; i <= 360.0f; i += degreeIntensity) {
         float rad = i * (M_PI / 180.0f);
-        PointType point {radius*cos(rad), radius*sin(rad), 0};
+        PointType point {radius*cos(rad), radius*sin(rad), 0, 255, 255, 255};
         shapePtr->points.push_back(point);
         if (isFilled) {
             for (float j = 0; j < radius; j += density) {
-                PointType point {j*cos(rad), j*sin(rad), 0};
+                PointType point {j*cos(rad), j*sin(rad), 0, 255, 255, 255};
                 shapePtr->points.push_back(point);
             }
         }
@@ -116,11 +135,11 @@ void SpherePointCloudShape::generateShape() {
     for (float i = 0; i <= 180.0f; i += degreeIntensity) {
         for (float j = 0; j < 360.0f; j += degreeIntensity) {
             float radI = i * (M_PI / 180.0f), radJ = j * (M_PI / 180.0f);
-            PointType point {radius*sin(radI)*cos(radJ), radius*sin(radI)*sin(radJ), radius*cos(radI)};
+            PointType point {radius*sin(radI)*cos(radJ), radius*sin(radI)*sin(radJ), radius*cos(radI), 255, 255, 255};
             shapePtr->points.push_back(point);
             if (isFilled) {
                 for (float k = 0; k < radius; k += density) {
-                    PointType point {k*sin(radI)*cos(radJ), k*sin(radI)*sin(radJ), k*cos(radI)};
+                    PointType point {k*sin(radI)*cos(radJ), k*sin(radI)*sin(radJ), k*cos(radI), 255, 255, 255};
                     shapePtr->points.push_back(point);
                 }
             }
@@ -143,7 +162,7 @@ void CylinderPointCloudShape::generateShape() {
     for (float i = 0; i <= 360.0f; i += degreeIntensity) {
         float rad = i * (M_PI / 180.0f);
         for (float j = 0; j <= radius; j += density) {
-            PointType point = {j*cos(rad), j*sin(rad), 0};
+            PointType point = {j*cos(rad), j*sin(rad), 0, 255, 255, 255};
             shapePtr->points.push_back(point);
             point.z = height;
             shapePtr->points.push_back(point);
@@ -153,11 +172,11 @@ void CylinderPointCloudShape::generateShape() {
     for (float i = 0; i <= 360.0f; i += degreeIntensity) {
         for (float j = density; j < height; j += density) {
             float rad = i * (M_PI / 180.0f);
-            PointType point {radius*cos(rad), radius*sin(rad), j};
+            PointType point {radius*cos(rad), radius*sin(rad), j, 255, 255, 255};
             shapePtr->points.push_back(point);
             if (isFilled) {
                 for (float k = 0; k < radius; k += density) {
-                    PointType point {k*cos(rad), k*sin(rad), j};
+                    PointType point {k*cos(rad), k*sin(rad), j, 255, 255, 255};
                     shapePtr->points.push_back(point);
                 }
             }
@@ -183,7 +202,7 @@ void ConePointCloudShape::generateShape() {
     for (float i = 0; i <= 360.0f; i += degreeIntensity) {
         float rad = i * (M_PI / 180.0f);
         for (float j = 0; j <= radius; j += density) {
-            PointType point = {j*cos(rad), j*sin(rad), 0};
+            PointType point = {j*cos(rad), j*sin(rad), 0, 255, 255, 255};
             shapePtr->points.push_back(point);
         }
     }
@@ -201,7 +220,7 @@ void ConePointCloudShape::generateShape() {
                 for (float k = 0; k < radius; k += density) {
                     x = (height - u) / height * k * cos(radI);
                     y = (height - u) / height * k * sin(radI);
-                    PointType point {x, y, u};
+                    PointType point {x, y, u, 255, 255, 255};
                     shapePtr->points.push_back(point);
                 }
             }

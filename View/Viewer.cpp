@@ -7,7 +7,7 @@
 EventListener Viewer::cloudSelectedEventListener = nullptr;
 
 Viewer::Viewer() : viewer {new pcl::visualization::PCLVisualizer ("3D Viewer")} {
-    viewer->setBackgroundColor (255, 255, 255);
+    viewer->setBackgroundColor (0,0,0);
     viewer->addCoordinateSystem (0.05);
     viewer->initCameraParameters ();
     viewer->registerPointPickingCallback(pointPickingEventOccurred, (void*)&viewer);
@@ -41,8 +41,6 @@ void Viewer::run() {
 }
 
 void Viewer::addCloud(const std::string& id, PointCloudT::ConstPtr cloud) {
-    //PointCloudT::ConstPtr pointCloudPtr {std::make_shared<PointCloudT>(cloud)};
-
     const pcl::visualization::PointCloudColorHandlerRGBField<PointType> rgb { cloud };
     viewer->addPointCloud<PointType>(cloud, rgb, id);
     viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, id);
