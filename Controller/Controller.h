@@ -25,6 +25,8 @@ public:
     void generateCylinder(const string&, bool, float, float, float);
     void generateCone(const string&, bool, float, float, float);
 
+    void translate(int,int,int);
+    void rotate(float,char);
     void tmp();
 };
 

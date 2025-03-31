@@ -4,18 +4,21 @@
 
 #include "Viewer.h"
 
-EventListener Viewer::cloudSelectedEventListener = nullptr;
+EventClickListener Viewer::cloudSelectedEventListener = nullptr;
+EventButtonListener Viewer::selectedCloudTranslateLeftEventListener = nullptr;
 
 Viewer::Viewer() : viewer {new pcl::visualization::PCLVisualizer ("3D Viewer")} {
     viewer->setBackgroundColor (0,0,0);
-    viewer->addCoordinateSystem (0.05);
     viewer->initCameraParameters ();
     viewer->registerPointPickingCallback(pointPickingEventOccurred, (void*)&viewer);
-    viewer->resetCamera();
+    viewer->registerKeyboardCallback(keyboardPressingEventOccurred, (void*)&viewer);
+    viewer->addOrientationMarkerWidgetAxes(viewer->getRenderWindow()->GetInteractor());
+
+    //viewer->resetCamera();
+    //viewer->addCoordinateSystem (0.05);
 }
 
-void Viewer::pointPickingEventOccurred(const pcl::visualization::PointPickingEvent& event, void* viewer_void)
-{
+void Viewer::pointPickingEventOccurred(const pcl::visualization::PointPickingEvent& event, void* viewer_void) {
     std::cout << "[INOF] Point picking event occurred." << std::endl;
     if (event.getPointIndex () == -1)
     {
@@ -32,6 +35,40 @@ void Viewer::pointPickingEventOccurred(const pcl::visualization::PointPickingEve
         cloudSelectedEventListener(name);
     }
 }
+
+void Viewer::keyboardPressingEventOccurred(const pcl::visualization::KeyboardEvent& event, void* viewer_void) {
+    if (event.getKeySym () == "a" && event.keyDown())
+    {
+        std::cout << "[INOF] \"a\" pressing event occurred." << std::endl;
+        selectedCloudTranslateLeftEventListener(1,0,0);
+    }
+    if (event.getKeySym () == "d" && event.keyDown())
+    {
+        std::cout << "[INOF] \"d\" pressing event occurred." << std::endl;
+        selectedCloudTranslateLeftEventListener(-1,0,0);
+    }
+    if (event.getKeySym () == "w" && event.keyDown())
+    {
+        std::cout << "[INOF] \"w\" pressing event occurred." << std::endl;
+        selectedCloudTranslateLeftEventListener(0,0,1);
+    }
+    if (event.getKeySym () == "s" && event.keyDown())
+    {
+        std::cout << "[INOF] \"s\" pressing event occurred." << std::endl;
+        selectedCloudTranslateLeftEventListener(0,0,-1);
+    }
+    if (event.getKeySym () == "f" && event.keyDown())
+    {
+        std::cout << "[INOF] \"f\" pressing event occurred." << std::endl;
+        selectedCloudTranslateLeftEventListener(0,1,0);
+    }
+    if (event.getKeySym () == "g" && event.keyDown())
+    {
+        std::cout << "[INOF] \"g\" pressing event occurred." << std::endl;
+        selectedCloudTranslateLeftEventListener(0,-1,0);
+    }
+}
+
 
 void Viewer::run() {
     while (!viewer->wasStopped()) {

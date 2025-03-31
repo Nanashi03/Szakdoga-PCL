@@ -13,7 +13,8 @@
 
 using PointType = pcl::PointXYZRGBNormal;
 using PointCloudT = pcl::PointCloud<PointType>;
-using EventListener = std::function<void(const std::string&)>;
+using EventClickListener = std::function<void(const std::string&)>;
+using EventButtonListener = std::function<void(int,int,int)>;
 
 using namespace std::chrono_literals;
 
@@ -21,8 +22,10 @@ class Viewer {
 private:
     pcl::visualization::PCLVisualizer::Ptr viewer;
     static void pointPickingEventOccurred (const pcl::visualization::PointPickingEvent&, void*);
+    static void keyboardPressingEventOccurred (const pcl::visualization::KeyboardEvent&, void*);
 public:
-    static EventListener cloudSelectedEventListener;
+    static EventClickListener cloudSelectedEventListener;
+    static EventButtonListener selectedCloudTranslateLeftEventListener;
 
     Viewer();
     void run();

@@ -24,6 +24,10 @@ void IPointCloudShape::setColor(pcl::RGB color) {
         shapePtr->points[i].b = color.b;
     }
 }
+
+void IPointCloudShape::setShape(PointCloudT::Ptr shape) {
+    this->shapePtr = shape;
+}
 /*********************************************IMPORTED_CLOUD***********************************************************/
 ImportedPointCloudShape::ImportedPointCloudShape(const string& id, const string& filePath) :
     IPointCloudShape(id),

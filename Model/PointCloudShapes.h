@@ -21,6 +21,8 @@ class IPointCloudShape {
         string getId();
         PointCloudT::Ptr getShape();
         void setColor(pcl::RGB);
+        void setShape(PointCloudT::Ptr);
+
         virtual void generateShape();
         virtual ~IPointCloudShape() = default;
 };

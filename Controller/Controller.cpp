@@ -6,6 +6,7 @@
 
 Controller::Controller() {
     Viewer::cloudSelectedEventListener = [this](const string& name) { this->selectCloud(name); };
+    Viewer::selectedCloudTranslateLeftEventListener = [this](int x, int y, int z) { this->translate(x,y,z); };
 }
 
 void Controller::start() {
@@ -18,6 +19,9 @@ void Controller::tmp() {
 
 void Controller::selectCloud(const string& cloudName) {
     cout << "I SELECTED A CLOUD: " << cloudName << endl;
+
+    if (model.isCloudSelected())
+        viewer.updateCloud(model.getSelectedCloudName(), model.deSelectCloud());
 
     viewer.updateCloud(cloudName, model.selectCloud(cloudName));
 }
@@ -76,6 +80,16 @@ void Controller::generateCone(const string& id, bool isFilled, float radius, flo
 
     model.addCloud(cloud);
     viewer.addCloud(cloud.getId(), cloud.getShape());
+}
+
+void Controller::translate(int x, int y, int z) {
+    if (model.isCloudSelected())
+        viewer.updateCloud(model.getSelectedCloudName(), model.translateSelectedCloud(x,y,z));
+}
+
+void Controller::rotate(float angle, char axis) {
+    if (model.isCloudSelected())
+        viewer.updateCloud(model.getSelectedCloudName(), model.rotateSelectedCloud(angle, axis));
 }
 
 
