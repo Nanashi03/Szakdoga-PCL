@@ -6,7 +6,7 @@
 
 Controller::Controller() {
     Viewer::cloudSelectedEventListener = [this](const string& name) { this->selectCloud(name); };
-    Viewer::selectedCloudTranslateLeftEventListener = [this](int x, int y, int z) { this->translate(x,y,z); };
+    Viewer::selectedCloudTranslateLeftEventListener = [this](float x, float y, float z) { this->translate(x,y,z); };
 }
 
 void Controller::start() {
@@ -21,9 +21,11 @@ void Controller::selectCloud(const string& cloudName) {
     cout << "I SELECTED A CLOUD: " << cloudName << endl;
 
     if (model.isCloudSelected())
-        viewer.updateCloud(model.getSelectedCloudName(), model.deSelectCloud());
+        viewer.removeBoundingBoxCube();
 
-    viewer.updateCloud(cloudName, model.selectCloud(cloudName));
+    BoundingBoxData bboxData;
+    model.selectCloud(cloudName, bboxData);
+    viewer.addBoundingBoxCube(bboxData.bboxTransform, bboxData.bboxQuaternion, bboxData.width, bboxData.height, bboxData.depth);
 }
 
 void Controller::importCloud(const string& id, const string& filePath) {
@@ -82,9 +84,11 @@ void Controller::generateCone(const string& id, bool isFilled, float radius, flo
     viewer.addCloud(cloud.getId(), cloud.getShape());
 }
 
-void Controller::translate(int x, int y, int z) {
-    if (model.isCloudSelected())
+void Controller::translate(float x, float y, float z) {
+    if (model.isCloudSelected()) {
         viewer.updateCloud(model.getSelectedCloudName(), model.translateSelectedCloud(x,y,z));
+        viewer.translateBoundingBoxCube(x,y,z);
+    }
 }
 
 void Controller::rotate(float angle, char axis) {

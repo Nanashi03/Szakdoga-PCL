@@ -46,7 +46,7 @@ void ImportedPointCloudShape::generateShape() {
         if (field.name == "rgb") constainRGB = true;
         if (field.name == "normal_x") constainNormals = true;
     }
-
+    
     if (constainRGB && constainNormals) {
         pcl::io::loadPCDFile<PointType>(filePath, *shapePtr);
     } else if (constainRGB) {

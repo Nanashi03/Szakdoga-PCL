@@ -7,7 +7,10 @@
 EventClickListener Viewer::cloudSelectedEventListener = nullptr;
 EventButtonListener Viewer::selectedCloudTranslateLeftEventListener = nullptr;
 
-Viewer::Viewer() : viewer {new pcl::visualization::PCLVisualizer ("3D Viewer")} {
+Viewer::Viewer() :
+    viewer {new pcl::visualization::PCLVisualizer ("3D Viewer")},
+    boundingBoxTransform {Eigen::Affine3f::Identity()}
+{
     viewer->setBackgroundColor (0,0,0);
     viewer->initCameraParameters ();
     viewer->registerPointPickingCallback(pointPickingEventOccurred, (void*)&viewer);
@@ -37,35 +40,35 @@ void Viewer::pointPickingEventOccurred(const pcl::visualization::PointPickingEve
 }
 
 void Viewer::keyboardPressingEventOccurred(const pcl::visualization::KeyboardEvent& event, void* viewer_void) {
-    if (event.getKeySym () == "a" && event.keyDown())
+    if (event.getKeySym () == "Left" && event.keyDown())
     {
         std::cout << "[INOF] \"a\" pressing event occurred." << std::endl;
-        selectedCloudTranslateLeftEventListener(1,0,0);
+        selectedCloudTranslateLeftEventListener(1.0f,0.0f,0.0f);
+    }
+    if (event.getKeySym () == "Right" && event.keyDown())
+    {
+        std::cout << "[INOF] \"d\" pressing event occurred." << std::endl;
+        selectedCloudTranslateLeftEventListener(-1.0f,0.0f,0.0f);
+    }
+    if (event.getKeySym () == "Up" && event.keyDown())
+    {
+        std::cout << "[INOF] \"w\" pressing event occurred." << std::endl;
+        selectedCloudTranslateLeftEventListener(0.0f,0.0f,1.0f);
+    }
+    if (event.getKeySym () == "Down" && event.keyDown())
+    {
+        std::cout << "[INOF] \"s\" pressing event occurred." << std::endl;
+        selectedCloudTranslateLeftEventListener(0.0f,0.0f,-1.0f);
+    }
+    if (event.getKeySym () == "a" && event.keyDown())
+    {
+        std::cout << "[INOF] \"f\" pressing event occurred." << std::endl;
+        selectedCloudTranslateLeftEventListener(0.0f,1.0f,0.0f);
     }
     if (event.getKeySym () == "d" && event.keyDown())
     {
-        std::cout << "[INOF] \"d\" pressing event occurred." << std::endl;
-        selectedCloudTranslateLeftEventListener(-1,0,0);
-    }
-    if (event.getKeySym () == "w" && event.keyDown())
-    {
-        std::cout << "[INOF] \"w\" pressing event occurred." << std::endl;
-        selectedCloudTranslateLeftEventListener(0,0,1);
-    }
-    if (event.getKeySym () == "s" && event.keyDown())
-    {
-        std::cout << "[INOF] \"s\" pressing event occurred." << std::endl;
-        selectedCloudTranslateLeftEventListener(0,0,-1);
-    }
-    if (event.getKeySym () == "f" && event.keyDown())
-    {
-        std::cout << "[INOF] \"f\" pressing event occurred." << std::endl;
-        selectedCloudTranslateLeftEventListener(0,1,0);
-    }
-    if (event.getKeySym () == "g" && event.keyDown())
-    {
         std::cout << "[INOF] \"g\" pressing event occurred." << std::endl;
-        selectedCloudTranslateLeftEventListener(0,-1,0);
+        selectedCloudTranslateLeftEventListener(0.0f,-1.0f,0.0f);
     }
 }
 
@@ -90,4 +93,26 @@ void Viewer::updateCloud(const std::string& id, PointCloudT::ConstPtr cloud) {
 
 void Viewer::removeCloud(const std::string& id) {
     viewer->removePointCloud(id);
+}
+
+void Viewer::addBoundingBoxCube(const Eigen::Vector3f& bboxTransform, const Eigen::Quaternionf& bboxQuaternion, double w, double h, double d)
+{
+    viewer->addCube(bboxTransform, bboxQuaternion, w, h, d, "BBOX");
+    viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION,
+                                             pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME,
+                                        "BBOX");
+}
+
+void Viewer::removeBoundingBoxCube() {
+   viewer->removeShape("BBOX");
+    boundingBoxTransform = Eigen::Affine3f::Identity();
+}
+
+
+void Viewer::translateBoundingBoxCube(float x, float y, float z) {
+    boundingBoxTransform.translation() += Eigen::Vector3f(x, y, z);
+    viewer->updateShapePose("BBOX", boundingBoxTransform);
+    viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION,
+                                             pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME,
+                                        "BBOX");
 }

@@ -20,6 +20,7 @@ using namespace std::chrono_literals;
 
 class Viewer {
 private:
+    Eigen::Affine3f boundingBoxTransform;
     pcl::visualization::PCLVisualizer::Ptr viewer;
     static void pointPickingEventOccurred (const pcl::visualization::PointPickingEvent&, void*);
     static void keyboardPressingEventOccurred (const pcl::visualization::KeyboardEvent&, void*);
@@ -29,9 +30,14 @@ public:
 
     Viewer();
     void run();
+
     void addCloud(const std::string&, PointCloudT::ConstPtr);
     void updateCloud(const std::string&, PointCloudT::ConstPtr);
     void removeCloud(const std::string&);
+
+    void addBoundingBoxCube(const Eigen::Vector3f&, const Eigen::Quaternionf&, double, double, double);
+    void removeBoundingBoxCube();
+    void translateBoundingBoxCube(float,float,float);
 };
 
 #endif //VIEWER_H
