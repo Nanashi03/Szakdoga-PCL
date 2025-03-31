@@ -14,7 +14,11 @@ void Controller::start() {
 }
 
 void Controller::tmp() {
-    return;
+    BoundingBoxData bboxData;
+    model.createBoundingBoxAround(0, bboxData);
+
+    cout << "width: " << bboxData.width << " height: " << bboxData.height << endl;
+    viewer.addBoundingBoxCube(bboxData.bboxTransform, bboxData.bboxQuaternion, bboxData.width, bboxData.height, bboxData.depth);
 }
 
 void Controller::selectCloud(const string& cloudName) {

@@ -18,6 +18,14 @@ using EventButtonListener = std::function<void(int,int,int)>;
 
 using namespace std::chrono_literals;
 
+struct BoundingBoxViewData
+{
+    Eigen::Quaternionf bboxQuaternion;
+    Eigen::Vector3f bboxTransform;
+    double width, height, depth;
+    const std::string NAME = "BBOX";
+};
+
 class Viewer {
 private:
     pcl::visualization::PCLVisualizer::Ptr viewer;
@@ -32,6 +40,7 @@ public:
     void addCloud(const std::string&, PointCloudT::ConstPtr);
     void updateCloud(const std::string&, PointCloudT::ConstPtr);
     void removeCloud(const std::string&);
+    void addBoundingBoxCube(const Eigen::Vector3f&, const Eigen::Quaternionf&, double, double, double);
 };
 
 #endif //VIEWER_H

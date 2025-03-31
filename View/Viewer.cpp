@@ -91,3 +91,11 @@ void Viewer::updateCloud(const std::string& id, PointCloudT::ConstPtr cloud) {
 void Viewer::removeCloud(const std::string& id) {
     viewer->removePointCloud(id);
 }
+
+void Viewer::addBoundingBoxCube(const Eigen::Vector3f& bboxTransform, const Eigen::Quaternionf& bboxQuaternion, double w, double h, double d)
+{
+    viewer->addCube(bboxTransform, bboxQuaternion, w, h, d, "BBOX");
+    viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION,
+                                    pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME,
+                                    "BBOX");
+}
