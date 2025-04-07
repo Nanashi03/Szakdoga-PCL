@@ -2,69 +2,77 @@
 #define POINTCLOUDSHAPES_H
 
 #include <pcl/io/pcd_io.h>
+#include <pcl/features/normal_3d.h>
 #include <pcl/PCLPointCloud2.h>
 #include <cmath>
 
-typedef pcl::PointXYZRGBNormal PointType;
-typedef pcl::PointCloud<PointType> PointCloudT;
+using PointType = pcl::PointXYZRGBNormal;
+using PointCloudT = pcl::PointCloud<PointType>;
 
 using namespace std;
 
 class IPointCloudShape {
-    protected:
-        string id;
-        bool isFilled;
-        PointCloudT::Ptr shapePtr;
-        float density;
-        IPointCloudShape(const string&,bool,float);
-    public:
-        string getId();
-        PointCloudT::Ptr getShape();
-        void setColor(pcl::RGB);
-        void setShape(PointCloudT::Ptr);
+protected:
+    PointCloudT::Ptr shapePtr;
+    string id;
+    float density;
 
-        virtual void generateShape();
-        virtual ~IPointCloudShape() = default;
+    bool isFilled;
+    bool areNormalsPresent;
+
+    IPointCloudShape(const string&,bool,float);
+public:
+    virtual void generateShape();
+    void calculateNormals();
+
+    void setColor(pcl::RGB);
+    void setShape(PointCloudT::Ptr);
+
+    bool getAreNormalsPresent();
+    string getId();
+    string getNormalId();
+    PointCloudT::Ptr getShape();
+    virtual ~IPointCloudShape() = default;
 };
 
 class ImportedPointCloudShape : public IPointCloudShape {
-    private:
-        string filePath;
-    public:
-        ImportedPointCloudShape(const string&, const string&);
-        void generateShape() override;
+private:
+    string filePath;
+public:
+    ImportedPointCloudShape(const string&, const string&);
+    void generateShape() override;
 };
 
 class RectanglePointCloudShape : public IPointCloudShape {
-    private:
-        float width, height;
-    public:
-        RectanglePointCloudShape(const string&, bool,float,float,float);
-        void generateShape() override;
+private:
+    float width, height;
+public:
+    RectanglePointCloudShape(const string&, bool,float,float,float);
+    void generateShape() override;
 };
 
 class CuboidPointCloudShape : public IPointCloudShape {
-    private:
-        float width, height, length;
-    public:
-        CuboidPointCloudShape(const string&, bool,float,float,float,float);
-        void generateShape() override;
+private:
+    float width, height, length;
+public:
+    CuboidPointCloudShape(const string&, bool,float,float,float,float);
+    void generateShape() override;
 };
 
 class CirclePointCloudShape : public IPointCloudShape {
-    private:
-        float radius;
-    public:
-        CirclePointCloudShape(const string&, bool,float,float);
-        void generateShape() override;
+private:
+    float radius;
+public:
+    CirclePointCloudShape(const string&, bool,float,float);
+    void generateShape() override;
 };
 
 class SpherePointCloudShape : public IPointCloudShape {
-    private:
-        float radius;
-    public:
-        SpherePointCloudShape(const string&, bool,float,float);
-        void generateShape() override;
+private:
+    float radius;
+public:
+    SpherePointCloudShape(const string&, bool,float,float);
+    void generateShape() override;
 };
 
 class CylinderPointCloudShape : public IPointCloudShape {

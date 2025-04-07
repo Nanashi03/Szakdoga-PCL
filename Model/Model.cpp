@@ -37,8 +37,8 @@ void Model::selectCloud(const string& name, BoundingBoxData& bboxData) {
             break;
         }
     }
-
-    createBoundingBoxAround(selectedCloud, bboxData);
+    if (selectedCloud != -1)
+        createBoundingBoxAround(selectedCloud, bboxData);
 }
 
 void Model::createBoundingBoxAround(int index, BoundingBoxData& bboxData)
@@ -106,4 +106,10 @@ string Model::getSelectedCloudName()
 bool Model::isCloudSelected()
 {
     return selectedCloud != -1;
+}
+
+bool Model::getSelectedCloudAreNormalsPresent()
+{
+    if (selectedCloud == -1) return false;
+    return  clouds[selectedCloud].getAreNormalsPresent();
 }

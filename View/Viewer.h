@@ -13,6 +13,8 @@
 
 using PointType = pcl::PointXYZRGBNormal;
 using PointCloudT = pcl::PointCloud<PointType>;
+using PointCloudNormals = pcl::PointCloud<pcl::Normal>;
+
 using EventClickListener = std::function<void(const std::string&)>;
 using EventButtonListener = std::function<void(int,int,int)>;
 
@@ -32,8 +34,9 @@ public:
     void run();
 
     void addCloud(const std::string&, PointCloudT::ConstPtr);
-    void updateCloud(const std::string&, PointCloudT::ConstPtr);
-    void removeCloud(const std::string&);
+    void addNormals(const std::string&, PointCloudT::ConstPtr);
+    void updateCloud(const std::string&, bool, PointCloudT::ConstPtr);
+    void removeCloud(const std::string&, bool);
 
     void addBoundingBoxCube(const Eigen::Vector3f&, const Eigen::Quaternionf&, double, double, double);
     void removeBoundingBoxCube();

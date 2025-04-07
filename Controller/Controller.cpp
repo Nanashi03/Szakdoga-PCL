@@ -14,18 +14,44 @@ void Controller::start() {
 }
 
 void Controller::tmp() {
-    return;
+    SpherePointCloudShape cloud1 {"id", false, 5, 1};
+    CylinderPointCloudShape cloud2 {"idd", false, 5, 10, 1};
+    cloud1.generateShape();
+    //cloud1.calculateNormals();
+
+    cloud2.generateShape();
+    cloud2.calculateNormals();
+
+    model.addCloud(cloud1);
+    viewer.addCloud(cloud1.getId(), cloud1.getShape());
+
+    //model.addCloud(cloud2);
+    //viewer.addCloud(cloud2.getId(), cloud2.getShape());
+
+    viewer.addNormals(cloud1.getNormalId(), cloud1.getShape());
 }
 
 void Controller::selectCloud(const string& cloudName) {
     cout << "I SELECTED A CLOUD: " << cloudName << endl;
 
-    if (model.isCloudSelected())
+    if (model.isCloudSelected() && cloudName == model.getSelectedCloudName())
+    {
+        model.deSelectCloud();
+        viewer.removeBoundingBoxCube();
+    } else if (model.isCloudSelected())
+    {
+        model.deSelectCloud();
         viewer.removeBoundingBoxCube();
 
-    BoundingBoxData bboxData;
-    model.selectCloud(cloudName, bboxData);
-    viewer.addBoundingBoxCube(bboxData.bboxTransform, bboxData.bboxQuaternion, bboxData.width, bboxData.height, bboxData.depth);
+        BoundingBoxData bboxData;
+        model.selectCloud(cloudName, bboxData);
+        viewer.addBoundingBoxCube(bboxData.bboxTransform, bboxData.bboxQuaternion, bboxData.width, bboxData.height, bboxData.depth);
+    } else
+    {
+        BoundingBoxData bboxData;
+        model.selectCloud(cloudName, bboxData);
+        viewer.addBoundingBoxCube(bboxData.bboxTransform, bboxData.bboxQuaternion, bboxData.width, bboxData.height, bboxData.depth);
+    }
 }
 
 void Controller::importCloud(const string& id, const string& filePath) {
@@ -86,14 +112,14 @@ void Controller::generateCone(const string& id, bool isFilled, float radius, flo
 
 void Controller::translate(float x, float y, float z) {
     if (model.isCloudSelected()) {
-        viewer.updateCloud(model.getSelectedCloudName(), model.translateSelectedCloud(x,y,z));
+        viewer.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.translateSelectedCloud(x,y,z));
         viewer.translateBoundingBoxCube(x,y,z);
     }
 }
 
 void Controller::rotate(float angle, char axis) {
     if (model.isCloudSelected())
-        viewer.updateCloud(model.getSelectedCloudName(), model.rotateSelectedCloud(angle, axis));
+        viewer.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.rotateSelectedCloud(angle, axis));
 }
 
 

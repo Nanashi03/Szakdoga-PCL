@@ -40,6 +40,7 @@ class Model {
         PointCloudT::ConstPtr rotateSelectedCloud(float,char);
 
         string getSelectedCloudName();
+        bool getSelectedCloudAreNormalsPresent();
         bool isCloudSelected();
 };
 

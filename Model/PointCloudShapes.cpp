@@ -4,14 +4,45 @@
 
 #include "PointCloudShapes.h"
 
+#include <oneapi/tbb/task_arena.h>
+
 IPointCloudShape::IPointCloudShape(const string& id_, bool iF = false, float d = 1.0f) :
     id{id_},
     shapePtr { make_shared<PointCloudT>() },
     isFilled { iF },
+    areNormalsPresent { false },
     density { d }
 { }
 
+void IPointCloudShape::calculateNormals()
+{
+    areNormalsPresent = true;
+
+    for (int i=0; i<shapePtr->points.size(); i++)
+    {
+        cout << shapePtr->points[i].x << " " << shapePtr->points[i].y << " " << shapePtr->points[i].z << endl;
+    }
+
+    cout << endl;
+
+    pcl::NormalEstimation<PointType, PointType> ne;
+    ne.setInputCloud (shapePtr);
+    pcl::search::KdTree<PointType>::Ptr tree { new pcl::search::KdTree<PointType> () };
+    ne.setSearchMethod (tree);
+    ne.setRadiusSearch (0.05);
+    ne.compute (*shapePtr);
+
+    for (int i=0; i<shapePtr->size(); ++i)
+    {
+        cout << shapePtr->points[i].normal_x << " " << shapePtr->points[i].normal_y << " " << shapePtr->points[i].normal_z << endl;
+    }
+}
+
+bool IPointCloudShape::getAreNormalsPresent() { return areNormalsPresent; }
+
 string IPointCloudShape::getId() { return id; }
+
+string IPointCloudShape::getNormalId() { return id + "_normals"; }
 
 PointCloudT::Ptr IPointCloudShape::getShape() { return shapePtr; }
 

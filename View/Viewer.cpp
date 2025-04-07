@@ -86,13 +86,22 @@ void Viewer::addCloud(const std::string& id, PointCloudT::ConstPtr cloud) {
     viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, id);
 }
 
-void Viewer::updateCloud(const std::string& id, PointCloudT::ConstPtr cloud) {
-    removeCloud(id);
-    addCloud(id, cloud);
+void Viewer::addNormals(const std::string& id, PointCloudT::ConstPtr cloud) {
+
+    viewer->addPointCloudNormals<PointType> (cloud, 10, 1, id);
 }
 
-void Viewer::removeCloud(const std::string& id) {
+void Viewer::updateCloud(const std::string& id, bool areNormalsPresent, PointCloudT::ConstPtr cloud) {
+    removeCloud(id, areNormalsPresent);
+    addCloud(id, cloud);
+    if (areNormalsPresent)
+        addNormals(id + "_normals", cloud);
+}
+
+void Viewer::removeCloud(const std::string& id, bool areNormalsPresent) {
     viewer->removePointCloud(id);
+    if (areNormalsPresent)
+        viewer->removePointCloud(id+"_normals");
 }
 
 void Viewer::addBoundingBoxCube(const Eigen::Vector3f& bboxTransform, const Eigen::Quaternionf& bboxQuaternion, double w, double h, double d)
@@ -104,7 +113,7 @@ void Viewer::addBoundingBoxCube(const Eigen::Vector3f& bboxTransform, const Eige
 }
 
 void Viewer::removeBoundingBoxCube() {
-   viewer->removeShape("BBOX");
+   viewer->removeAllShapes();
     boundingBoxTransform = Eigen::Affine3f::Identity();
 }
 
