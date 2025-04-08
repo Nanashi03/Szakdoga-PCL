@@ -6,12 +6,12 @@
 #define CONTROLLER_H
 
 #include "../Model/Model.h"
-#include "../View/Viewer.h"
+#include "../View/mainwindow.h"
 
 class Controller {
 private:
     Model model;
-    Viewer viewer;
+    MainWindow mainWindow;
 public:
     Controller();
     void start();

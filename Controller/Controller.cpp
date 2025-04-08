@@ -10,25 +10,25 @@ Controller::Controller() {
 }
 
 void Controller::start() {
-    viewer.run();
+    mainWindow.show();
 }
 
 void Controller::tmp() {
-    SpherePointCloudShape cloud1 {"id", false, 5, 1};
+    CylinderPointCloudShape cloud1 {"id", false, 5, 10, 1};
     CylinderPointCloudShape cloud2 {"idd", false, 5, 10, 1};
     cloud1.generateShape();
     //cloud1.calculateNormals();
 
     cloud2.generateShape();
-    cloud2.calculateNormals();
+    //cloud2.calculateNormals();
 
     model.addCloud(cloud1);
-    viewer.addCloud(cloud1.getId(), cloud1.getShape());
+    mainWindow.pclEditorView.addCloud(cloud1.getId(), cloud1.getShape());
 
     //model.addCloud(cloud2);
     //viewer.addCloud(cloud2.getId(), cloud2.getShape());
 
-    viewer.addNormals(cloud1.getNormalId(), cloud1.getShape());
+    //mainWindow.pclEditorView.addNormals(cloud1.getNormalId(), cloud1.getShape());
 }
 
 void Controller::selectCloud(const string& cloudName) {
@@ -37,20 +37,20 @@ void Controller::selectCloud(const string& cloudName) {
     if (model.isCloudSelected() && cloudName == model.getSelectedCloudName())
     {
         model.deSelectCloud();
-        viewer.removeBoundingBoxCube();
+        mainWindow.pclEditorView.removeBoundingBoxCube();
     } else if (model.isCloudSelected())
     {
         model.deSelectCloud();
-        viewer.removeBoundingBoxCube();
+        mainWindow.pclEditorView.removeBoundingBoxCube();
 
         BoundingBoxData bboxData;
         model.selectCloud(cloudName, bboxData);
-        viewer.addBoundingBoxCube(bboxData.bboxTransform, bboxData.bboxQuaternion, bboxData.width, bboxData.height, bboxData.depth);
+        mainWindow.pclEditorView.addBoundingBoxCube(bboxData.bboxTransform, bboxData.bboxQuaternion, bboxData.width, bboxData.height, bboxData.depth);
     } else
     {
         BoundingBoxData bboxData;
         model.selectCloud(cloudName, bboxData);
-        viewer.addBoundingBoxCube(bboxData.bboxTransform, bboxData.bboxQuaternion, bboxData.width, bboxData.height, bboxData.depth);
+        mainWindow.pclEditorView.addBoundingBoxCube(bboxData.bboxTransform, bboxData.bboxQuaternion, bboxData.width, bboxData.height, bboxData.depth);
     }
 }
 
@@ -59,7 +59,7 @@ void Controller::importCloud(const string& id, const string& filePath) {
     cloud.generateShape();
 
     model.addCloud(cloud);
-    viewer.addCloud(cloud.getId(), cloud.getShape());
+    mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
 }
 
 void Controller::generateRectangle(const string& id, bool isFilled, float width, float height, float density) {
@@ -67,7 +67,7 @@ void Controller::generateRectangle(const string& id, bool isFilled, float width,
     cloud.generateShape();
 
     model.addCloud(cloud);
-    viewer.addCloud(cloud.getId(), cloud.getShape());
+    mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
 }
 
 void Controller::generateCircle(const string& id, bool isFilled, float radius, float density) {
@@ -75,7 +75,7 @@ void Controller::generateCircle(const string& id, bool isFilled, float radius, f
     cloud.generateShape();
 
     model.addCloud(cloud);
-    viewer.addCloud(cloud.getId(), cloud.getShape());
+    mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
 }
 
 void Controller::generateCube(const string & id, bool isFilled, float width, float height, float length, float density) {
@@ -83,7 +83,7 @@ void Controller::generateCube(const string & id, bool isFilled, float width, flo
     cloud.generateShape();
 
     model.addCloud(cloud);
-    viewer.addCloud(cloud.getId(), cloud.getShape());
+    mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
 }
 
 void Controller::generateSphere(const string& id, bool isFilled, float radius, float density) {
@@ -91,7 +91,7 @@ void Controller::generateSphere(const string& id, bool isFilled, float radius, f
     cloud.generateShape();
 
     model.addCloud(cloud);
-    viewer.addCloud(cloud.getId(), cloud.getShape());
+    mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
 }
 
 void Controller::generateCylinder(const string& id, bool isFilled, float radius, float height, float density) {
@@ -99,7 +99,7 @@ void Controller::generateCylinder(const string& id, bool isFilled, float radius,
     cloud.generateShape();
 
     model.addCloud(cloud);
-    viewer.addCloud(cloud.getId(), cloud.getShape());
+    mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
 }
 
 void Controller::generateCone(const string& id, bool isFilled, float radius, float height, float density) {
@@ -107,19 +107,19 @@ void Controller::generateCone(const string& id, bool isFilled, float radius, flo
     cloud.generateShape();
 
     model.addCloud(cloud);
-    viewer.addCloud(cloud.getId(), cloud.getShape());
+    mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
 }
 
 void Controller::translate(float x, float y, float z) {
     if (model.isCloudSelected()) {
-        viewer.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.translateSelectedCloud(x,y,z));
-        viewer.translateBoundingBoxCube(x,y,z);
+        mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.translateSelectedCloud(x,y,z));
+        mainWindow.pclEditorView.translateBoundingBoxCube(x,y,z);
     }
 }
 
 void Controller::rotate(float angle, char axis) {
     if (model.isCloudSelected())
-        viewer.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.rotateSelectedCloud(angle, axis));
+        mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.rotateSelectedCloud(angle, axis));
 }
 
 

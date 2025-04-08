@@ -8,17 +8,8 @@ EventClickListener Viewer::cloudSelectedEventListener = nullptr;
 EventButtonListener Viewer::selectedCloudTranslateLeftEventListener = nullptr;
 
 Viewer::Viewer() :
-    viewer {new pcl::visualization::PCLVisualizer ("3D Viewer")},
     boundingBoxTransform {Eigen::Affine3f::Identity()}
 {
-    viewer->setBackgroundColor (0,0,0);
-    viewer->initCameraParameters ();
-    viewer->registerPointPickingCallback(pointPickingEventOccurred, (void*)&viewer);
-    viewer->registerKeyboardCallback(keyboardPressingEventOccurred, (void*)&viewer);
-    viewer->addOrientationMarkerWidgetAxes(viewer->getRenderWindow()->GetInteractor());
-
-    //viewer->resetCamera();
-    //viewer->addCoordinateSystem (0.05);
 }
 
 void Viewer::pointPickingEventOccurred(const pcl::visualization::PointPickingEvent& event, void* viewer_void) {
@@ -88,7 +79,7 @@ void Viewer::addCloud(const std::string& id, PointCloudT::ConstPtr cloud) {
 
 void Viewer::addNormals(const std::string& id, PointCloudT::ConstPtr cloud) {
 
-    viewer->addPointCloudNormals<PointType> (cloud, 10, 1, id);
+    viewer->addPointCloudNormals<PointType> (cloud, 10, 2, id);
 }
 
 void Viewer::updateCloud(const std::string& id, bool areNormalsPresent, PointCloudT::ConstPtr cloud) {
@@ -124,4 +115,26 @@ void Viewer::translateBoundingBoxCube(float x, float y, float z) {
     viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION,
                                              pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME,
                                         "BBOX");
+}
+
+void Viewer::init(vtkRenderer* renderer, vtkGenericOpenGLRenderWindow* renderWindow) {
+    viewer.reset(new pcl::visualization::PCLVisualizer(renderer, renderWindow, "viewer", false));
+
+    viewer->setBackgroundColor (0,0,0);
+    viewer->initCameraParameters ();
+    viewer->registerPointPickingCallback(pointPickingEventOccurred, (void*)&viewer);
+    viewer->registerKeyboardCallback(keyboardPressingEventOccurred, (void*)&viewer);
+    //viewer->addOrientationMarkerWidgetAxes(viewer->getRenderWindow()->GetInteractor());
+
+    //viewer->resetCamera();
+    //viewer->addCoordinateSystem (0.05);
+}
+
+
+vtkSmartPointer<vtkRenderWindow> Viewer::getRender() {
+    return viewer->getRenderWindow();
+}
+
+void Viewer::setupInteractor(vtkRenderWindowInteractor* interactor, vtkRenderWindow* renderWindow) {
+    viewer->setupInteractor(interactor, renderWindow);
 }

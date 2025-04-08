@@ -4,6 +4,7 @@ project(src1)
 set(CMAKE_AUTOMOC ON) # For meta object compiler
 set(CMAKE_AUTORCC ON) # Resource files
 set(CMAKE_AUTOUIC ON) # UI files
+set(CMAKE_CXX_STANDARD 20)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 find_package(PCL REQUIRED)
@@ -14,17 +15,25 @@ add_definitions(${PCL_DEFINITIONS})
 find_package(Qt5 COMPONENTS Concurrent OpenGL Widgets REQUIRED)
 set(QTX Qt5)
 
-set(CMAKE_CXX_STANDARD 20)
+include_directories(${CMAKE_BINARY_DIR})
 
-add_executable(src1 main.cpp
-        Model/PointCloudShapes.h
-        Controller/Controller.cpp
-        Controller/Controller.h
-        Model/Model.cpp
-        Model/Model.h
+set(SOURCES
+        main.cpp
         View/Viewer.cpp
-        View/Viewer.h
+        View/mainwindow.cpp
+        Controller/Controller.cpp
+        Model/Model.cpp
         Model/PointCloudShapes.cpp
 )
 
-target_link_libraries(src1 ${PCL_LIBRARIES} ${QTX}::Widgets)
+set(HEADERS
+        View/Viewer.h
+        View/mainwindow.h
+        Controller/Controller.h
+        Model/Model.h
+        Model/PointCloudShapes.h
+)
+
+add_executable(src1 ${SOURCES} ${HEADERS})
+
+target_link_libraries(src1 ${PCL_LIBRARIES} ${QTX}::Widgets ${QTX}::OpenGL)
