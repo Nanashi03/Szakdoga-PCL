@@ -7,6 +7,7 @@
 Controller::Controller() {
     Viewer::cloudSelectedEventListener = [this](const string& name) { this->selectCloud(name); };
     Viewer::selectedCloudTranslateLeftEventListener = [this](float x, float y, float z) { this->translate(x,y,z); };
+    MainWindow::eventImportListener = [this](const string& id, const string& fileName) { this->importCloud(id, fileName); };
 }
 
 void Controller::start() {
@@ -55,11 +56,15 @@ void Controller::selectCloud(const string& cloudName) {
 }
 
 void Controller::importCloud(const string& id, const string& filePath) {
-    ImportedPointCloudShape cloud{id, filePath};
-    cloud.generateShape();
+    try {
+        ImportedPointCloudShape cloud{id, filePath};
+        cloud.generateShape();
 
-    model.addCloud(cloud);
-    mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+        model.addCloud(cloud);
+        mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+    } catch (const std::exception& e) {
+        mainWindow.showErrorMessageBox(e.what());
+    }
 }
 
 void Controller::generateRectangle(const string& id, bool isFilled, float width, float height, float density) {

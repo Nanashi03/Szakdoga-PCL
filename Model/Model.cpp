@@ -9,8 +9,11 @@ Model::Model() :
 {}
 
 void Model::addCloud(const IPointCloudShape& cloud_shape) {
-    //if (std::ranges::find(clouds.begin(), clouds.end(), cloud_shape) == clouds.end()) return; //RAISE ERROR
-  
+    for (int i = 0; i < clouds.size(); i++) {
+        if (clouds[i].getId() == cloud_shape.getId() || clouds[i].getNormalId() == cloud_shape.getId())
+            throw std::runtime_error("ID already exists or conflicts with to be generated ones!");
+    }
+
     clouds.push_back(cloud_shape);
 }
 

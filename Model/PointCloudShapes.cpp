@@ -38,13 +38,13 @@ void IPointCloudShape::calculateNormals()
     }
 }
 
-bool IPointCloudShape::getAreNormalsPresent() { return areNormalsPresent; }
+bool IPointCloudShape::getAreNormalsPresent() const { return areNormalsPresent; }
 
-string IPointCloudShape::getId() { return id; }
+string IPointCloudShape::getId() const { return id; }
 
-string IPointCloudShape::getNormalId() { return id + "_normals"; }
+string IPointCloudShape::getNormalId() const { return id + "_normals"; }
 
-PointCloudT::Ptr IPointCloudShape::getShape() { return shapePtr; }
+PointCloudT::Ptr IPointCloudShape::getShape() const { return shapePtr; }
 
 void IPointCloudShape::generateShape() { }
 
@@ -69,7 +69,7 @@ void ImportedPointCloudShape::generateShape() {
     pcl::PCLPointCloud2 cloud2;
     pcl::PCDReader reader;
     if (reader.readHeader(filePath, cloud2) != 0) {
-        PCL_ERROR("Couldn't read file test_pcd.pcd \n");
+        throw runtime_error("Error reading file: " + filePath);
     }
     bool constainRGB { false };
     bool constainNormals {false};

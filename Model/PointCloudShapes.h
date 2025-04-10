@@ -28,10 +28,10 @@ public:
     void setColor(pcl::RGB);
     void setShape(PointCloudT::Ptr);
 
-    bool getAreNormalsPresent();
-    string getId();
-    string getNormalId();
-    PointCloudT::Ptr getShape();
+    bool getAreNormalsPresent() const;
+    string getId() const;
+    string getNormalId() const;
+    PointCloudT::Ptr getShape() const;
     virtual ~IPointCloudShape() = default;
 };
 
