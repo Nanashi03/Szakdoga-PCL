@@ -27,7 +27,6 @@ public:
 
     void translate(float,float,float);
     void rotate(float,char);
-    void tmp();
 };
 
 #endif //CONTROLLER_H

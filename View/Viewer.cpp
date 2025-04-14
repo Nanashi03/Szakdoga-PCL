@@ -137,4 +137,5 @@ vtkSmartPointer<vtkRenderWindow> Viewer::getRender() {
 
 void Viewer::setupInteractor(vtkRenderWindowInteractor* interactor, vtkRenderWindow* renderWindow) {
     viewer->setupInteractor(interactor, renderWindow);
+    viewer->addOrientationMarkerWidgetAxes(interactor);
 }

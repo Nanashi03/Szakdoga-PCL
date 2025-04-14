@@ -7,29 +7,19 @@
 Controller::Controller() {
     Viewer::cloudSelectedEventListener = [this](const string& name) { this->selectCloud(name); };
     Viewer::selectedCloudTranslateLeftEventListener = [this](float x, float y, float z) { this->translate(x,y,z); };
-    MainWindow::eventImportListener = [this](const string& id, const string& fileName) { this->importCloud(id, fileName); };
+    MainWindow::importEventListener = [this](const string& id, const string& fileName) { this->importCloud(id, fileName); };
+    MainWindow::addSquareEventListener = [this](const string& id, bool isFilled, float side) { this->generateRectangle(id, isFilled, side, side, 1.0f); };
+    MainWindow::addCubeEventListener = [this](const string& id, bool isFilled, float side) { this->generateCube(id, isFilled, side, side, side, 1.0f); };
+    MainWindow::addCircleEventListener = [this](const string& id, bool isFilled, float r) { this->generateCircle(id, isFilled, r, 1.0f); };
+    MainWindow::addSphereEventListener = [this](const string& id, bool isFilled, float r) { this->generateSphere(id, isFilled, r, 1.0f); };
+    MainWindow::addRectangleEventListener = [this](const string& id, bool isFilled, float w, float h) { this->generateRectangle(id, isFilled, w, h, 1.0f); };
+    MainWindow::addCylinderEventListener = [this](const string& id, bool isFilled, float r, float h) { this->generateCylinder(id, isFilled, r, h, 1.0f); };
+    MainWindow::addConeEventListener = [this](const string& id, bool isFilled, float r, float h) { this->generateCone(id, isFilled, r, h, 1.0f); };
+    MainWindow::addCuboidEventListener = [this](const string& id, bool isFilled, float w, float h, float d) { this->generateCube(id, isFilled, w, h, d, 1.0f); };
 }
 
 void Controller::start() {
     mainWindow.show();
-}
-
-void Controller::tmp() {
-    CylinderPointCloudShape cloud1 {"id", false, 5, 10, 1};
-    CylinderPointCloudShape cloud2 {"idd", false, 5, 10, 1};
-    cloud1.generateShape();
-    //cloud1.calculateNormals();
-
-    cloud2.generateShape();
-    //cloud2.calculateNormals();
-
-    model.addCloud(cloud1);
-    mainWindow.pclEditorView.addCloud(cloud1.getId(), cloud1.getShape());
-
-    //model.addCloud(cloud2);
-    //viewer.addCloud(cloud2.getId(), cloud2.getShape());
-
-    //mainWindow.pclEditorView.addNormals(cloud1.getNormalId(), cloud1.getShape());
 }
 
 void Controller::selectCloud(const string& cloudName) {
@@ -68,51 +58,75 @@ void Controller::importCloud(const string& id, const string& filePath) {
 }
 
 void Controller::generateRectangle(const string& id, bool isFilled, float width, float height, float density) {
-    RectanglePointCloudShape cloud {id, isFilled, width, height, density};
-    cloud.generateShape();
+    try {
+        RectanglePointCloudShape cloud {id, isFilled, width, height, density};
+        cloud.generateShape();
 
-    model.addCloud(cloud);
-    mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+        model.addCloud(cloud);
+        mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+    } catch (const std::exception& e) {
+        mainWindow.showErrorMessageBox(e.what());
+    }
 }
 
 void Controller::generateCircle(const string& id, bool isFilled, float radius, float density) {
-    CirclePointCloudShape cloud {id, isFilled, radius, density};
-    cloud.generateShape();
+    try {
+        CirclePointCloudShape cloud {id, isFilled, radius, density};
+        cloud.generateShape();
 
-    model.addCloud(cloud);
-    mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+        model.addCloud(cloud);
+        mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+    } catch (const std::exception& e) {
+        mainWindow.showErrorMessageBox(e.what());
+    }
 }
 
 void Controller::generateCube(const string & id, bool isFilled, float width, float height, float length, float density) {
-    CuboidPointCloudShape cloud {id, isFilled, width, height, length, density};
-    cloud.generateShape();
+    try {
+        CuboidPointCloudShape cloud {id, isFilled, width, height, length, density};
+        cloud.generateShape();
 
-    model.addCloud(cloud);
-    mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+        model.addCloud(cloud);
+        mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+    } catch (const std::exception& e) {
+        mainWindow.showErrorMessageBox(e.what());
+    }
 }
 
 void Controller::generateSphere(const string& id, bool isFilled, float radius, float density) {
-    SpherePointCloudShape cloud {id, isFilled, radius, density};
-    cloud.generateShape();
+    try {
+        SpherePointCloudShape cloud {id, isFilled, radius, density};
+        cloud.generateShape();
 
-    model.addCloud(cloud);
-    mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+        model.addCloud(cloud);
+        mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+    } catch (const std::exception& e) {
+        mainWindow.showErrorMessageBox(e.what());
+    }
 }
 
 void Controller::generateCylinder(const string& id, bool isFilled, float radius, float height, float density) {
-    CylinderPointCloudShape cloud {id, isFilled, radius, height, density};
-    cloud.generateShape();
+    try {
+        CylinderPointCloudShape cloud {id, isFilled, radius, height, density};
+        cloud.generateShape();
 
-    model.addCloud(cloud);
-    mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+        model.addCloud(cloud);
+        mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+    } catch (const std::exception& e) {
+        mainWindow.showErrorMessageBox(e.what());
+    }
 }
 
 void Controller::generateCone(const string& id, bool isFilled, float radius, float height, float density) {
-    ConePointCloudShape cloud {id, isFilled, radius, height, density};
-    cloud.generateShape();
+    try {
+        ConePointCloudShape cloud {id, isFilled, radius, height, density};
+        cloud.generateShape();
 
-    model.addCloud(cloud);
-    mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+        model.addCloud(cloud);
+        mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+    } catch (const std::exception& e) {
+        mainWindow.showErrorMessageBox(e.what());
+    }
 }
 
 void Controller::translate(float x, float y, float z) {

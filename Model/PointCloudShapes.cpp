@@ -249,7 +249,7 @@ void ConePointCloudShape::generateShape() {
         {
             float x = (height - u) / height * radius * cos(radI);
             float y = (height - u) / height * radius * sin(radI);
-            PointType point {x, y, u};
+            PointType point {x, y, u, 255, 255, 255};
             shapePtr->points.push_back(point);
             if (isFilled) {
                 for (float k = 0; k < radius; k += density) {

@@ -17,10 +17,16 @@ set(QTX Qt5)
 
 include_directories(${CMAKE_BINARY_DIR})
 
+set(UIS
+        Forms/InputDialogBox.ui
+        View/mainwindow.ui
+)
+
 set(SOURCES
         main.cpp
         View/Viewer.cpp
         View/mainwindow.cpp
+        Forms/InputDialogBox.cpp
         Controller/Controller.cpp
         Model/Model.cpp
         Model/PointCloudShapes.cpp
@@ -29,11 +35,13 @@ set(SOURCES
 set(HEADERS
         View/Viewer.h
         View/mainwindow.h
+        Forms/InputDialogBox.h
         Controller/Controller.h
         Model/Model.h
         Model/PointCloudShapes.h
+        Forms/InputFormData.h
 )
 
-add_executable(src1 ${SOURCES} ${HEADERS})
+add_executable(src1 ${SOURCES} ${HEADERS} ${UIS})
 
 target_link_libraries(src1 ${PCL_LIBRARIES} ${QTX}::Widgets ${QTX}::OpenGL)
