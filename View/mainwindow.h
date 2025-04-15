@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QInputDialog>
 #include <../Forms/InputDialogBox.h>
+#include "../DataStructures/EditCloudData.h"
 #include "Viewer.h"
 
 QT_BEGIN_NAMESPACE
@@ -18,6 +19,11 @@ using EventImportListener = std::function<void(const std::string&,const std::str
 using EventOneInputListener = std::function<void(const std::string&,bool,float)>;
 using EventTwoInputListener = std::function<void(const std::string&,bool,float,float)>;
 using EventThreeInputListener = std::function<void(const std::string&,bool,float,float,float)>;
+using EventDensitySliderListener = std::function<void(int)>;
+using EventSelectedCloudSliderListener = std::function<void(int,int,int)>;
+using EventChangeShapeDimensions = std::function<void(float,float,float)>;
+using EventTickBoxChanged = std::function<void(bool)>;
+using EventRemoveCloud = std::function<void()>;
 
 class MainWindow : public QMainWindow
 {
@@ -35,10 +41,18 @@ public:
     static EventTwoInputListener addCylinderEventListener;
     static EventTwoInputListener addConeEventListener;
     static EventThreeInputListener addCuboidEventListener;
+    static EventDensitySliderListener densityChangedEventListener;
+    static EventSelectedCloudSliderListener colorChangedEventListener;
+    static EventChangeShapeDimensions shapeChangedEventListener;
+    static EventTickBoxChanged isFilledChangedEventListener;
+    static EventTickBoxChanged areNormalsPresentChangedEventListener;
+    static EventRemoveCloud removeCloudEventListener;
 
     MainWindow(QWidget *parent = nullptr);
     void refreshView();
     void showErrorMessageBox(const std::string&);
+    void changeToEditShapeWidget(EditCloudData);
+    void changeToAddShapeWidget();
     ~MainWindow();
 private:
     Ui::MainWindow *ui;
@@ -52,5 +66,9 @@ private slots:
     void onAddSphereButtonClicked();
     void onAddCylinderButtonClicked();
     void onAddConeButtonClicked();
+    void onDensitySliderChanged();
+    void onColorSliderChanged();
+    void onDimensionChanged();
+
 };
 #endif // MAINWINDOW_H

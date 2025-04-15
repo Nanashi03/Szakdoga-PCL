@@ -40,6 +40,7 @@ public:
     void addNormals(const std::string&, PointCloudT::ConstPtr);
     void updateCloud(const std::string&, bool, PointCloudT::ConstPtr);
     void removeCloud(const std::string&, bool);
+    void removeNormals(const std::string&);
 
     void addBoundingBoxCube(const BoundingBoxData&);
     void removeBoundingBoxCube();

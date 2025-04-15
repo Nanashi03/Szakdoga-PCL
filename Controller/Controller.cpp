@@ -16,6 +16,12 @@ Controller::Controller() {
     MainWindow::addCylinderEventListener = [this](const string& id, bool isFilled, float r, float h) { this->generateCylinder(id, isFilled, r, h, 1.0f); };
     MainWindow::addConeEventListener = [this](const string& id, bool isFilled, float r, float h) { this->generateCone(id, isFilled, r, h, 1.0f); };
     MainWindow::addCuboidEventListener = [this](const string& id, bool isFilled, float w, float h, float d) { this->generateCube(id, isFilled, w, h, d, 1.0f); };
+    MainWindow::densityChangedEventListener = [this](int d) { this->updateSelectedCloudDensity(d); };
+    MainWindow::colorChangedEventListener = [this](int r, int g, int b) { this->changeSelectedCloudColor(r,g,b); };
+    MainWindow::shapeChangedEventListener = [this](float x, float y, float z) { this->updateSelectedCloudDimensions(x,y,z); };
+    MainWindow::isFilledChangedEventListener = [this](bool isFilled) { this->updateSelectedCloudIsFilled(isFilled); };
+    MainWindow::areNormalsPresentChangedEventListener = [this](bool areNormalsPresent) { this->updateSelectedCloudNormals(areNormalsPresent); };
+    MainWindow::removeCloudEventListener = [this]() { this->removeSelectedCloud(); };
 }
 
 void Controller::start() {
@@ -29,6 +35,7 @@ void Controller::selectCloud(const string& cloudName) {
     {
         model.deSelectCloud();
         mainWindow.pclEditorView.removeBoundingBoxCube();
+        mainWindow.changeToAddShapeWidget();
     } else if (model.isCloudSelected())
     {
         model.deSelectCloud();
@@ -36,6 +43,7 @@ void Controller::selectCloud(const string& cloudName) {
 
         model.selectCloud(cloudName);
         mainWindow.pclEditorView.addBoundingBoxCube(model.getBoundingBoxDataAroundSelectedCloud());
+        mainWindow.changeToEditShapeWidget(model.getEditCloudData());
     } else
     {
         model.selectCloud(cloudName);
@@ -43,7 +51,7 @@ void Controller::selectCloud(const string& cloudName) {
         mainWindow.changeToEditShapeWidget(model.getEditCloudData());
     }
 }
-
+/**********************************************GENERATION**************************************************************/
 void Controller::importCloud(const string& id, const string& filePath) {
     try {
         shared_ptr<ImportedPointCloudShape> cloud {make_shared<ImportedPointCloudShape>(id, filePath)};
@@ -128,6 +136,7 @@ void Controller::generateCone(const string& id, bool isFilled, float radius, flo
     }
 }
 
+/*************************************************EDITING**************************************************************/
 void Controller::changeSelectedCloudColor(uint8_t r, uint8_t g, uint8_t b) {
     if (!model.isCloudSelected()) return;
 
@@ -138,13 +147,55 @@ void Controller::changeSelectedCloudColor(uint8_t r, uint8_t g, uint8_t b) {
 
 void Controller::updateSelectedCloudDimensions(float x, float y, float z) {
     if (!model.isCloudSelected()) return;
-    cout << "UPDATING CLOUD IN CONTROLLER" << endl;
 
     model.updateSelectedCloudDimensions(x, y, z);
+    mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.getSelectedCloudShape());
+
+    mainWindow.pclEditorView.removeBoundingBoxCube();
+    mainWindow.pclEditorView.addBoundingBoxCube(model.getBoundingBoxDataAroundSelectedCloud());
+
+    mainWindow.refreshView();
+}
+
+void Controller::updateSelectedCloudDensity(int density) {
+    if (!model.isCloudSelected()) return;
+
+    model.updateSelectedCloudDensity(density);
     mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.getSelectedCloudShape());
     mainWindow.refreshView();
 }
 
+void Controller::updateSelectedCloudIsFilled(bool isFilled)
+{
+    if (!model.isCloudSelected()) return;
+
+    model.updateSelectedCloudIsFilled(isFilled);
+    mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.getSelectedCloudShape());
+    mainWindow.refreshView();
+}
+
+void Controller::updateSelectedCloudNormals(bool areNormalsPresent)
+{
+    if (!model.isCloudSelected()) return;
+
+    if (areNormalsPresent) {
+        model.generateNormalsForSelectedCloud();
+        mainWindow.pclEditorView.addNormals(model.getSelectedCloudNormalsName(), model.getSelectedCloudShape());
+    } else {
+        mainWindow.pclEditorView.removeNormals(model.getSelectedCloudNormalsName());
+    }
+}
+
+void Controller::removeSelectedCloud() {
+    if (!model.isCloudSelected()) return;
+    mainWindow.pclEditorView.removeCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent());
+    mainWindow.pclEditorView.removeBoundingBoxCube();
+    mainWindow.changeToAddShapeWidget();
+    model.removeSelectedCloud();
+
+    mainWindow.refreshView();
+}
+/*********************************************TRANSFORMATION***********************************************************/
 void Controller::translate(float x, float y, float z) {
     if (model.isCloudSelected()) {
         mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.translateSelectedCloud(x,y,z));

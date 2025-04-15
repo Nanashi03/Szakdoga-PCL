@@ -6,6 +6,8 @@
 
 #include <oneapi/tbb/task_arena.h>
 
+#include <utility>
+
 IPointCloudShape::IPointCloudShape(const string& id_, bool iF = false, float d = 1.0f) :
     id{id_},
     shapePtr { make_shared<PointCloudT>() },
@@ -32,7 +34,7 @@ void IPointCloudShape::calculateNormals()
     ne.setInputCloud (shapePtr);
     pcl::search::KdTree<PointType>::Ptr tree { new pcl::search::KdTree<PointType> () };
     ne.setSearchMethod (tree);
-    ne.setRadiusSearch (0.05);
+    ne.setRadiusSearch (100);
     ne.compute (*shapePtr);
 
     for (int i=0; i<shapePtr->size(); ++i)
@@ -51,7 +53,7 @@ string IPointCloudShape::getNormalId() const { return id + "_normals"; }
 
 PointCloudT::Ptr IPointCloudShape::getShape() const { return shapePtr; }
 
-float IPointCloudShape::getDensity() const { return density; }
+float IPointCloudShape::getDensity() const { return 1/density; }
 
 bool IPointCloudShape::getIsColorable() const { return isColorable; }
 
@@ -73,8 +75,6 @@ pcl::RGB IPointCloudShape::getColor() const
 
 void IPointCloudShape::generateShape() { }
 
-void IPointCloudShape::setDimensions(float x, float y, float z) { }
-
 void IPointCloudShape::setColor(pcl::RGB color) {
     for (int i=0; i<shapePtr->size(); i++) {
         shapePtr->points[i].r = color.r;
@@ -83,13 +83,19 @@ void IPointCloudShape::setColor(pcl::RGB color) {
     }
 }
 
-void IPointCloudShape::setShape(PointCloudT::Ptr shape) {
-    this->shapePtr = shape;
-}
+void IPointCloudShape::setIsFilled(bool isFilled) { this->isFilled = isFilled; }
+
+void IPointCloudShape::setAreNormalsPresent(bool areNormalsPresent) { this->areNormalsPresent = areNormalsPresent; }
+
+void IPointCloudShape::setDensity(int density) { this->density = 1/static_cast<float>(density); }
+
+void IPointCloudShape::setShape(PointCloudT::Ptr shape) { this->shapePtr = std::move(shape); }
+
+void IPointCloudShape::setDimensions(float x, float y, float z) { }
 /*********************************************IMPORTED_CLOUD***********************************************************/
-ImportedPointCloudShape::ImportedPointCloudShape(const string& id, const string& filePath) :
+ImportedPointCloudShape::ImportedPointCloudShape(const string& id, string  filePath) :
     IPointCloudShape(id),
-    filePath {filePath}
+    filePath {std::move(filePath)}
 {
     this->isFillable = false;
     this->isDensitable = false;

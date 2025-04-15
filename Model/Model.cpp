@@ -24,8 +24,35 @@ void Model::updateSelectedCloudDimensions(float x, float y, float z) {
     clouds[selectedCloud]->generateShape();
 }
 
-void Model::removeCloud(const shared_ptr<IPointCloudShape>& cloud_shape) {
-    return;
+void Model::updateSelectedCloudDensity(int density) {
+    if (selectedCloud == -1) return;
+
+    clouds[selectedCloud]->setDensity(density);
+    clouds[selectedCloud]->generateShape();
+}
+
+void Model::updateSelectedCloudIsFilled(bool isFilled) {
+    if (selectedCloud == -1) return;
+
+    clouds[selectedCloud]->setIsFilled(isFilled);
+    clouds[selectedCloud]->generateShape();
+}
+
+void Model::updateSelectedCloudAreNormalsPresent(bool areNormalsPresent) {
+    if (selectedCloud == -1) return;
+
+    clouds[selectedCloud]->setAreNormalsPresent(areNormalsPresent);
+}
+
+void Model::removeSelectedCloud() {
+    if (selectedCloud == -1) return;
+    clouds.erase(clouds.begin() + selectedCloud);
+    deSelectCloud();
+}
+
+void Model::generateNormalsForSelectedCloud() {
+    if (selectedCloud == -1 || clouds[selectedCloud]->getAreNormalsPresent()) return;
+    clouds[selectedCloud]->calculateNormals();
 }
 
 void Model::colorSelectedCloud(pcl::RGB color) {
@@ -133,19 +160,21 @@ PointCloudT::ConstPtr Model::getSelectedCloudShape() {
     return clouds[selectedCloud]->getShape();
 }
 
-string Model::getSelectedCloudName()
-{
+string Model::getSelectedCloudName() {
     if (selectedCloud == -1) return "";
     return clouds[selectedCloud]->getId();
 }
 
-bool Model::isCloudSelected()
-{
+string Model::getSelectedCloudNormalsName() {
+    if (selectedCloud == -1) return "";
+    return clouds[selectedCloud]->getNormalId();
+}
+
+bool Model::isCloudSelected() {
     return selectedCloud != -1;
 }
 
-bool Model::getSelectedCloudAreNormalsPresent()
-{
+bool Model::getSelectedCloudAreNormalsPresent() {
     if (selectedCloud == -1) return false;
     return clouds[selectedCloud]->getAreNormalsPresent();
 }

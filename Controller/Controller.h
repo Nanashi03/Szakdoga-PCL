@@ -27,6 +27,10 @@ public:
 
     void changeSelectedCloudColor(uint8_t, uint8_t, uint8_t);
     void updateSelectedCloudDimensions(float,float,float);
+    void updateSelectedCloudDensity(int);
+    void updateSelectedCloudIsFilled(bool);
+    void updateSelectedCloudNormals(bool);
+    void removeSelectedCloud();
 
     void translate(float,float,float);
     void rotate(float,char);

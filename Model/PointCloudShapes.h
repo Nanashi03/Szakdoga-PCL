@@ -32,6 +32,9 @@ public:
 
     void setColor(pcl::RGB);
     void setShape(PointCloudT::Ptr);
+    void setIsFilled(bool);
+    void setAreNormalsPresent(bool);
+    void setDensity(int);
     virtual void setDimensions(float,float,float);
 
     bool getAreNormalsPresent() const;
@@ -56,7 +59,7 @@ class ImportedPointCloudShape : public IPointCloudShape {
 private:
     string filePath;
 public:
-    ImportedPointCloudShape(const string&, const string&);
+    ImportedPointCloudShape(const string&, string );
     void generateShape() override;
 };
 

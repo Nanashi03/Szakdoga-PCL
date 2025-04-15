@@ -22,12 +22,17 @@ class Model {
     public:
         Model();
         void addCloud(const shared_ptr<IPointCloudShape>&);
-        void updateSelectedCloudDimensions(float,float,float);
-        void removeCloud(const shared_ptr<IPointCloudShape>&);
-        void colorSelectedCloud(pcl::RGB);
+        void removeSelectedCloud();
+        void generateNormalsForSelectedCloud();
 
         void selectCloud(const string&);
         void deSelectCloud();
+
+        void colorSelectedCloud(pcl::RGB);
+        void updateSelectedCloudDimensions(float,float,float);
+        void updateSelectedCloudDensity(int);
+        void updateSelectedCloudIsFilled(bool);
+        void updateSelectedCloudAreNormalsPresent(bool);
         PointCloudT::ConstPtr translateSelectedCloud(float,float,float);
         PointCloudT::ConstPtr rotateSelectedCloud(float,char);
 
@@ -36,6 +41,7 @@ class Model {
 
         PointCloudT::ConstPtr getSelectedCloudShape();
         string getSelectedCloudName();
+        string getSelectedCloudNormalsName();
         bool getSelectedCloudAreNormalsPresent();
         bool isCloudSelected();
 };

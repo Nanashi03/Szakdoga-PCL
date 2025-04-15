@@ -77,9 +77,9 @@ void Viewer::addCloud(const std::string& id, PointCloudT::ConstPtr cloud) {
     viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, id);
 }
 
-void Viewer::addNormals(const std::string& id, PointCloudT::ConstPtr cloud) {
+void Viewer::addNormals(const std::string& normalsId, PointCloudT::ConstPtr cloud) {
 
-    viewer->addPointCloudNormals<PointType> (cloud, 10, 2, id);
+    viewer->addPointCloudNormals<PointType> (cloud, 10, 1, normalsId);
 }
 
 void Viewer::updateCloud(const std::string& id, bool areNormalsPresent, PointCloudT::ConstPtr cloud) {
@@ -93,6 +93,10 @@ void Viewer::removeCloud(const std::string& id, bool areNormalsPresent) {
     viewer->removePointCloud(id);
     if (areNormalsPresent)
         viewer->removePointCloud(id+"_normals");
+}
+
+void Viewer::removeNormals(const std::string& normalsId) {
+    viewer->removePointCloud(normalsId);
 }
 
 void Viewer::addBoundingBoxCube(const BoundingBoxData& data)

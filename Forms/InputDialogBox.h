@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QValidator>
 #include <QMessageBox>
-#include "InputFormData.h"
+#include "../DataStructures/InputFormData.h"
 
 namespace Ui {
 class InputDialogBox;
