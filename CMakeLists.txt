@@ -39,7 +39,8 @@ set(HEADERS
         Controller/Controller.h
         Model/Model.h
         Model/PointCloudShapes.h
-        Forms/InputFormData.h
+        DataStructures/InputFormData.h
+        DataStructures/EditCloudData.h
 )
 
 add_executable(src1 ${SOURCES} ${HEADERS} ${UIS})

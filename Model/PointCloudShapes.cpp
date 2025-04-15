@@ -1,4 +1,4 @@
-//asd
+//
 // Created by kristof on 2025.03.23..
 //
 
@@ -11,7 +11,10 @@ IPointCloudShape::IPointCloudShape(const string& id_, bool iF = false, float d =
     shapePtr { make_shared<PointCloudT>() },
     isFilled { iF },
     areNormalsPresent { false },
-    density { d }
+    density { d },
+    isColorable { true },
+    isDensitable { true },
+    isFillable { true }
 { }
 
 void IPointCloudShape::calculateNormals()
@@ -40,13 +43,37 @@ void IPointCloudShape::calculateNormals()
 
 bool IPointCloudShape::getAreNormalsPresent() const { return areNormalsPresent; }
 
+bool IPointCloudShape::getIsFilled() const { return isFilled; }
+
 string IPointCloudShape::getId() const { return id; }
 
 string IPointCloudShape::getNormalId() const { return id + "_normals"; }
 
 PointCloudT::Ptr IPointCloudShape::getShape() const { return shapePtr; }
 
+float IPointCloudShape::getDensity() const { return density; }
+
+bool IPointCloudShape::getIsColorable() const { return isColorable; }
+
+bool IPointCloudShape::getIsFillable() const { return isFillable; }
+
+bool IPointCloudShape::getIsDensitable() const { return isDensitable; }
+
+vector<bool> IPointCloudShape::getShowLabels() const { return showLabels; }
+
+vector<string> IPointCloudShape::getLabels() const { return labels; }
+
+vector<float> IPointCloudShape::getDimensions() const { return dimensions; }
+
+pcl::RGB IPointCloudShape::getColor() const
+{
+    if (shapePtr->size() > 0) return { shapePtr->points[0].r, shapePtr->points[0].g, shapePtr->points[0].b };
+    return {0,0,0};
+}
+
 void IPointCloudShape::generateShape() { }
+
+void IPointCloudShape::setDimensions(float x, float y, float z) { }
 
 void IPointCloudShape::setColor(pcl::RGB color) {
     for (int i=0; i<shapePtr->size(); i++) {
@@ -63,7 +90,13 @@ void IPointCloudShape::setShape(PointCloudT::Ptr shape) {
 ImportedPointCloudShape::ImportedPointCloudShape(const string& id, const string& filePath) :
     IPointCloudShape(id),
     filePath {filePath}
-{}
+{
+    this->isFillable = false;
+    this->isDensitable = false;
+    this->labels = {};
+    this->showLabels = {false, false, false};
+    this->dimensions = {};
+}
 
 void ImportedPointCloudShape::generateShape() {
     pcl::PCLPointCloud2 cloud2;
@@ -77,7 +110,9 @@ void ImportedPointCloudShape::generateShape() {
         if (field.name == "rgb") constainRGB = true;
         if (field.name == "normal_x") constainNormals = true;
     }
-    
+
+    this->isColorable = !constainRGB;
+
     if (constainRGB && constainNormals) {
         pcl::io::loadPCDFile<PointType>(filePath, *shapePtr);
     } else if (constainRGB) {
@@ -97,9 +132,18 @@ RectanglePointCloudShape::RectanglePointCloudShape(const string& id, bool iF, fl
     IPointCloudShape(id, iF, 1/d),
     width {w},
     height {h}
-{}
+{
+    this->labels = {"Width", "Height"};
+    this->showLabels = {true, true, false};
+    this->dimensions = {w,h};
+}
 
 void RectanglePointCloudShape::generateShape() {
+    shapePtr->points.clear();
+
+    cout << "width: " << width << endl;
+    cout << "height: " << height << endl;
+
     for (float i = 0; i <= width; i += density) {
         for (float j = 0; j <= height; j += density) {
             if (!isFilled && (i==0 || i>width-density || j==0 || j>height-density)) {
@@ -112,15 +156,26 @@ void RectanglePointCloudShape::generateShape() {
         }
     }
 }
+
+void RectanglePointCloudShape::setDimensions(float width, float height, float z) {
+    this->width = width;
+    this->height = height;
+}
 /*********************************************CUBOID*******************************************************************/
 CuboidPointCloudShape::CuboidPointCloudShape(const string& id, bool iF, float w, float h, float l, float d) :
     IPointCloudShape(id, iF, 1/d),
     width {w},
     height {h},
     length {l}
-{}
+{
+    this->labels = {"Width", "Height", "Length"};
+    this->showLabels = {true, true, true};
+    this->dimensions = {w,h,l};
+}
 
 void CuboidPointCloudShape::generateShape() {
+    shapePtr->points.clear();
+
     for (float i = 0; i <= width; i += density) {
         for (float j = 0; j <= height; j += density) {
             for (float k = 0; k <= length; k += density) {
@@ -135,13 +190,25 @@ void CuboidPointCloudShape::generateShape() {
         }
     }
 }
+
+void CuboidPointCloudShape::setDimensions(float width, float height, float length) {
+    this->width = width;
+    this->height = height;
+    this->length = length;
+}
 /*********************************************CIRCLE*******************************************************************/
 CirclePointCloudShape::CirclePointCloudShape(const string& id, bool iF, float r, float d) :
     IPointCloudShape(id, iF, 1/d),
     radius {r}
-{}
+{
+    this->labels = {"Radius"};
+    this->showLabels = {true, false, false};
+    this->dimensions = {r};
+}
 
 void CirclePointCloudShape::generateShape() {
+    shapePtr->points.clear();
+
     float degreeIntensity = 360*density / 20;
 
     if (fmodf(radius, density) > 0.0001)
@@ -159,13 +226,23 @@ void CirclePointCloudShape::generateShape() {
         }
     }
 }
+
+void CirclePointCloudShape::setDimensions(float radius, float y, float z) {
+    this->radius = radius;
+}
 /*********************************************SPHERE*******************************************************************/
 SpherePointCloudShape::SpherePointCloudShape(const string& id, bool iF, float r, float d) :
     IPointCloudShape(id,iF,1/d),
     radius {r}
-{}
+{
+    this->labels = {"Radius"};
+    this->showLabels = {true, false, false};
+    this->dimensions = {r};
+}
 
 void SpherePointCloudShape::generateShape() {
+    shapePtr->points.clear();
+
     float degreeIntensity = 360*density / 20;
     for (float i = 0; i <= 180.0f; i += degreeIntensity) {
         for (float j = 0; j < 360.0f; j += degreeIntensity) {
@@ -181,14 +258,24 @@ void SpherePointCloudShape::generateShape() {
         }
     }
 }
+
+void SpherePointCloudShape::setDimensions(float radius, float y, float z) {
+    this->radius = radius;
+}
 /*********************************************CYLINDER*****************************************************************/
 CylinderPointCloudShape::CylinderPointCloudShape(const string& id, bool iF, float r, float h, float d) :
     IPointCloudShape(id,iF,1/d),
     radius {r},
     height {h}
-{}
+{
+    this->labels = {"Radius", "Height"};
+    this->showLabels = {true, true, false};
+    this->dimensions = {r,h};
+}
 
 void CylinderPointCloudShape::generateShape() {
+    shapePtr->points.clear();
+
     float degreeIntensity = 360*density / 20;
 
     if (fmodf(radius, density) > 0.0001)
@@ -218,14 +305,25 @@ void CylinderPointCloudShape::generateShape() {
         }
     }
 }
+
+void CylinderPointCloudShape::setDimensions(float radius, float height, float z) {
+    this->radius = radius;
+    this->height = height;
+}
 /***********************************************CONE*******************************************************************/
 ConePointCloudShape::ConePointCloudShape(const string& id, bool iF, float r, float h, float d) :
     IPointCloudShape(id,iF,1/d),
     radius {r},
     height {h}
-{}
+{
+    this->labels = {"Radius", "Height"};
+    this->showLabels = {true, true, false};
+    this->dimensions = {r,h};
+}
 
 void ConePointCloudShape::generateShape() {
+    shapePtr->points.clear();
+
     float degreeIntensity = 360*density / 20;
 
     if (fmodf(radius, density) > 0.0001)
@@ -261,4 +359,9 @@ void ConePointCloudShape::generateShape() {
             }
         }
     }
+}
+
+void ConePointCloudShape::setDimensions(float radius, float height, float z) {
+    this->radius = radius;
+    this->height = height;
 }

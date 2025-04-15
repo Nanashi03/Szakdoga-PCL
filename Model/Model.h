@@ -11,6 +11,7 @@
 #include <pcl/common/common.h>
 #include <pcl/common/pca.h>
 
+#include "../DataStructures/EditCloudData.h"
 #include "PointCloudShapes.h"
 
 struct BoundingBoxData
@@ -23,22 +24,24 @@ struct BoundingBoxData
 
 class Model {
     private:
-        std::pmr::vector<IPointCloudShape> clouds;
+        vector<shared_ptr<IPointCloudShape>> clouds;
         int selectedCloud;
-        //void createBoundingBoxAround(int);
-    public:
+
         void createBoundingBoxAround(int, BoundingBoxData&);
+    public:
         Model();
-        void addCloud(const IPointCloudShape&);
-        void updateCloud(const IPointCloudShape&);
-        void removeCloud(const IPointCloudShape&);
-        void colorCloud(pcl::RGB, int);
+        void addCloud(const shared_ptr<IPointCloudShape>&);
+        void updateSelectedCloudDimensions(float,float,float);
+        void removeCloud(const shared_ptr<IPointCloudShape>&);
+        void colorSelectedCloud(pcl::RGB);
 
         void selectCloud(const string&, BoundingBoxData&);
         void deSelectCloud();
         PointCloudT::ConstPtr translateSelectedCloud(float,float,float);
         PointCloudT::ConstPtr rotateSelectedCloud(float,char);
 
+        EditCloudData getEditCloudData();
+        PointCloudT::ConstPtr getSelectedCloudShape();
         string getSelectedCloudName();
         bool getSelectedCloudAreNormalsPresent();
         bool isCloudSelected();

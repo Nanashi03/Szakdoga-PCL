@@ -47,11 +47,11 @@ void Controller::selectCloud(const string& cloudName) {
 
 void Controller::importCloud(const string& id, const string& filePath) {
     try {
-        ImportedPointCloudShape cloud{id, filePath};
-        cloud.generateShape();
+        shared_ptr<ImportedPointCloudShape> cloud {make_shared<ImportedPointCloudShape>(id, filePath)};
+        cloud->generateShape();
 
         model.addCloud(cloud);
-        mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getShape());
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
@@ -59,11 +59,11 @@ void Controller::importCloud(const string& id, const string& filePath) {
 
 void Controller::generateRectangle(const string& id, bool isFilled, float width, float height, float density) {
     try {
-        RectanglePointCloudShape cloud {id, isFilled, width, height, density};
-        cloud.generateShape();
+        shared_ptr<RectanglePointCloudShape> cloud { make_shared<RectanglePointCloudShape>(id, isFilled, width, height, density) };
+        cloud->generateShape();
 
         model.addCloud(cloud);
-        mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getShape());
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
@@ -71,11 +71,11 @@ void Controller::generateRectangle(const string& id, bool isFilled, float width,
 
 void Controller::generateCircle(const string& id, bool isFilled, float radius, float density) {
     try {
-        CirclePointCloudShape cloud {id, isFilled, radius, density};
-        cloud.generateShape();
+        shared_ptr<CirclePointCloudShape> cloud { make_shared<CirclePointCloudShape>(id, isFilled, radius, density) };
+        cloud->generateShape();
 
         model.addCloud(cloud);
-        mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getShape());
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
@@ -83,11 +83,11 @@ void Controller::generateCircle(const string& id, bool isFilled, float radius, f
 
 void Controller::generateCube(const string & id, bool isFilled, float width, float height, float length, float density) {
     try {
-        CuboidPointCloudShape cloud {id, isFilled, width, height, length, density};
-        cloud.generateShape();
+        shared_ptr<CuboidPointCloudShape> cloud { make_shared<CuboidPointCloudShape>(id, isFilled, width, height, length, density) };
+        cloud->generateShape();
 
         model.addCloud(cloud);
-        mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getShape());
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
@@ -95,11 +95,11 @@ void Controller::generateCube(const string & id, bool isFilled, float width, flo
 
 void Controller::generateSphere(const string& id, bool isFilled, float radius, float density) {
     try {
-        SpherePointCloudShape cloud {id, isFilled, radius, density};
-        cloud.generateShape();
+        shared_ptr<SpherePointCloudShape> cloud  { make_shared<SpherePointCloudShape>(id, isFilled, radius, density) };
+        cloud->generateShape();
 
         model.addCloud(cloud);
-        mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getShape());
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
@@ -107,11 +107,11 @@ void Controller::generateSphere(const string& id, bool isFilled, float radius, f
 
 void Controller::generateCylinder(const string& id, bool isFilled, float radius, float height, float density) {
     try {
-        CylinderPointCloudShape cloud {id, isFilled, radius, height, density};
-        cloud.generateShape();
+        shared_ptr<CylinderPointCloudShape> cloud { make_shared<CylinderPointCloudShape>(id, isFilled, radius, height, density) };
+        cloud->generateShape();
 
         model.addCloud(cloud);
-        mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getShape());
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
@@ -119,14 +119,31 @@ void Controller::generateCylinder(const string& id, bool isFilled, float radius,
 
 void Controller::generateCone(const string& id, bool isFilled, float radius, float height, float density) {
     try {
-        ConePointCloudShape cloud {id, isFilled, radius, height, density};
-        cloud.generateShape();
+        shared_ptr<ConePointCloudShape> cloud { make_shared<ConePointCloudShape>(id, isFilled, radius, height, density) };
+        cloud->generateShape();
 
         model.addCloud(cloud);
-        mainWindow.pclEditorView.addCloud(cloud.getId(), cloud.getShape());
+        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getShape());
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
+}
+
+void Controller::changeSelectedCloudColor(uint8_t r, uint8_t g, uint8_t b) {
+    if (!model.isCloudSelected()) return;
+
+    model.colorSelectedCloud({r,g,b});
+    mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.getSelectedCloudShape());
+    mainWindow.refreshView();
+}
+
+void Controller::updateSelectedCloudDimensions(float x, float y, float z) {
+    if (!model.isCloudSelected()) return;
+    cout << "UPDATING CLOUD IN CONTROLLER" << endl;
+
+    model.updateSelectedCloudDimensions(x, y, z);
+    mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.getSelectedCloudShape());
+    mainWindow.refreshView();
 }
 
 void Controller::translate(float x, float y, float z) {

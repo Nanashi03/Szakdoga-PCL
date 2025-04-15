@@ -8,25 +8,29 @@ Model::Model() :
     selectedCloud {-1}
 {}
 
-void Model::addCloud(const IPointCloudShape& cloud_shape) {
+void Model::addCloud(const shared_ptr<IPointCloudShape>& cloud_shape) {
     for (int i = 0; i < clouds.size(); i++) {
-        if (clouds[i].getId() == cloud_shape.getId() || clouds[i].getNormalId() == cloud_shape.getId())
+        if (clouds[i]->getId() == cloud_shape->getId() || clouds[i]->getNormalId() == cloud_shape->getId())
             throw std::runtime_error("ID already exists or conflicts with to be generated ones!");
     }
 
     clouds.push_back(cloud_shape);
 }
 
-void Model::updateCloud(const IPointCloudShape& cloud_shape) {
+void Model::updateSelectedCloudDimensions(float x, float y, float z) {
+    if (selectedCloud == -1) return;
+
+    clouds[selectedCloud]->setDimensions(x,y,z);
+    clouds[selectedCloud]->generateShape();
+}
+
+void Model::removeCloud(const shared_ptr<IPointCloudShape>& cloud_shape) {
     return;
 }
 
-void Model::removeCloud(const IPointCloudShape& cloud_shape) {
-    return;
-}
-
-void Model::colorCloud(pcl::RGB color, int index) {
-    clouds[index].setColor(color);
+void Model::colorSelectedCloud(pcl::RGB color) {
+    if (selectedCloud == -1) return;
+    clouds[selectedCloud]->setColor(color);
 }
 
 void Model::deSelectCloud() {
@@ -35,7 +39,7 @@ void Model::deSelectCloud() {
 
 void Model::selectCloud(const string& name, BoundingBoxData& bboxData) {
     for (int i = 0; i < clouds.size(); i++) {
-        if (clouds[i].getId() == name) {
+        if (clouds[i]->getId() == name) {
             selectedCloud = i;
             break;
         }
@@ -48,8 +52,8 @@ void Model::createBoundingBoxAround(int index, BoundingBoxData& bboxData)
 {
     PointCloudT::Ptr cloudPCAprojection (new PointCloudT);
     pcl::PCA<PointType> pca;
-    pca.setInputCloud(clouds[index].getShape());
-    pca.project(*clouds[index].getShape(), *cloudPCAprojection);
+    pca.setInputCloud(clouds[index]->getShape());
+    pca.project(*clouds[index]->getShape(), *cloudPCAprojection);
 
     Eigen::Matrix3f eigenVectorsPCA = pca.getEigenVectors();
     eigenVectorsPCA.col(2) = eigenVectorsPCA.col(0).cross(eigenVectorsPCA.col(1));
@@ -59,7 +63,7 @@ void Model::createBoundingBoxAround(int index, BoundingBoxData& bboxData)
     projectionTransform.block<3,1>(0,3) = -1.f * (projectionTransform.block<3,3>(0,0) * pca.getEigenValues().head<3>());
 
     PointCloudT::Ptr cloudPointsProjected (new PointCloudT);
-    pcl::transformPointCloud(*clouds[index].getShape(), *cloudPointsProjected, projectionTransform);
+    pcl::transformPointCloud(*clouds[index]->getShape(), *cloudPointsProjected, projectionTransform);
 
     PointType minPoint, maxPoint;
     pcl::getMinMax3D(*cloudPointsProjected, minPoint, maxPoint);
@@ -78,10 +82,10 @@ PointCloudT::ConstPtr Model::translateSelectedCloud(float x, float y, float z) {
     Eigen::Affine3f transform = Eigen::Affine3f::Identity();
     transform.translation() << x, y, z;
     PointCloudT::Ptr translatedCloud (new PointCloudT);
-    pcl::transformPointCloud(*clouds[selectedCloud].getShape(), *translatedCloud, transform);
+    pcl::transformPointCloud(*clouds[selectedCloud]->getShape(), *translatedCloud, transform);
 
-    clouds[selectedCloud].setShape(translatedCloud);
-    return clouds[selectedCloud].getShape();
+    clouds[selectedCloud]->setShape(translatedCloud);
+    return clouds[selectedCloud]->getShape();
 }
 
 PointCloudT::ConstPtr Model::rotateSelectedCloud(float angle, char axis) {
@@ -94,16 +98,42 @@ PointCloudT::ConstPtr Model::rotateSelectedCloud(float angle, char axis) {
     else if (axis == 'z') transform_2.rotate (Eigen::AngleAxisf (angleRad, Eigen::Vector3f::UnitZ()));
 
     PointCloudT::Ptr rotatedCloud (new PointCloudT);
-    pcl::transformPointCloud(*clouds[selectedCloud].getShape(), *rotatedCloud, transform_2);
+    pcl::transformPointCloud(*clouds[selectedCloud]->getShape(), *rotatedCloud, transform_2);
 
-    clouds[selectedCloud].setShape(rotatedCloud);
-    return clouds[selectedCloud].getShape();
+    clouds[selectedCloud]->setShape(rotatedCloud);
+    return clouds[selectedCloud]->getShape();
+}
+
+EditCloudData Model::getEditCloudData()
+{
+    if (selectedCloud == -1) return EditCloudData();
+
+    EditCloudData data;
+    data.name = getSelectedCloudName();
+    data.rgb = { clouds[selectedCloud]->getColor().r, clouds[selectedCloud]->getColor().g, clouds[selectedCloud]->getColor().b };
+    data.isFilled = clouds[selectedCloud]->getIsFilled();
+    data.areNormalsPresent = clouds[selectedCloud]->getAreNormalsPresent();
+    data.dim = clouds[selectedCloud]->getDimensions();
+    data.labels = clouds[selectedCloud]->getLabels();
+    data.density = clouds[selectedCloud]->getDensity();
+
+    data.showFilledEdit = clouds[selectedCloud]->getIsFillable();
+    data.showColorEdit = clouds[selectedCloud]->getIsColorable();
+    data.showDensityEdit = clouds[selectedCloud]->getIsDensitable();
+    data.showLabels = clouds[selectedCloud]->getShowLabels();
+
+    return data;
+}
+
+PointCloudT::ConstPtr Model::getSelectedCloudShape() {
+    if (selectedCloud == -1) return nullptr;
+    return clouds[selectedCloud]->getShape();
 }
 
 string Model::getSelectedCloudName()
 {
     if (selectedCloud == -1) return "";
-    return clouds[selectedCloud].getId();
+    return clouds[selectedCloud]->getId();
 }
 
 bool Model::isCloudSelected()
@@ -114,5 +144,5 @@ bool Model::isCloudSelected()
 bool Model::getSelectedCloudAreNormalsPresent()
 {
     if (selectedCloud == -1) return false;
-    return  clouds[selectedCloud].getAreNormalsPresent();
+    return clouds[selectedCloud]->getAreNormalsPresent();
 }

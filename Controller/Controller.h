@@ -25,6 +25,9 @@ public:
     void generateCylinder(const string&, bool, float, float, float);
     void generateCone(const string&, bool, float, float, float);
 
+    void changeSelectedCloudColor(uint8_t, uint8_t, uint8_t);
+    void updateSelectedCloudDimensions(float,float,float);
+
     void translate(float,float,float);
     void rotate(float,char);
 };
