@@ -11,6 +11,8 @@
 #include <memory>
 #include <functional>
 
+#include "../DataStructures/BoundingBoxData.h"
+
 
 using PointType = pcl::PointXYZRGBNormal;
 using PointCloudT = pcl::PointCloud<PointType>;
@@ -39,7 +41,7 @@ public:
     void updateCloud(const std::string&, bool, PointCloudT::ConstPtr);
     void removeCloud(const std::string&, bool);
 
-    void addBoundingBoxCube(const Eigen::Vector3f&, const Eigen::Quaternionf&, double, double, double);
+    void addBoundingBoxCube(const BoundingBoxData&);
     void removeBoundingBoxCube();
     void translateBoundingBoxCube(float,float,float);
 

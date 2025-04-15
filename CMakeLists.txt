@@ -41,6 +41,7 @@ set(HEADERS
         Model/PointCloudShapes.h
         DataStructures/InputFormData.h
         DataStructures/EditCloudData.h
+        DataStructures/BoundingBoxData.h
 )
 
 add_executable(src1 ${SOURCES} ${HEADERS} ${UIS})

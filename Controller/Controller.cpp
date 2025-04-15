@@ -34,14 +34,13 @@ void Controller::selectCloud(const string& cloudName) {
         model.deSelectCloud();
         mainWindow.pclEditorView.removeBoundingBoxCube();
 
-        BoundingBoxData bboxData;
-        model.selectCloud(cloudName, bboxData);
-        mainWindow.pclEditorView.addBoundingBoxCube(bboxData.bboxTransform, bboxData.bboxQuaternion, bboxData.width, bboxData.height, bboxData.depth);
+        model.selectCloud(cloudName);
+        mainWindow.pclEditorView.addBoundingBoxCube(model.getBoundingBoxDataAroundSelectedCloud());
     } else
     {
-        BoundingBoxData bboxData;
-        model.selectCloud(cloudName, bboxData);
-        mainWindow.pclEditorView.addBoundingBoxCube(bboxData.bboxTransform, bboxData.bboxQuaternion, bboxData.width, bboxData.height, bboxData.depth);
+        model.selectCloud(cloudName);
+        mainWindow.pclEditorView.addBoundingBoxCube(model.getBoundingBoxDataAroundSelectedCloud());
+        mainWindow.changeToEditShapeWidget(model.getEditCloudData());
     }
 }
 

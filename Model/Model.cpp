@@ -37,23 +37,23 @@ void Model::deSelectCloud() {
     selectedCloud = -1;
 }
 
-void Model::selectCloud(const string& name, BoundingBoxData& bboxData) {
+void Model::selectCloud(const string& name) {
     for (int i = 0; i < clouds.size(); i++) {
         if (clouds[i]->getId() == name) {
             selectedCloud = i;
             break;
         }
     }
-    if (selectedCloud != -1)
-        createBoundingBoxAround(selectedCloud, bboxData);
 }
 
-void Model::createBoundingBoxAround(int index, BoundingBoxData& bboxData)
+BoundingBoxData Model::getBoundingBoxDataAroundSelectedCloud()
 {
+    if (selectedCloud == -1) return BoundingBoxData();
+
     PointCloudT::Ptr cloudPCAprojection (new PointCloudT);
     pcl::PCA<PointType> pca;
-    pca.setInputCloud(clouds[index]->getShape());
-    pca.project(*clouds[index]->getShape(), *cloudPCAprojection);
+    pca.setInputCloud(clouds[selectedCloud]->getShape());
+    pca.project(*clouds[selectedCloud]->getShape(), *cloudPCAprojection);
 
     Eigen::Matrix3f eigenVectorsPCA = pca.getEigenVectors();
     eigenVectorsPCA.col(2) = eigenVectorsPCA.col(0).cross(eigenVectorsPCA.col(1));
@@ -63,17 +63,20 @@ void Model::createBoundingBoxAround(int index, BoundingBoxData& bboxData)
     projectionTransform.block<3,1>(0,3) = -1.f * (projectionTransform.block<3,3>(0,0) * pca.getEigenValues().head<3>());
 
     PointCloudT::Ptr cloudPointsProjected (new PointCloudT);
-    pcl::transformPointCloud(*clouds[index]->getShape(), *cloudPointsProjected, projectionTransform);
+    pcl::transformPointCloud(*clouds[selectedCloud]->getShape(), *cloudPointsProjected, projectionTransform);
 
     PointType minPoint, maxPoint;
     pcl::getMinMax3D(*cloudPointsProjected, minPoint, maxPoint);
     const Eigen::Vector3f meanDiagonal = 0.5f*(maxPoint.getVector3fMap() + minPoint.getVector3fMap());
 
+    BoundingBoxData bboxData;
     bboxData.bboxQuaternion = eigenVectorsPCA;
     bboxData.bboxTransform = eigenVectorsPCA * meanDiagonal + pca.getEigenValues().head<3>();
     bboxData.width = maxPoint.x - minPoint.x;
     bboxData.height = maxPoint.y - minPoint.y;
     bboxData.depth = maxPoint.z - minPoint.z;
+
+    return bboxData;
 }
 
 PointCloudT::ConstPtr Model::translateSelectedCloud(float x, float y, float z) {

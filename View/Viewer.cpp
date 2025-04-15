@@ -95,12 +95,12 @@ void Viewer::removeCloud(const std::string& id, bool areNormalsPresent) {
         viewer->removePointCloud(id+"_normals");
 }
 
-void Viewer::addBoundingBoxCube(const Eigen::Vector3f& bboxTransform, const Eigen::Quaternionf& bboxQuaternion, double w, double h, double d)
+void Viewer::addBoundingBoxCube(const BoundingBoxData& data)
 {
-    viewer->addCube(bboxTransform, bboxQuaternion, w, h, d, "BBOX");
+    viewer->addCube(data.bboxTransform, data.bboxQuaternion, data.width, data.height, data.depth, data.NAME);
     viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION,
                                              pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME,
-                                        "BBOX");
+                                        data.NAME);
 }
 
 void Viewer::removeBoundingBoxCube() {
@@ -124,7 +124,6 @@ void Viewer::init(vtkRenderer* renderer, vtkGenericOpenGLRenderWindow* renderWin
     viewer->initCameraParameters ();
     viewer->registerPointPickingCallback(pointPickingEventOccurred, (void*)&viewer);
     viewer->registerKeyboardCallback(keyboardPressingEventOccurred, (void*)&viewer);
-    //viewer->addOrientationMarkerWidgetAxes(viewer->getRenderWindow()->GetInteractor());
 
     //viewer->resetCamera();
     //viewer->addCoordinateSystem (0.05);
