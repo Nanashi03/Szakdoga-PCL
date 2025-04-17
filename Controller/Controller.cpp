@@ -21,7 +21,7 @@ Controller::Controller() {
     MainWindow::colorChangedEventListener = [this](int r, int g, int b) { this->changeSelectedCloudColor(r,g,b); };
     MainWindow::shapeChangedEventListener = [this](float x, float y, float z) { this->updateSelectedCloudDimensions(x,y,z); };
     MainWindow::isFilledChangedEventListener = [this](bool isFilled) { this->updateSelectedCloudIsFilled(isFilled); };
-    MainWindow::areNormalsPresentChangedEventListener = [this](bool areNormalsPresent) { this->updateSelectedCloudNormals(areNormalsPresent); };
+    MainWindow::showNormalsChangedEventListener = [this](bool showNormals) { this->updateSelectedCloudNormals(showNormals); };
     MainWindow::removeCloudEventListener = [this]() { this->removeSelectedCloud(); };
 }
 
@@ -31,22 +31,22 @@ void Controller::start() {
 
 void Controller::selectCloud(const string& cloudName) {
     cout << "I SELECTED A CLOUD: " << cloudName << endl;
-
-    if (model.isCloudSelected() && cloudName == model.getSelectedCloudName())
-    {
+    cout << "COND: " << model.isCloudSelected() << " && " << (cloudName == model.getSelectedCloudNormalsName()) << endl;
+    if (model.isCloudSelected() && (cloudName == model.getSelectedCloudName() || cloudName == model.getSelectedCloudNormalsName())) {
+        cout << "1" << endl;
         model.deSelectCloud();
         mainWindow.pclEditorView.removeBoundingBoxCube();
         mainWindow.changeToAddShapeWidget();
-    } else if (model.isCloudSelected())
-    {
+    } else if (model.isCloudSelected()) {
+        cout << "2" << endl;
         model.deSelectCloud();
         mainWindow.pclEditorView.removeBoundingBoxCube();
 
         model.selectCloud(cloudName);
         mainWindow.pclEditorView.addBoundingBoxCube(model.getBoundingBoxDataAroundSelectedCloud());
         mainWindow.changeToEditShapeWidget(model.getEditCloudData());
-    } else
-    {
+    } else {
+        cout << "3" << endl;
         model.selectCloud(cloudName);
         mainWindow.pclEditorView.addBoundingBoxCube(model.getBoundingBoxDataAroundSelectedCloud());
         mainWindow.changeToEditShapeWidget(model.getEditCloudData());
@@ -142,7 +142,7 @@ void Controller::changeSelectedCloudColor(uint8_t r, uint8_t g, uint8_t b) {
     if (!model.isCloudSelected()) return;
 
     model.colorSelectedCloud({r,g,b});
-    mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.getSelectedCloudShape());
+    mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsShown(), model.getSelectedCloudShape());
     mainWindow.refreshView();
 }
 
@@ -150,7 +150,7 @@ void Controller::updateSelectedCloudDimensions(float x, float y, float z) {
     if (!model.isCloudSelected()) return;
 
     model.updateSelectedCloudDimensions(x, y, z);
-    mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.getSelectedCloudShape());
+    mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsShown(), model.getSelectedCloudShape());
 
     mainWindow.pclEditorView.removeBoundingBoxCube();
     mainWindow.pclEditorView.addBoundingBoxCube(model.getBoundingBoxDataAroundSelectedCloud());
@@ -162,7 +162,7 @@ void Controller::updateSelectedCloudDensity(int density) {
     if (!model.isCloudSelected()) return;
 
     model.updateSelectedCloudDensity(density);
-    mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.getSelectedCloudShape());
+    mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsShown(), model.getSelectedCloudShape());
     mainWindow.refreshView();
 }
 
@@ -171,25 +171,26 @@ void Controller::updateSelectedCloudIsFilled(bool isFilled)
     if (!model.isCloudSelected()) return;
 
     model.updateSelectedCloudIsFilled(isFilled);
-    mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.getSelectedCloudShape());
+    mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsShown(), model.getSelectedCloudShape());
     mainWindow.refreshView();
 }
 
-void Controller::updateSelectedCloudNormals(bool areNormalsPresent)
+void Controller::updateSelectedCloudNormals(bool showNormals)
 {
     if (!model.isCloudSelected()) return;
 
-    if (areNormalsPresent) {
-        model.generateNormalsForSelectedCloud();
+    model.updateSelectedCloudAreNormalsShown(showNormals);
+    if (showNormals) {
         mainWindow.pclEditorView.addNormals(model.getSelectedCloudNormalsName(), model.getSelectedCloudShape());
     } else {
         mainWindow.pclEditorView.removeNormals(model.getSelectedCloudNormalsName());
     }
+    mainWindow.refreshView();
 }
 
 void Controller::removeSelectedCloud() {
     if (!model.isCloudSelected()) return;
-    mainWindow.pclEditorView.removeCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent());
+    mainWindow.pclEditorView.removeCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsShown());
     mainWindow.pclEditorView.removeBoundingBoxCube();
     mainWindow.changeToAddShapeWidget();
     model.removeSelectedCloud();
@@ -201,7 +202,7 @@ void Controller::translate(float x, float y, float z) {
     if (model.isCloudSelected()) {
         Eigen::Affine3f translation = Eigen::Affine3f::Identity();
         model.translateSelectedCloud(x,y,z,translation);
-        mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.getSelectedCloudShape());
+        mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsShown(), model.getSelectedCloudShape());
         mainWindow.pclEditorView.translateBoundingBoxCube(translation);
         mainWindow.refreshView();
     }
@@ -211,7 +212,7 @@ void Controller::rotate(int angle, char axis) {
     if (model.isCloudSelected()) {
         Eigen::Affine3f rotation = Eigen::Affine3f::Identity();
         model.rotateSelectedCloud(angle, axis, rotation);
-        mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.getSelectedCloudShape());
+        mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsShown(), model.getSelectedCloudShape());
         mainWindow.pclEditorView.rotateBoundingBoxCube(rotation);
         mainWindow.refreshView();
     }

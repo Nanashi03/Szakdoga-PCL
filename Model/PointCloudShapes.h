@@ -22,7 +22,7 @@ protected:
     int rotation[3];
 
     bool isFilled;
-    bool areNormalsPresent;
+    bool areNormalsShown;
 
     bool isColorable, isFillable, isDensitable;
     vector<string> labels;
@@ -31,15 +31,15 @@ protected:
 
     IPointCloudShape(const string&,bool,float);
     void transformPointCloudToCenter();
+    void calculateNormals();
 public:
     virtual void generateShape();
-    void calculateNormals();
 
     void setColor(pcl::RGB);
     void setShape(PointCloudT::Ptr);
     void addToTranslationValues(const Eigen::Vector3f&);
     void setIsFilled(bool);
-    void setAreNormalsPresent(bool);
+    void setAreNormalsShown(bool);
     void setDensity(int);
     void setRotationAt(int,int);
     virtual void setDimensions(float,float,float);
@@ -57,7 +57,7 @@ public:
     bool getIsColorable() const;
     bool getIsFillable() const;
     bool getIsDensitable() const;
-    bool getAreNormalsPresent() const;
+    bool getAreNormalsShown() const;
     bool getIsFilled() const;
 
     virtual ~IPointCloudShape() = default;

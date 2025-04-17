@@ -10,7 +10,7 @@
 struct EditCloudData
 {
     std::string name;
-    bool isFilled, areNormalsPresent;
+    bool isFilled, areNormalsShown;
     std::vector<int> rgb, rotation;
 
     std::vector<float> dim;

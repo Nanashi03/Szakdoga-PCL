@@ -38,21 +38,16 @@ void Model::updateSelectedCloudIsFilled(bool isFilled) {
     clouds[selectedCloud]->generateShape();
 }
 
-void Model::updateSelectedCloudAreNormalsPresent(bool areNormalsPresent) {
+void Model::updateSelectedCloudAreNormalsShown(bool areNormalsShown) {
     if (selectedCloud == -1) return;
 
-    clouds[selectedCloud]->setAreNormalsPresent(areNormalsPresent);
+    clouds[selectedCloud]->setAreNormalsShown(areNormalsShown);
 }
 
 void Model::removeSelectedCloud() {
     if (selectedCloud == -1) return;
     clouds.erase(clouds.begin() + selectedCloud);
     deSelectCloud();
-}
-
-void Model::generateNormalsForSelectedCloud() {
-    if (selectedCloud == -1 || clouds[selectedCloud]->getAreNormalsPresent()) return;
-    clouds[selectedCloud]->calculateNormals();
 }
 
 void Model::colorSelectedCloud(pcl::RGB color) {
@@ -66,7 +61,7 @@ void Model::deSelectCloud() {
 
 void Model::selectCloud(const string& name) {
     for (int i = 0; i < clouds.size(); i++) {
-        if (clouds[i]->getId() == name) {
+        if (clouds[i]->getId() == name || clouds[i]->getNormalId() == name) {
             selectedCloud = i;
             break;
         }
@@ -153,7 +148,7 @@ EditCloudData Model::getEditCloudData()
     data.name = getSelectedCloudName();
     data.rgb = { clouds[selectedCloud]->getColor().r, clouds[selectedCloud]->getColor().g, clouds[selectedCloud]->getColor().b };
     data.isFilled = clouds[selectedCloud]->getIsFilled();
-    data.areNormalsPresent = clouds[selectedCloud]->getAreNormalsPresent();
+    data.areNormalsShown = clouds[selectedCloud]->getAreNormalsShown();
     data.dim = clouds[selectedCloud]->getDimensions();
     data.labels = clouds[selectedCloud]->getLabels();
     data.density = clouds[selectedCloud]->getDensity();
@@ -185,7 +180,7 @@ bool Model::isCloudSelected() {
     return selectedCloud != -1;
 }
 
-bool Model::getSelectedCloudAreNormalsPresent() {
+bool Model::getSelectedCloudAreNormalsShown() {
     if (selectedCloud == -1) return false;
-    return clouds[selectedCloud]->getAreNormalsPresent();
+    return clouds[selectedCloud]->getAreNormalsShown();
 }

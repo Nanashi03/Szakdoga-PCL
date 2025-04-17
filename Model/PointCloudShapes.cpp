@@ -13,7 +13,7 @@ IPointCloudShape::IPointCloudShape(const string& id_, bool iF = false, float d =
     shapePtr { make_shared<PointCloudT>() },
     translationValues { Eigen::Vector3f::Zero() },
     isFilled { iF },
-    areNormalsPresent { false },
+    areNormalsShown { false },
     density { d },
     rotation { 0, 0, 0 },
     isColorable { true },
@@ -31,20 +31,11 @@ void IPointCloudShape::transformPointCloudToCenter() {
 
 void IPointCloudShape::calculateNormals()
 {
-    areNormalsPresent = true;
-
-    for (int i=0; i<shapePtr->points.size(); i++)
-    {
-        cout << shapePtr->points[i].x << " " << shapePtr->points[i].y << " " << shapePtr->points[i].z << endl;
-    }
-
-    cout << endl;
-
     pcl::NormalEstimation<PointType, PointType> ne;
     ne.setInputCloud (shapePtr);
     pcl::search::KdTree<PointType>::Ptr tree { new pcl::search::KdTree<PointType> () };
     ne.setSearchMethod (tree);
-    ne.setRadiusSearch (100);
+    ne.setRadiusSearch (10);
     ne.compute (*shapePtr);
 
     for (int i=0; i<shapePtr->size(); ++i)
@@ -53,7 +44,7 @@ void IPointCloudShape::calculateNormals()
     }
 }
 
-bool IPointCloudShape::getAreNormalsPresent() const { return areNormalsPresent; }
+bool IPointCloudShape::getAreNormalsShown() const { return areNormalsShown; }
 
 bool IPointCloudShape::getIsFilled() const { return isFilled; }
 
@@ -99,7 +90,7 @@ void IPointCloudShape::setColor(pcl::RGB color) {
 
 void IPointCloudShape::setIsFilled(bool isFilled) { this->isFilled = isFilled; }
 
-void IPointCloudShape::setAreNormalsPresent(bool areNormalsPresent) { this->areNormalsPresent = areNormalsPresent; }
+void IPointCloudShape::setAreNormalsShown(bool areNormalsShown) { cout << "SET TO: " << areNormalsShown << endl; this->areNormalsShown = areNormalsShown; }
 
 void IPointCloudShape::setDensity(int density) { this->density = 1/static_cast<float>(density); }
 
@@ -152,6 +143,7 @@ void ImportedPointCloudShape::generateShape() {
     }
 
     transformPointCloudToCenter();
+    if (!constainNormals) calculateNormals();
 }
 /******************************************RECTANGLE*******************************************************************/
 RectanglePointCloudShape::RectanglePointCloudShape(const string& id, bool iF, float w, float h, float d) :
@@ -183,6 +175,7 @@ void RectanglePointCloudShape::generateShape() {
     }
 
     transformPointCloudToCenter();
+    calculateNormals();
 }
 
 void RectanglePointCloudShape::setDimensions(float width, float height, float z) {
@@ -219,6 +212,7 @@ void CuboidPointCloudShape::generateShape() {
     }
 
     transformPointCloudToCenter();
+    calculateNormals();
 }
 
 void CuboidPointCloudShape::setDimensions(float width, float height, float length) {
@@ -257,6 +251,7 @@ void CirclePointCloudShape::generateShape() {
     }
 
     transformPointCloudToCenter();
+    calculateNormals();
 }
 
 void CirclePointCloudShape::setDimensions(float radius, float y, float z) {
@@ -291,6 +286,7 @@ void SpherePointCloudShape::generateShape() {
     }
 
     transformPointCloudToCenter();
+    calculateNormals();
 }
 
 void SpherePointCloudShape::setDimensions(float radius, float y, float z) {
@@ -340,6 +336,7 @@ void CylinderPointCloudShape::generateShape() {
     }
 
     transformPointCloudToCenter();
+    calculateNormals();
 }
 
 void CylinderPointCloudShape::setDimensions(float radius, float height, float z) {
@@ -397,6 +394,7 @@ void ConePointCloudShape::generateShape() {
     }
 
     transformPointCloudToCenter();
+    calculateNormals();
 }
 
 void ConePointCloudShape::setDimensions(float radius, float height, float z) {

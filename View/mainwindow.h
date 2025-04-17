@@ -47,7 +47,7 @@ public:
     static EventRotationSliderChangedListener rotationChangedEventListener;
     static EventChangeShapeDimensions shapeChangedEventListener;
     static EventTickBoxChanged isFilledChangedEventListener;
-    static EventTickBoxChanged areNormalsPresentChangedEventListener;
+    static EventTickBoxChanged showNormalsChangedEventListener;
     static EventRemoveCloud removeCloudEventListener;
 
     MainWindow(QWidget *parent = nullptr);

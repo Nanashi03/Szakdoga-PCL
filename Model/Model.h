@@ -22,7 +22,6 @@ class Model {
         Model();
         void addCloud(const shared_ptr<IPointCloudShape>&);
         void removeSelectedCloud();
-        void generateNormalsForSelectedCloud();
 
         void selectCloud(const string&);
         void deSelectCloud();
@@ -31,7 +30,7 @@ class Model {
         void updateSelectedCloudDimensions(float,float,float);
         void updateSelectedCloudDensity(int);
         void updateSelectedCloudIsFilled(bool);
-        void updateSelectedCloudAreNormalsPresent(bool);
+        void updateSelectedCloudAreNormalsShown(bool);
         void translateSelectedCloud(float,float,float,Eigen::Affine3f&);
         void rotateSelectedCloud(int,char,Eigen::Affine3f&);
 
@@ -41,7 +40,7 @@ class Model {
         PointCloudT::ConstPtr getSelectedCloudShape();
         string getSelectedCloudName();
         string getSelectedCloudNormalsName();
-        bool getSelectedCloudAreNormalsPresent();
+        bool getSelectedCloudAreNormalsShown();
         bool isCloudSelected();
 };
 

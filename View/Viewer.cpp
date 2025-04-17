@@ -13,13 +13,11 @@ Viewer::Viewer() :
 }
 
 void Viewer::pointPickingEventOccurred(const pcl::visualization::PointPickingEvent& event, void* viewer_void) {
-    std::cout << "[INOF] Point picking event occurred." << std::endl;
     if (event.getPointIndex () == -1)
     {
         return;
     }
     std::string name = event.getCloudName();
-    std::cout << "[INOF] Cloud name: " << name << std::endl;
     if (name.empty()) {
         //DO SOMETHING MAYBE SEARCH BETWEEN CLOUDS?
         float x,y,z;
@@ -82,16 +80,16 @@ void Viewer::addNormals(const std::string& normalsId, PointCloudT::ConstPtr clou
     viewer->addPointCloudNormals<PointType> (cloud, 10, 1, normalsId);
 }
 
-void Viewer::updateCloud(const std::string& id, bool areNormalsPresent, PointCloudT::ConstPtr cloud) {
-    removeCloud(id, areNormalsPresent);
+void Viewer::updateCloud(const std::string& id, bool areNormalsShown, PointCloudT::ConstPtr cloud) {
+    removeCloud(id, areNormalsShown);
     addCloud(id, cloud);
-    if (areNormalsPresent)
+    if (areNormalsShown)
         addNormals(id + "_normals", cloud);
 }
 
-void Viewer::removeCloud(const std::string& id, bool areNormalsPresent) {
+void Viewer::removeCloud(const std::string& id, bool areNormalsShown) {
     viewer->removePointCloud(id);
-    if (areNormalsPresent)
+    if (areNormalsShown)
         viewer->removePointCloud(id+"_normals");
 }
 

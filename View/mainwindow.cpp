@@ -15,7 +15,7 @@ EventColorSliderChangedListener MainWindow::colorChangedEventListener = nullptr;
 EventRotationSliderChangedListener MainWindow::rotationChangedEventListener = nullptr;
 EventChangeShapeDimensions MainWindow::shapeChangedEventListener = nullptr;
 EventTickBoxChanged MainWindow::isFilledChangedEventListener = nullptr;
-EventTickBoxChanged MainWindow::areNormalsPresentChangedEventListener = nullptr;
+EventTickBoxChanged MainWindow::showNormalsChangedEventListener = nullptr;
 EventRemoveCloud MainWindow::removeCloudEventListener = nullptr;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(ui->yInput, &QLineEdit::editingFinished, this, &MainWindow::onDimensionChanged);
     connect(ui->zInput, &QLineEdit::editingFinished, this, &MainWindow::onDimensionChanged);
     connect(ui->IsFilledCheckBox, &QCheckBox::toggled, this, [](bool v) { isFilledChangedEventListener(v); });
-    connect(ui->ShowNormals, &QCheckBox::toggled, this, [](bool v) { areNormalsPresentChangedEventListener(v); });
+    connect(ui->ShowNormals, &QCheckBox::toggled, this, [](bool v) { showNormalsChangedEventListener(v); });
     connect(ui->RemoveCloud, &QPushButton::clicked, this, []() { removeCloudEventListener(); });
 
     refreshView();
@@ -226,7 +226,7 @@ void MainWindow::changeToEditShapeWidget(EditCloudData editData)
     ui->BlueSlider->hide();
 
     ui->EditedShapeName->setTitle(editData.name.data());
-    ui->ShowNormals->setChecked(editData.areNormalsPresent);
+    ui->ShowNormals->setChecked(editData.areNormalsShown);
     if (editData.showLabels.at(0))
     {
         ui->xWidget->show();
