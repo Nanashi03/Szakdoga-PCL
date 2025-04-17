@@ -106,32 +106,43 @@ BoundingBoxData Model::getBoundingBoxDataAroundSelectedCloud()
     return bboxData;
 }
 
-PointCloudT::ConstPtr Model::translateSelectedCloud(float x, float y, float z) {
-    if (selectedCloud == -1) return nullptr;
+void Model::translateSelectedCloud(float x, float y, float z, Eigen::Affine3f& transform) {
+    if (selectedCloud == -1) return;
 
-    Eigen::Affine3f transform = Eigen::Affine3f::Identity();
+    transform = Eigen::Affine3f::Identity();
     transform.translation() << x, y, z;
-    PointCloudT::Ptr translatedCloud (new PointCloudT);
-    pcl::transformPointCloud(*clouds[selectedCloud]->getShape(), *translatedCloud, transform);
+    pcl::transformPointCloud(*clouds[selectedCloud]->getShape(), *clouds[selectedCloud]->getShape(), transform);
 
-    clouds[selectedCloud]->setShape(translatedCloud);
-    return clouds[selectedCloud]->getShape();
+    clouds[selectedCloud]->addToTranslationValues({x, y, z});
 }
 
-PointCloudT::ConstPtr Model::rotateSelectedCloud(float angle, char axis) {
-    if (selectedCloud == -1) return nullptr;
-    float angleRad = angle * M_PI / 180;
+void Model::rotateSelectedCloud(int angle, char axis, Eigen::Affine3f& fullTransform) {
+    if (selectedCloud == -1) return;
 
-    Eigen::Affine3f transform_2 = Eigen::Affine3f::Identity();
-    if (axis == 'x') transform_2.rotate (Eigen::AngleAxisf (angleRad, Eigen::Vector3f::UnitX()));
-    else if (axis == 'y') transform_2.rotate (Eigen::AngleAxisf (angleRad, Eigen::Vector3f::UnitY()));
-    else if (axis == 'z') transform_2.rotate (Eigen::AngleAxisf (angleRad, Eigen::Vector3f::UnitZ()));
+    Eigen::Affine3f rotation { Eigen::Affine3f::Identity() };
+    float offsetRad = 0.0f;
+    if (axis == 'x') {
+        offsetRad = (float)(angle - clouds[selectedCloud]->getRotationAt(0)) * M_PI / 180.0f;
+        rotation.rotate(Eigen::AngleAxisf(offsetRad, Eigen::Vector3f::UnitX()));
+        clouds[selectedCloud]->setRotationAt(0, angle);
+    } else if (axis == 'y') {
+        offsetRad = (float)(angle - clouds[selectedCloud]->getRotationAt(1)) * M_PI / 180.0f;
+        rotation.rotate(Eigen::AngleAxisf(offsetRad, Eigen::Vector3f::UnitY()));
+        clouds[selectedCloud]->setRotationAt(1, angle);
+    } else if (axis == 'z') {
+        offsetRad = (float)(angle - clouds[selectedCloud]->getRotationAt(2)) * M_PI / 180.0f;
+        rotation.rotate(Eigen::AngleAxisf(offsetRad, Eigen::Vector3f::UnitZ()));
+        clouds[selectedCloud]->setRotationAt(2, angle);
+    }
 
-    PointCloudT::Ptr rotatedCloud (new PointCloudT);
-    pcl::transformPointCloud(*clouds[selectedCloud]->getShape(), *rotatedCloud, transform_2);
+    Eigen::Affine3f toOrigin = Eigen::Affine3f::Identity();
+    toOrigin.translate(-clouds[selectedCloud]->getTranslationValues());
+    Eigen::Affine3f backToCentroid = Eigen::Affine3f::Identity();
+    backToCentroid.translate(clouds[selectedCloud]->getTranslationValues());
 
-    clouds[selectedCloud]->setShape(rotatedCloud);
-    return clouds[selectedCloud]->getShape();
+    fullTransform = backToCentroid * rotation * toOrigin;
+
+    pcl::transformPointCloud(*clouds[selectedCloud]->getShape(), *clouds[selectedCloud]->getShape(), fullTransform);
 }
 
 EditCloudData Model::getEditCloudData()

@@ -99,8 +99,7 @@ void Viewer::removeNormals(const std::string& normalsId) {
     viewer->removePointCloud(normalsId);
 }
 
-void Viewer::addBoundingBoxCube(const BoundingBoxData& data)
-{
+void Viewer::addBoundingBoxCube(const BoundingBoxData& data) {
     viewer->addCube(data.bboxTransform, data.bboxQuaternion, data.width, data.height, data.depth, data.NAME);
     viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION,
                                              pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME,
@@ -108,17 +107,27 @@ void Viewer::addBoundingBoxCube(const BoundingBoxData& data)
 }
 
 void Viewer::removeBoundingBoxCube() {
-   viewer->removeAllShapes();
+    viewer->removeAllShapes();
     boundingBoxTransform = Eigen::Affine3f::Identity();
 }
 
 
-void Viewer::translateBoundingBoxCube(float x, float y, float z) {
-    boundingBoxTransform.translation() += Eigen::Vector3f(x, y, z);
+void Viewer::translateBoundingBoxCube(const Eigen::Affine3f& translation) {
+    boundingBoxTransform.translation() += translation.translation();
     viewer->updateShapePose("BBOX", boundingBoxTransform);
     viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION,
                                              pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME,
                                         "BBOX");
+}
+
+void Viewer::rotateBoundingBoxCube(const Eigen::Affine3f& rotation) {
+    boundingBoxTransform = rotation * boundingBoxTransform;
+
+    viewer->updateShapePose("BBOX", boundingBoxTransform);
+    viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION,
+                                             pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME,
+                                        "BBOX");
+
 }
 
 void Viewer::init(vtkRenderer* renderer, vtkGenericOpenGLRenderWindow* renderWindow) {

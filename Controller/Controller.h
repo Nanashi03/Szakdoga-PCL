@@ -33,7 +33,7 @@ public:
     void removeSelectedCloud();
 
     void translate(float,float,float);
-    void rotate(float,char);
+    void rotate(int,char);
 };
 
 #endif //CONTROLLER_H

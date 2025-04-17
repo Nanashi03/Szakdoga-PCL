@@ -3,6 +3,7 @@
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/common/transforms.h>
 #include <pcl/PCLPointCloud2.h>
 #include <cmath>
 
@@ -14,8 +15,11 @@ using namespace std;
 class IPointCloudShape {
 protected:
     PointCloudT::Ptr shapePtr;
+    Eigen::Vector3f translationValues;
+
     string id;
     float density;
+    int rotation[3];
 
     bool isFilled;
     bool areNormalsPresent;
@@ -26,31 +30,35 @@ protected:
     vector<float> dimensions;
 
     IPointCloudShape(const string&,bool,float);
+    void transformPointCloudToCenter();
 public:
     virtual void generateShape();
     void calculateNormals();
 
     void setColor(pcl::RGB);
     void setShape(PointCloudT::Ptr);
+    void addToTranslationValues(const Eigen::Vector3f&);
     void setIsFilled(bool);
     void setAreNormalsPresent(bool);
     void setDensity(int);
+    void setRotationAt(int,int);
     virtual void setDimensions(float,float,float);
 
-    bool getAreNormalsPresent() const;
-    bool getIsFilled() const;
-    string getId() const;
-    string getNormalId() const;
-    PointCloudT::Ptr getShape() const;
-
-    float getDensity() const;
-    bool getIsColorable() const;
-    bool getIsFillable() const;
-    bool getIsDensitable() const;
     vector<bool> getShowLabels() const;
     vector<string> getLabels() const;
     vector<float> getDimensions() const;
+    PointCloudT::Ptr getShape() const;
+    const Eigen::Vector3f& getTranslationValues() const;
     pcl::RGB getColor() const;
+    string getId() const;
+    string getNormalId() const;
+    float getDensity() const;
+    int getRotationAt(int) const;
+    bool getIsColorable() const;
+    bool getIsFillable() const;
+    bool getIsDensitable() const;
+    bool getAreNormalsPresent() const;
+    bool getIsFilled() const;
 
     virtual ~IPointCloudShape() = default;
 };

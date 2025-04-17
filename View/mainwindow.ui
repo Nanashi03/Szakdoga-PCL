@@ -712,6 +712,15 @@
           <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <property name="topMargin">
+           <number>3</number>
+          </property>
+          <property name="bottomMargin">
+           <number>3</number>
+          </property>
           <item>
            <widget class="QWidget" name="xWidget" native="true">
             <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -884,6 +893,84 @@
             </property>
             <property name="value">
              <number>255</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="widget" native="true">
+            <layout class="QHBoxLayout" name="horizontalLayout_9">
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Rotate on X</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLCDNumber" name="RotXNumber"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="RotXSlider">
+            <property name="maximum">
+             <number>360</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="widget_2" native="true">
+            <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <item>
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Rotate on Y</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLCDNumber" name="RotYNumber"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="RotYSlider">
+            <property name="maximum">
+             <number>360</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="widget_3" native="true">
+            <layout class="QHBoxLayout" name="horizontalLayout_11">
+             <item>
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Rotate on Z</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLCDNumber" name="RotZNumber"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="RotZSlider">
+            <property name="maximum">
+             <number>360</number>
             </property>
             <property name="orientation">
              <enum>Qt::Orientation::Horizontal</enum>

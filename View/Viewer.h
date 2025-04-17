@@ -44,7 +44,8 @@ public:
 
     void addBoundingBoxCube(const BoundingBoxData&);
     void removeBoundingBoxCube();
-    void translateBoundingBoxCube(float,float,float);
+    void translateBoundingBoxCube(const Eigen::Affine3f&);
+    void rotateBoundingBoxCube(const Eigen::Affine3f&);
 
     void init(vtkRenderer*, vtkGenericOpenGLRenderWindow*);
     vtkSmartPointer<vtkRenderWindow> getRender();

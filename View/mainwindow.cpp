@@ -11,7 +11,8 @@ EventTwoInputListener MainWindow::addCylinderEventListener = nullptr;
 EventTwoInputListener MainWindow::addConeEventListener = nullptr;
 EventThreeInputListener MainWindow::addCuboidEventListener = nullptr;
 EventDensitySliderListener MainWindow::densityChangedEventListener = nullptr;
-EventSelectedCloudSliderListener MainWindow::colorChangedEventListener = nullptr;
+EventColorSliderChangedListener MainWindow::colorChangedEventListener = nullptr;
+EventRotationSliderChangedListener MainWindow::rotationChangedEventListener = nullptr;
 EventChangeShapeDimensions MainWindow::shapeChangedEventListener = nullptr;
 EventTickBoxChanged MainWindow::isFilledChangedEventListener = nullptr;
 EventTickBoxChanged MainWindow::areNormalsPresentChangedEventListener = nullptr;
@@ -45,6 +46,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(ui->RedSlider, &QSlider::valueChanged, this, &MainWindow::onColorSliderChanged);
     connect(ui->GreenSlider, &QSlider::valueChanged, this, &MainWindow::onColorSliderChanged);
     connect(ui->BlueSlider, &QSlider::valueChanged, this, &MainWindow::onColorSliderChanged);
+    connect(ui->RotXSlider, &QSlider::valueChanged, this, &MainWindow::onRotationSliderChanged);
+    connect(ui->RotYSlider, &QSlider::valueChanged, this, &MainWindow::onRotationSliderChanged);
+    connect(ui->RotZSlider, &QSlider::valueChanged, this, &MainWindow::onRotationSliderChanged);
     connect(ui->xInput, &QLineEdit::editingFinished, this, &MainWindow::onDimensionChanged);
     connect(ui->yInput, &QLineEdit::editingFinished, this, &MainWindow::onDimensionChanged);
     connect(ui->zInput, &QLineEdit::editingFinished, this, &MainWindow::onDimensionChanged);
@@ -173,6 +177,24 @@ void MainWindow::onColorSliderChanged()
     else if (sliderName == "BlueSlider") ui->BlueNumber->display(ui->BlueSlider->value());
 
     colorChangedEventListener(ui->RedSlider->value(), ui->GreenSlider->value(), ui->BlueSlider->value());
+}
+
+void MainWindow::onRotationSliderChanged()
+{
+    std::string sliderName = sender()->objectName().toStdString();
+    if (sliderName == "RotXSlider")
+    {
+        ui->RotXNumber->display(ui->RotXSlider->value());
+        rotationChangedEventListener(ui->RotXSlider->value(), 'x');
+    } else if (sliderName == "RotYSlider")
+    {
+        ui->RotYNumber->display(ui->RotYSlider->value());
+        rotationChangedEventListener(ui->RotYSlider->value(), 'y');
+    } else if (sliderName == "RotZSlider")
+    {
+        ui->RotZNumber->display(ui->RotZSlider->value());
+        rotationChangedEventListener(ui->RotZSlider->value(), 'z');
+    }
 }
 
 void MainWindow::onDimensionChanged()

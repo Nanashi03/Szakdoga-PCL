@@ -7,7 +7,6 @@
 
 #include <vector>
 #include <memory>
-#include <pcl/common/transforms.h>
 #include <pcl/common/common.h>
 #include <pcl/common/pca.h>
 
@@ -33,8 +32,8 @@ class Model {
         void updateSelectedCloudDensity(int);
         void updateSelectedCloudIsFilled(bool);
         void updateSelectedCloudAreNormalsPresent(bool);
-        PointCloudT::ConstPtr translateSelectedCloud(float,float,float);
-        PointCloudT::ConstPtr rotateSelectedCloud(float,char);
+        void translateSelectedCloud(float,float,float,Eigen::Affine3f&);
+        void rotateSelectedCloud(int,char,Eigen::Affine3f&);
 
         EditCloudData getEditCloudData();
         BoundingBoxData getBoundingBoxDataAroundSelectedCloud();

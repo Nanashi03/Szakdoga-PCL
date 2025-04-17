@@ -20,7 +20,8 @@ using EventOneInputListener = std::function<void(const std::string&,bool,float)>
 using EventTwoInputListener = std::function<void(const std::string&,bool,float,float)>;
 using EventThreeInputListener = std::function<void(const std::string&,bool,float,float,float)>;
 using EventDensitySliderListener = std::function<void(int)>;
-using EventSelectedCloudSliderListener = std::function<void(int,int,int)>;
+using EventColorSliderChangedListener = std::function<void(int,int,int)>;
+using EventRotationSliderChangedListener = std::function<void(int,char)>;
 using EventChangeShapeDimensions = std::function<void(float,float,float)>;
 using EventTickBoxChanged = std::function<void(bool)>;
 using EventRemoveCloud = std::function<void()>;
@@ -42,7 +43,8 @@ public:
     static EventTwoInputListener addConeEventListener;
     static EventThreeInputListener addCuboidEventListener;
     static EventDensitySliderListener densityChangedEventListener;
-    static EventSelectedCloudSliderListener colorChangedEventListener;
+    static EventColorSliderChangedListener colorChangedEventListener;
+    static EventRotationSliderChangedListener rotationChangedEventListener;
     static EventChangeShapeDimensions shapeChangedEventListener;
     static EventTickBoxChanged isFilledChangedEventListener;
     static EventTickBoxChanged areNormalsPresentChangedEventListener;
@@ -68,6 +70,7 @@ private slots:
     void onAddConeButtonClicked();
     void onDensitySliderChanged();
     void onColorSliderChanged();
+    void onRotationSliderChanged();
     void onDimensionChanged();
 
 };

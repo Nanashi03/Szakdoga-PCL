@@ -7,6 +7,7 @@
 Controller::Controller() {
     Viewer::cloudSelectedEventListener = [this](const string& name) { this->selectCloud(name); };
     Viewer::selectedCloudTranslateLeftEventListener = [this](float x, float y, float z) { this->translate(x,y,z); };
+    MainWindow::rotationChangedEventListener = [this](int v, char axis) { this->rotate(v,axis); };
     MainWindow::importEventListener = [this](const string& id, const string& fileName) { this->importCloud(id, fileName); };
     MainWindow::addSquareEventListener = [this](const string& id, bool isFilled, float side) { this->generateRectangle(id, isFilled, side, side, 1.0f); };
     MainWindow::addCubeEventListener = [this](const string& id, bool isFilled, float side) { this->generateCube(id, isFilled, side, side, side, 1.0f); };
@@ -198,14 +199,22 @@ void Controller::removeSelectedCloud() {
 /*********************************************TRANSFORMATION***********************************************************/
 void Controller::translate(float x, float y, float z) {
     if (model.isCloudSelected()) {
-        mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.translateSelectedCloud(x,y,z));
-        mainWindow.pclEditorView.translateBoundingBoxCube(x,y,z);
+        Eigen::Affine3f translation = Eigen::Affine3f::Identity();
+        model.translateSelectedCloud(x,y,z,translation);
+        mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.getSelectedCloudShape());
+        mainWindow.pclEditorView.translateBoundingBoxCube(translation);
+        mainWindow.refreshView();
     }
 }
 
-void Controller::rotate(float angle, char axis) {
-    if (model.isCloudSelected())
-        mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.rotateSelectedCloud(angle, axis));
+void Controller::rotate(int angle, char axis) {
+    if (model.isCloudSelected()) {
+        Eigen::Affine3f rotation = Eigen::Affine3f::Identity();
+        model.rotateSelectedCloud(angle, axis, rotation);
+        mainWindow.pclEditorView.updateCloud(model.getSelectedCloudName(), model.getSelectedCloudAreNormalsPresent(), model.getSelectedCloudShape());
+        mainWindow.pclEditorView.rotateBoundingBoxCube(rotation);
+        mainWindow.refreshView();
+    }
 }
 
 
