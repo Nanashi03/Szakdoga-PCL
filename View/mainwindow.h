@@ -17,6 +17,7 @@ class MainWindow;
 QT_END_NAMESPACE
 
 using EventImportListener = std::function<void(const std::string&,const std::string&)>;
+using EventExportListener = std::function<void(const std::string&)>;
 using EventOneInputListener = std::function<void(const std::string&,bool,float)>;
 using EventTwoInputListener = std::function<void(const std::string&,bool,float,float)>;
 using EventThreeInputListener = std::function<void(const std::string&,bool,float,float,float)>;
@@ -35,6 +36,7 @@ public:
     Viewer pclEditorView;
 
     static EventImportListener importEventListener;
+    static EventExportListener exportEventListener;
     static EventOneInputListener addSquareEventListener;
     static EventOneInputListener addCubeEventListener;
     static EventOneInputListener addCircleEventListener;
@@ -62,6 +64,7 @@ private:
     std::shared_ptr<HelpDialogBox> helpDialogBox;
 private slots:
     void onImportCloudButtonClicked();
+    void onExportButtonClicked();
     void onAddSquareButtonClicked();
     void onRectangleButtonClicked();
     void onAddCircleButtonClicked();

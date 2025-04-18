@@ -9,6 +9,7 @@ Controller::Controller() {
     Viewer::selectedCloudTranslateLeftEventListener = [this](float x, float y, float z) { this->translate(x,y,z); };
     MainWindow::rotationChangedEventListener = [this](int v, char axis) { this->rotate(v,axis); };
     MainWindow::importEventListener = [this](const string& id, const string& fileName) { this->importCloud(id, fileName); };
+    MainWindow::exportEventListener = [this](const string& newFilePath) { this->exportCloud(newFilePath); };
     MainWindow::addSquareEventListener = [this](const string& id, bool isFilled, float side) { this->generateRectangle(id, isFilled, side, side, 1.0f); };
     MainWindow::addCubeEventListener = [this](const string& id, bool isFilled, float side) { this->generateCube(id, isFilled, side, side, side, 1.0f); };
     MainWindow::addCircleEventListener = [this](const string& id, bool isFilled, float r) { this->generateCircle(id, isFilled, r, 1.0f); };
@@ -56,6 +57,14 @@ void Controller::importCloud(const string& id, const string& filePath) {
 
         model.addCloud(cloud);
         mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getShape());
+    } catch (const std::exception& e) {
+        mainWindow.showErrorMessageBox(e.what());
+    }
+}
+
+void Controller::exportCloud(const string& newFilePath) {
+    try {
+        model.exportClouds(newFilePath);
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }

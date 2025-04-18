@@ -21,11 +21,12 @@ class Model {
     public:
         Model();
         void addCloud(const shared_ptr<IPointCloudShape>&);
-        void removeSelectedCloud();
+        void exportClouds(const string&);
 
         void selectCloud(const string&);
         void deSelectCloud();
 
+        void removeSelectedCloud();
         void colorSelectedCloud(pcl::RGB);
         void updateSelectedCloudDimensions(float,float,float);
         void updateSelectedCloudDensity(int);

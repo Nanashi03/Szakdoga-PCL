@@ -9,12 +9,26 @@ Model::Model() :
 {}
 
 void Model::addCloud(const shared_ptr<IPointCloudShape>& cloud_shape) {
+    if (cloud_shape->getId() == "BBOX") throw runtime_error("ID already exists or conflicts with to be generated ones!");
     for (int i = 0; i < clouds.size(); i++) {
         if (clouds[i]->getId() == cloud_shape->getId() || clouds[i]->getNormalId() == cloud_shape->getId())
-            throw std::runtime_error("ID already exists or conflicts with to be generated ones!");
+            throw runtime_error("ID already exists or conflicts with to be generated ones!");
     }
 
     clouds.push_back(cloud_shape);
+}
+
+void Model::exportClouds(const string& newFilePath) {
+    PointCloudT::Ptr mergedCloud  { make_shared<PointCloudT>() };
+    for (int i = 0; i < clouds.size(); i++) {
+        *mergedCloud += *clouds[i]->getShape();
+    }
+    mergedCloud->width = mergedCloud->points.size();
+    mergedCloud->height = 1;
+    mergedCloud->is_dense = true; //?????????????????????????????????????????????no NaN's
+
+    if (pcl::io::savePCDFileASCII(newFilePath, *mergedCloud) == -1)
+        throw runtime_error("Failed to save file :" + newFilePath);
 }
 
 void Model::updateSelectedCloudDimensions(float x, float y, float z) {

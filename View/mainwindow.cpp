@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 EventImportListener MainWindow::importEventListener = nullptr;
+EventExportListener MainWindow::exportEventListener = nullptr;
 EventOneInputListener MainWindow::addSquareEventListener = nullptr;
 EventOneInputListener MainWindow::addCubeEventListener = nullptr;
 EventOneInputListener MainWindow::addCircleEventListener = nullptr;
@@ -34,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui->EditCloudsWidget->hide();
 
     connect(ui->ImportCloudButton, &QPushButton::clicked, this, &MainWindow::onImportCloudButtonClicked);
+    connect(ui->ExportButton, &QPushButton::clicked, this, &MainWindow::onExportButtonClicked);
     connect(ui->AddSquareButton, &QPushButton::clicked, this, &MainWindow::onAddSquareButtonClicked);
     connect(ui->AddRectangleButton, &QPushButton::clicked, this, &MainWindow::onRectangleButtonClicked);
     connect(ui->AddCircleButton, &QPushButton::clicked, this, &MainWindow::onAddCircleButtonClicked);
@@ -80,6 +82,17 @@ void MainWindow::onImportCloudButtonClicked()
     if (id.isNull()) return;
 
     importEventListener(id.toStdString(), fileName.toStdString());
+}
+
+void MainWindow::onExportButtonClicked()
+{
+    QString newFilePath = QFileDialog::getSaveFileName(this, "Save File Cloud File", QDir::homePath() + "/untitled.pcd", "Point CLoud (*.pcd)");
+    if (newFilePath.isNull()) return;
+
+    if (!newFilePath.endsWith(".pcd", Qt::CaseInsensitive)) {
+        newFilePath += ".pcd";
+    }
+    exportEventListener(newFilePath.toStdString());
 }
 
 void MainWindow::onAddSquareButtonClicked()
