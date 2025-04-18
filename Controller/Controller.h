@@ -5,8 +5,8 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include "../Model/Model.h"
-#include "../View/mainwindow.h"
+#include "Model.h"
+#include "mainwindow.h"
 
 class Controller {
 private:

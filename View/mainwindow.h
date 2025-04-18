@@ -5,8 +5,9 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QInputDialog>
-#include <../Forms/InputDialogBox.h>
-#include "../DataStructures/EditCloudData.h"
+#include "EditCloudData.h"
+#include "InputDialogBox.h"
+#include "HelpDialogBox.h"
 #include "Viewer.h"
 
 QT_BEGIN_NAMESPACE
@@ -58,6 +59,7 @@ public:
     ~MainWindow();
 private:
     Ui::MainWindow *ui;
+    std::shared_ptr<HelpDialogBox> helpDialogBox;
 private slots:
     void onImportCloudButtonClicked();
     void onAddSquareButtonClicked();
@@ -68,6 +70,7 @@ private slots:
     void onAddSphereButtonClicked();
     void onAddCylinderButtonClicked();
     void onAddConeButtonClicked();
+    void onHelpButtonClicked();
     void onDensitySliderChanged();
     void onColorSliderChanged();
     void onRotationSliderChanged();

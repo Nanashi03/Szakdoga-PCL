@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>720</height>
+    <height>760</height>
    </rect>
   </property>
   <property name="palette">
@@ -680,6 +680,13 @@
            </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="HelpButton">
+         <property name="text">
+          <string>Help</string>
+         </property>
         </widget>
        </item>
       </layout>

@@ -4,10 +4,6 @@
 
 #include "PointCloudShapes.h"
 
-#include <oneapi/tbb/task_arena.h>
-
-#include <utility>
-
 IPointCloudShape::IPointCloudShape(const string& id_, bool iF = false, float d = 1.0f) :
     id{id_},
     shapePtr { make_shared<PointCloudT>() },

@@ -10,8 +10,8 @@
 #include <pcl/common/common.h>
 #include <pcl/common/pca.h>
 
-#include "../DataStructures/EditCloudData.h"
-#include "../DataStructures/BoundingBoxData.h"
+#include "EditCloudData.h"
+#include "BoundingBoxData.h"
 #include "PointCloudShapes.h"
 
 class Model {

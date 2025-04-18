@@ -19,7 +19,8 @@ EventTickBoxChanged MainWindow::showNormalsChangedEventListener = nullptr;
 EventRemoveCloud MainWindow::removeCloudEventListener = nullptr;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
-    ui { new Ui::MainWindow }
+    ui { new Ui::MainWindow },
+    helpDialogBox { nullptr }
 {
     ui->setupUi(this);
 
@@ -41,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(ui->AddSphereButton, &QPushButton::clicked, this, &MainWindow::onAddSphereButtonClicked);
     connect(ui->AddCylinderButton, &QPushButton::clicked, this, &MainWindow::onAddCylinderButtonClicked);
     connect(ui->AddConeButton, &QPushButton::clicked, this, &MainWindow::onAddConeButtonClicked);
+    connect(ui->HelpButton, &QPushButton::clicked, this, &MainWindow::onHelpButtonClicked);
 
     connect(ui->DensitySlider, &QSlider::valueChanged, this, &MainWindow::onDensitySliderChanged);
     connect(ui->RedSlider, &QSlider::valueChanged, this, &MainWindow::onColorSliderChanged);
@@ -160,6 +162,17 @@ void MainWindow::onAddConeButtonClicked()
     dBox.setModal(true);
     if (dBox.exec() == QDialog::Accepted) {
         addConeEventListener(data.id, data.isFilled, data.x, data.y);
+    }
+}
+
+void MainWindow::onHelpButtonClicked() {
+    if (!helpDialogBox) {
+        helpDialogBox = std::make_shared<HelpDialogBox>(this);
+        helpDialogBox->setModal(false);
+        helpDialogBox->show();
+    } else {
+        helpDialogBox->raise();
+        helpDialogBox->activateWindow();
     }
 }
 

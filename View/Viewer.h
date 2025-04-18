@@ -11,7 +11,7 @@
 #include <memory>
 #include <functional>
 
-#include "../DataStructures/BoundingBoxData.h"
+#include "BoundingBoxData.h"
 
 
 using PointType = pcl::PointXYZRGBNormal;
