@@ -16,10 +16,12 @@ class IPointCloudShape {
 protected:
     PointCloudT::Ptr shapePtr;
     Eigen::Vector3f translationValues;
+    Eigen::Vector3i rotationValues;
+    Eigen::Affine3f currentRotation;
+    pcl::RGB color;
 
     string id;
     float density;
-    int rotation[3];
 
     bool isFilled;
     bool areNormalsShown;
@@ -31,24 +33,27 @@ protected:
 
     IPointCloudShape(const string&,bool,float);
     void transformPointCloudToCenter();
+    void transformPointCloudBackToOriginal();
     void calculateNormals();
 public:
     virtual void generateShape();
+    virtual void scale(float,float,float);
 
     void setColor(pcl::RGB);
     void setShape(PointCloudT::Ptr);
     void addToTranslationValues(const Eigen::Vector3f&);
+    void addToRotationMatrix(const Eigen::Affine3f&);
     void setIsFilled(bool);
     void setAreNormalsShown(bool);
     void setDensity(int);
     void setRotationAt(int,int);
-    virtual void setDimensions(float,float,float);
 
     vector<bool> getShowLabels() const;
     vector<string> getLabels() const;
     vector<float> getDimensions() const;
     PointCloudT::Ptr getShape() const;
     const Eigen::Vector3f& getTranslationValues() const;
+    const Eigen::Affine3f& getCurrentRotation() const;
     pcl::RGB getColor() const;
     string getId() const;
     string getNormalId() const;
@@ -77,7 +82,7 @@ private:
 public:
     RectanglePointCloudShape(const string&, bool,float,float,float);
     void generateShape() override;
-    void setDimensions(float,float,float) override;
+    void scale(float,float,float) override;
 };
 
 class CuboidPointCloudShape : public IPointCloudShape {
@@ -86,7 +91,7 @@ private:
 public:
     CuboidPointCloudShape(const string&, bool,float,float,float,float);
     void generateShape() override;
-    void setDimensions(float,float,float) override;
+    void scale(float,float,float) override;
 };
 
 class CirclePointCloudShape : public IPointCloudShape {
@@ -95,7 +100,7 @@ private:
 public:
     CirclePointCloudShape(const string&, bool,float,float);
     void generateShape() override;
-    void setDimensions(float,float,float) override;
+    void scale(float,float,float) override;
 };
 
 class SpherePointCloudShape : public IPointCloudShape {
@@ -104,7 +109,7 @@ private:
 public:
     SpherePointCloudShape(const string&, bool,float,float);
     void generateShape() override;
-    void setDimensions(float,float,float) override;
+    void scale(float,float,float) override;
 };
 
 class CylinderPointCloudShape : public IPointCloudShape {
@@ -113,7 +118,7 @@ private:
 public:
     CylinderPointCloudShape(const string&, bool,float,float,float);
     void generateShape() override;
-    void setDimensions(float,float,float) override;
+    void scale(float,float,float) override;
 };
 
 class ConePointCloudShape : public IPointCloudShape {
@@ -122,7 +127,7 @@ private:
 public:
     ConePointCloudShape(const string&, bool,float,float,float);
     void generateShape() override;
-    void setDimensions(float,float,float) override;
+    void scale(float,float,float) override;
 };
 
 #endif //POINTCLOUDSHAPES_H

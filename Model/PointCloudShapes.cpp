@@ -12,14 +12,16 @@ IPointCloudShape::IPointCloudShape(const string& id_, bool iF = false, float d =
     id{id_},
     shapePtr { make_shared<PointCloudT>() },
     translationValues { Eigen::Vector3f::Zero() },
+    rotationValues { Eigen::Vector3i::Zero() },
+    currentRotation { Eigen::Affine3f::Identity() },
+    color { 255, 255, 255 },
     isFilled { iF },
     areNormalsShown { false },
     density { d },
-    rotation { 0, 0, 0 },
     isColorable { true },
     isDensitable { true },
     isFillable { true }
-{ }
+{  }
 
 void IPointCloudShape::transformPointCloudToCenter() {
     Eigen::Vector4f centroid;
@@ -29,13 +31,20 @@ void IPointCloudShape::transformPointCloudToCenter() {
     pcl::transformPointCloud(*shapePtr, *shapePtr, translation);
 }
 
+void IPointCloudShape::transformPointCloudBackToOriginal() {
+    Eigen::Affine3f backToCentroid = Eigen::Affine3f::Identity();
+    backToCentroid.translate(getTranslationValues());
+    Eigen::Affine3f fullTransform = backToCentroid * currentRotation;
+    pcl::transformPointCloud(*shapePtr, *shapePtr, fullTransform);
+}
+
 void IPointCloudShape::calculateNormals()
 {
     pcl::NormalEstimation<PointType, PointType> ne;
     ne.setInputCloud (shapePtr);
     pcl::search::KdTree<PointType>::Ptr tree { new pcl::search::KdTree<PointType> () };
     ne.setSearchMethod (tree);
-    ne.setRadiusSearch (10);
+    ne.setRadiusSearch (2);
     ne.compute (*shapePtr);
 
     for (int i=0; i<shapePtr->size(); ++i)
@@ -56,9 +65,11 @@ PointCloudT::Ptr IPointCloudShape::getShape() const { return shapePtr; }
 
 const Eigen::Vector3f& IPointCloudShape::getTranslationValues() const { return translationValues; }
 
+const Eigen::Affine3f& IPointCloudShape::getCurrentRotation() const { return currentRotation; }
+
 float IPointCloudShape::getDensity() const { return 1/density; }
 
-int IPointCloudShape::getRotationAt(int ind) const { return rotation[ind]; }
+int IPointCloudShape::getRotationAt(int ind) const { return rotationValues[ind]; }
 
 bool IPointCloudShape::getIsColorable() const { return isColorable; }
 
@@ -72,15 +83,12 @@ vector<string> IPointCloudShape::getLabels() const { return labels; }
 
 vector<float> IPointCloudShape::getDimensions() const { return dimensions; }
 
-pcl::RGB IPointCloudShape::getColor() const
-{
-    if (shapePtr->size() > 0) return { shapePtr->points[0].r, shapePtr->points[0].g, shapePtr->points[0].b };
-    return {0,0,0};
-}
+pcl::RGB IPointCloudShape::getColor() const { return color; }
 
 void IPointCloudShape::generateShape() { }
 
 void IPointCloudShape::setColor(pcl::RGB color) {
+    this->color = color;
     for (int i=0; i<shapePtr->size(); i++) {
         shapePtr->points[i].r = color.r;
         shapePtr->points[i].g = color.g;
@@ -90,17 +98,19 @@ void IPointCloudShape::setColor(pcl::RGB color) {
 
 void IPointCloudShape::setIsFilled(bool isFilled) { this->isFilled = isFilled; }
 
-void IPointCloudShape::setAreNormalsShown(bool areNormalsShown) { cout << "SET TO: " << areNormalsShown << endl; this->areNormalsShown = areNormalsShown; }
+void IPointCloudShape::setAreNormalsShown(bool areNormalsShown) { this->areNormalsShown = areNormalsShown; }
 
 void IPointCloudShape::setDensity(int density) { this->density = 1/static_cast<float>(density); }
 
-void IPointCloudShape::setRotationAt(int ind, int value) { this->rotation[ind] = value; }
+void IPointCloudShape::setRotationAt(int ind, int value) { this->rotationValues[ind] = value; }
 
 void IPointCloudShape::setShape(PointCloudT::Ptr shape) { this->shapePtr = std::move(shape); }
 
 void IPointCloudShape::addToTranslationValues(const Eigen::Vector3f& offSet) { translationValues += offSet; }
 
-void IPointCloudShape::setDimensions(float x, float y, float z) { }
+void IPointCloudShape::addToRotationMatrix(const Eigen::Affine3f& deltaRotation) { currentRotation = deltaRotation * currentRotation; }
+
+void IPointCloudShape::scale(float x, float y, float z) { }
 /*********************************************IMPORTED_CLOUD***********************************************************/
 ImportedPointCloudShape::ImportedPointCloudShape(const string& id, string  filePath) :
     IPointCloudShape(id),
@@ -139,7 +149,7 @@ void ImportedPointCloudShape::generateShape() {
         pcl::PointCloud<pcl::PointXYZ> tmp;
         pcl::io::loadPCDFile<pcl::PointXYZ> (filePath, tmp);
         pcl::copyPointCloud(tmp, *shapePtr);
-        setColor({ 255, 255, 255 });
+        setColor({ color.r, color.g, color.b });
     }
 
     transformPointCloudToCenter();
@@ -165,22 +175,25 @@ void RectanglePointCloudShape::generateShape() {
     for (float i = 0; i <= width; i += density) {
         for (float j = 0; j <= height; j += density) {
             if (!isFilled && (i==0 || i>width-density || j==0 || j>height-density)) {
-                PointType point {i, j, 0, 255, 255, 255};
+                PointType point {i, j, 0, color.r, color.g, color.b};
                 shapePtr->points.push_back(point);
             } else if (isFilled) {
-                PointType point {i, j, 0, 255, 255, 255};
+                PointType point {i, j, 0, color.r, color.g, color.b};
                 shapePtr->points.push_back(point);
             }
         }
     }
 
     transformPointCloudToCenter();
+    transformPointCloudBackToOriginal();
     calculateNormals();
 }
 
-void RectanglePointCloudShape::setDimensions(float width, float height, float z) {
+void RectanglePointCloudShape::scale(float width, float height, float z) {
     this->width = width;
     this->height = height;
+    this->generateShape();
+    this->dimensions = {this->width,this->height};
 }
 /*********************************************CUBOID*******************************************************************/
 CuboidPointCloudShape::CuboidPointCloudShape(const string& id, bool iF, float w, float h, float l, float d) :
@@ -201,10 +214,10 @@ void CuboidPointCloudShape::generateShape() {
         for (float j = 0; j <= height; j += density) {
             for (float k = 0; k <= length; k += density) {
                 if (i==0 || i>width-density || j==0 || j>height-density || k==0 || k>length-density) {
-                    PointType point {i, j, k, 255, 255, 255};
+                    PointType point {i, j, k, color.r, color.g, color.b};
                     shapePtr->points.push_back(point);
                 } else if (isFilled) {
-                    PointType point {i, j, k, 255, 255, 255};
+                    PointType point {i, j, k, color.r, color.g, color.b};
                     shapePtr->points.push_back(point);
                 }
             }
@@ -212,13 +225,16 @@ void CuboidPointCloudShape::generateShape() {
     }
 
     transformPointCloudToCenter();
+    transformPointCloudBackToOriginal();
     calculateNormals();
 }
 
-void CuboidPointCloudShape::setDimensions(float width, float height, float length) {
+void CuboidPointCloudShape::scale(float width, float height, float length) {
     this->width = width;
     this->height = height;
     this->length = length;
+    this->generateShape();
+    this->dimensions = {this->width,this->height,this->length};
 }
 /*********************************************CIRCLE*******************************************************************/
 CirclePointCloudShape::CirclePointCloudShape(const string& id, bool iF, float r, float d) :
@@ -240,22 +256,25 @@ void CirclePointCloudShape::generateShape() {
 
     for (float i = 0; i <= 360.0f; i += degreeIntensity) {
         float rad = i * (M_PI / 180.0f);
-        PointType point {radius*cos(rad), radius*sin(rad), 0, 255, 255, 255};
+        PointType point {radius*cos(rad), radius*sin(rad), 0, color.r, color.g, color.b};
         shapePtr->points.push_back(point);
         if (isFilled) {
             for (float j = 0; j < radius; j += density) {
-                PointType point {j*cos(rad), j*sin(rad), 0, 255, 255, 255};
+                PointType point {j*cos(rad), j*sin(rad), 0, color.r, color.g, color.b};
                 shapePtr->points.push_back(point);
             }
         }
     }
 
     transformPointCloudToCenter();
+    transformPointCloudBackToOriginal();
     calculateNormals();
 }
 
-void CirclePointCloudShape::setDimensions(float radius, float y, float z) {
+void CirclePointCloudShape::scale(float radius, float y, float z) {
     this->radius = radius;
+    this->generateShape();
+    this->dimensions = {this->radius};
 }
 /*********************************************SPHERE*******************************************************************/
 SpherePointCloudShape::SpherePointCloudShape(const string& id, bool iF, float r, float d) :
@@ -274,11 +293,11 @@ void SpherePointCloudShape::generateShape() {
     for (float i = 0; i <= 180.0f; i += degreeIntensity) {
         for (float j = 0; j < 360.0f; j += degreeIntensity) {
             float radI = i * (M_PI / 180.0f), radJ = j * (M_PI / 180.0f);
-            PointType point {radius*sin(radI)*cos(radJ), radius*sin(radI)*sin(radJ), radius*cos(radI), 255, 255, 255};
+            PointType point {radius*sin(radI)*cos(radJ), radius*sin(radI)*sin(radJ), radius*cos(radI), color.r, color.g, color.b};
             shapePtr->points.push_back(point);
             if (isFilled) {
                 for (float k = 0; k < radius; k += density) {
-                    PointType point {k*sin(radI)*cos(radJ), k*sin(radI)*sin(radJ), k*cos(radI), 255, 255, 255};
+                    PointType point {k*sin(radI)*cos(radJ), k*sin(radI)*sin(radJ), k*cos(radI), color.r, color.g, color.b};
                     shapePtr->points.push_back(point);
                 }
             }
@@ -286,11 +305,14 @@ void SpherePointCloudShape::generateShape() {
     }
 
     transformPointCloudToCenter();
+    transformPointCloudBackToOriginal();
     calculateNormals();
 }
 
-void SpherePointCloudShape::setDimensions(float radius, float y, float z) {
+void SpherePointCloudShape::scale(float radius, float y, float z) {
     this->radius = radius;
+    this->generateShape();
+    this->dimensions = {this->radius};
 }
 /*********************************************CYLINDER*****************************************************************/
 CylinderPointCloudShape::CylinderPointCloudShape(const string& id, bool iF, float r, float h, float d) :
@@ -314,7 +336,7 @@ void CylinderPointCloudShape::generateShape() {
     for (float i = 0; i <= 360.0f; i += degreeIntensity) {
         float rad = i * (M_PI / 180.0f);
         for (float j = 0; j <= radius; j += density) {
-            PointType point = {j*cos(rad), j*sin(rad), 0, 255, 255, 255};
+            PointType point = {j*cos(rad), j*sin(rad), 0, color.r, color.g, color.b};
             shapePtr->points.push_back(point);
             point.z = height;
             shapePtr->points.push_back(point);
@@ -324,11 +346,11 @@ void CylinderPointCloudShape::generateShape() {
     for (float i = 0; i <= 360.0f; i += degreeIntensity) {
         for (float j = density; j < height; j += density) {
             float rad = i * (M_PI / 180.0f);
-            PointType point {radius*cos(rad), radius*sin(rad), j, 255, 255, 255};
+            PointType point {radius*cos(rad), radius*sin(rad), j, color.r, color.g, color.b};
             shapePtr->points.push_back(point);
             if (isFilled) {
                 for (float k = 0; k < radius; k += density) {
-                    PointType point {k*cos(rad), k*sin(rad), j, 255, 255, 255};
+                    PointType point {k*cos(rad), k*sin(rad), j, color.r, color.g, color.b};
                     shapePtr->points.push_back(point);
                 }
             }
@@ -336,12 +358,15 @@ void CylinderPointCloudShape::generateShape() {
     }
 
     transformPointCloudToCenter();
+    transformPointCloudBackToOriginal();
     calculateNormals();
 }
 
-void CylinderPointCloudShape::setDimensions(float radius, float height, float z) {
+void CylinderPointCloudShape::scale(float radius, float height, float z) {
     this->radius = radius;
     this->height = height;
+    this->generateShape();
+    this->dimensions = {this->radius, this->height};
 }
 /***********************************************CONE*******************************************************************/
 ConePointCloudShape::ConePointCloudShape(const string& id, bool iF, float r, float h, float d) :
@@ -368,7 +393,7 @@ void ConePointCloudShape::generateShape() {
     for (float i = 0; i <= 360.0f; i += degreeIntensity) {
         float rad = i * (M_PI / 180.0f);
         for (float j = 0; j <= radius; j += density) {
-            PointType point = {j*cos(rad), j*sin(rad), 0, 255, 255, 255};
+            PointType point = {j*cos(rad), j*sin(rad), 0, color.r, color.g, color.b};
             shapePtr->points.push_back(point);
         }
     }
@@ -380,13 +405,13 @@ void ConePointCloudShape::generateShape() {
         {
             float x = (height - u) / height * radius * cos(radI);
             float y = (height - u) / height * radius * sin(radI);
-            PointType point {x, y, u, 255, 255, 255};
+            PointType point {x, y, u, color.r, color.g, color.b};
             shapePtr->points.push_back(point);
             if (isFilled) {
                 for (float k = 0; k < radius; k += density) {
                     x = (height - u) / height * k * cos(radI);
                     y = (height - u) / height * k * sin(radI);
-                    PointType point {x, y, u, 255, 255, 255};
+                    PointType point {x, y, u, color.r, color.g, color.b};
                     shapePtr->points.push_back(point);
                 }
             }
@@ -394,10 +419,25 @@ void ConePointCloudShape::generateShape() {
     }
 
     transformPointCloudToCenter();
+    transformPointCloudBackToOriginal();
     calculateNormals();
 }
 
-void ConePointCloudShape::setDimensions(float radius, float height, float z) {
+void ConePointCloudShape::scale(float radius, float height, float z) {
+    /*float percent1 = radius / this->radius, percent2 = height / this->height;
+
+    Eigen::Affine3f scaling = Eigen::Affine3f::Identity();
+    scaling.scale(Eigen::Vector3f(percent1, percent1, percent2));
+
+    Eigen::Affine3f toOrigin = Eigen::Affine3f::Identity();
+    toOrigin.translate(-getTranslationValues());
+    Eigen::Affine3f backToCentroid = Eigen::Affine3f::Identity();
+    backToCentroid.translate(getTranslationValues());
+
+    Eigen::Affine3f fullTransform = backToCentroid * currentRotation * scaling * currentRotation.inverse() * toOrigin;
+    pcl::transformPointCloud(*shapePtr, *shapePtr, fullTransform);*/
     this->radius = radius;
     this->height = height;
+    this->generateShape();
+    this->dimensions = {this->radius, this->height};
 }

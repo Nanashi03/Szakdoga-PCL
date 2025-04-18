@@ -31,14 +31,11 @@ void Controller::start() {
 
 void Controller::selectCloud(const string& cloudName) {
     cout << "I SELECTED A CLOUD: " << cloudName << endl;
-    cout << "COND: " << model.isCloudSelected() << " && " << (cloudName == model.getSelectedCloudNormalsName()) << endl;
     if (model.isCloudSelected() && (cloudName == model.getSelectedCloudName() || cloudName == model.getSelectedCloudNormalsName())) {
-        cout << "1" << endl;
         model.deSelectCloud();
         mainWindow.pclEditorView.removeBoundingBoxCube();
         mainWindow.changeToAddShapeWidget();
     } else if (model.isCloudSelected()) {
-        cout << "2" << endl;
         model.deSelectCloud();
         mainWindow.pclEditorView.removeBoundingBoxCube();
 
@@ -46,7 +43,6 @@ void Controller::selectCloud(const string& cloudName) {
         mainWindow.pclEditorView.addBoundingBoxCube(model.getBoundingBoxDataAroundSelectedCloud());
         mainWindow.changeToEditShapeWidget(model.getEditCloudData());
     } else {
-        cout << "3" << endl;
         model.selectCloud(cloudName);
         mainWindow.pclEditorView.addBoundingBoxCube(model.getBoundingBoxDataAroundSelectedCloud());
         mainWindow.changeToEditShapeWidget(model.getEditCloudData());

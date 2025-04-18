@@ -20,8 +20,7 @@ void Model::addCloud(const shared_ptr<IPointCloudShape>& cloud_shape) {
 void Model::updateSelectedCloudDimensions(float x, float y, float z) {
     if (selectedCloud == -1) return;
 
-    clouds[selectedCloud]->setDimensions(x,y,z);
-    clouds[selectedCloud]->generateShape();
+    clouds[selectedCloud]->scale(x,y,z);
 }
 
 void Model::updateSelectedCloudDensity(int density) {
@@ -138,6 +137,8 @@ void Model::rotateSelectedCloud(int angle, char axis, Eigen::Affine3f& fullTrans
     fullTransform = backToCentroid * rotation * toOrigin;
 
     pcl::transformPointCloud(*clouds[selectedCloud]->getShape(), *clouds[selectedCloud]->getShape(), fullTransform);
+
+    clouds[selectedCloud]->addToRotationMatrix(rotation);
 }
 
 EditCloudData Model::getEditCloudData()
