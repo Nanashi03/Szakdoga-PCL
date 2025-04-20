@@ -69,20 +69,21 @@ void Viewer::run() {
     }
 }
 
-void Viewer::addCloud(const std::string& id, PointCloudT::ConstPtr cloud) {
+void Viewer::addCloud(const std::string& id, bool areNormalsShown, PointCloudT::ConstPtr cloud) {
     const pcl::visualization::PointCloudColorHandlerRGBField<PointType> rgb { cloud };
     viewer->addPointCloud<PointType>(cloud, rgb, id);
     viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, id);
+    if (areNormalsShown)
+        addNormals(id + "_normals", cloud);
 }
 
 void Viewer::addNormals(const std::string& normalsId, PointCloudT::ConstPtr cloud) {
-
     viewer->addPointCloudNormals<PointType> (cloud, 10, 1, normalsId);
 }
 
 void Viewer::updateCloud(const std::string& id, bool areNormalsShown, PointCloudT::ConstPtr cloud) {
     removeCloud(id, areNormalsShown);
-    addCloud(id, cloud);
+    addCloud(id, areNormalsShown, cloud);
     if (areNormalsShown)
         addNormals(id + "_normals", cloud);
 }

@@ -9,7 +9,7 @@ InputDialogBox::InputDialogBox(QWidget *parent, const std::vector<std::string>& 
 
     if (showData[0]) {
         ui->InputLabel1->setText((labels.at(0)+":").data());
-        ui->InputBox1->setValidator(new QDoubleValidator(2.0, 999999.99, 2));
+        ui->InputBox1->setValidator(new QDoubleValidator(2.0, 999999.99, 6));
         ui->InputBox1->setText("2.0");
 
         ui->InputLabel1->show();
@@ -17,7 +17,7 @@ InputDialogBox::InputDialogBox(QWidget *parent, const std::vector<std::string>& 
     }
     if (showData[1]) {
         ui->InputLabel2->setText((labels.at(1)+":").data());
-        ui->InputBox2->setValidator(new QDoubleValidator(2.0, 999999.99, 2));
+        ui->InputBox2->setValidator(new QDoubleValidator(2.0, 999999.99, 6));
         ui->InputBox2->setText("2.0");
 
         ui->InputLabel2->show();
@@ -25,7 +25,7 @@ InputDialogBox::InputDialogBox(QWidget *parent, const std::vector<std::string>& 
     }
     if (showData[2]) {
         ui->InputLabel3->setText((labels.at(2)+":").data());
-        ui->InputBox3->setValidator(new QDoubleValidator(2.0, 999999.99, 2));
+        ui->InputBox3->setValidator(new QDoubleValidator(2.0, 999999.99, 6));
         ui->InputBox3->setText("2.0");
 
         ui->InputLabel3->show();

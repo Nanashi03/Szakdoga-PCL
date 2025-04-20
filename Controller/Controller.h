@@ -17,7 +17,9 @@ public:
     void start();
     void selectCloud(const string&);
 
+    void importProject(const string&);
     void importCloud(const string&, const string&);
+    void exportProject(const string&);
     void exportCloud(const string&);
     void generateRectangle(const string&, bool, float, float, float);
     void generateCircle(const string&, bool, float, float);

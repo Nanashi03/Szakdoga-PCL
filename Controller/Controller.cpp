@@ -8,7 +8,9 @@ Controller::Controller() {
     Viewer::cloudSelectedEventListener = [this](const string& name) { this->selectCloud(name); };
     Viewer::selectedCloudTranslateLeftEventListener = [this](float x, float y, float z) { this->translate(x,y,z); };
     MainWindow::rotationChangedEventListener = [this](int v, char axis) { this->rotate(v,axis); };
+    MainWindow::importProjectEventListener = [this](const string& fileName) { this->importProject(fileName); };
     MainWindow::importEventListener = [this](const string& id, const string& fileName) { this->importCloud(id, fileName); };
+    MainWindow::exportProjectEventListener = [this](const string& fileName) { this->exportProject(fileName); };
     MainWindow::exportEventListener = [this](const string& newFilePath) { this->exportCloud(newFilePath); };
     MainWindow::addSquareEventListener = [this](const string& id, bool isFilled, float side) { this->generateRectangle(id, isFilled, side, side, 1.0f); };
     MainWindow::addCubeEventListener = [this](const string& id, bool isFilled, float side) { this->generateCube(id, isFilled, side, side, side, 1.0f); };
@@ -31,7 +33,6 @@ void Controller::start() {
 }
 
 void Controller::selectCloud(const string& cloudName) {
-    cout << "I SELECTED A CLOUD: " << cloudName << endl;
     if (model.isCloudSelected() && (cloudName == model.getSelectedCloudName() || cloudName == model.getSelectedCloudNormalsName())) {
         model.deSelectCloud();
         mainWindow.pclEditorView.removeBoundingBoxCube();
@@ -42,11 +43,36 @@ void Controller::selectCloud(const string& cloudName) {
 
         model.selectCloud(cloudName);
         mainWindow.pclEditorView.addBoundingBoxCube(model.getBoundingBoxDataAroundSelectedCloud());
-        mainWindow.changeToEditShapeWidget(model.getEditCloudData());
+        mainWindow.changeToEditShapeWidget(model.getEditCloudData(model.getSelectedCloudName()));
     } else {
         model.selectCloud(cloudName);
         mainWindow.pclEditorView.addBoundingBoxCube(model.getBoundingBoxDataAroundSelectedCloud());
-        mainWindow.changeToEditShapeWidget(model.getEditCloudData());
+        mainWindow.changeToEditShapeWidget(model.getEditCloudData(model.getSelectedCloudName()));
+    }
+}
+/************************************************PROJECT***************************************************************/
+void Controller::importProject(const string& filePath) {
+    vector<string> cloudNames = model.getCloudNames();
+    for (string name : cloudNames) {
+        cout << name << endl;
+        model.selectCloud(name);
+        removeSelectedCloud();
+    }
+    try {
+        model.importProject(filePath);
+    } catch (const exception& e){
+        mainWindow.showErrorMessageBox(e.what());
+    }
+    for (shared_ptr<IPointCloudShape> cloud : model.getClouds()) {
+        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getAreNormalsShown(), cloud->getShape());
+    }
+}
+
+void Controller::exportProject(const string& filePath) {
+    try {
+        model.exportProject(filePath);
+    } catch (const std::exception& e) {
+        mainWindow.showErrorMessageBox(e.what());
     }
 }
 /**********************************************GENERATION**************************************************************/
@@ -56,7 +82,7 @@ void Controller::importCloud(const string& id, const string& filePath) {
         cloud->generateShape();
 
         model.addCloud(cloud);
-        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getShape());
+        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getAreNormalsShown(), cloud->getShape());
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
@@ -76,7 +102,7 @@ void Controller::generateRectangle(const string& id, bool isFilled, float width,
         cloud->generateShape();
 
         model.addCloud(cloud);
-        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getShape());
+        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getAreNormalsShown(), cloud->getShape());
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
@@ -88,7 +114,7 @@ void Controller::generateCircle(const string& id, bool isFilled, float radius, f
         cloud->generateShape();
 
         model.addCloud(cloud);
-        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getShape());
+        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getAreNormalsShown(), cloud->getShape());
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
@@ -100,7 +126,7 @@ void Controller::generateCube(const string & id, bool isFilled, float width, flo
         cloud->generateShape();
 
         model.addCloud(cloud);
-        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getShape());
+        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getAreNormalsShown(), cloud->getShape());
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
@@ -112,7 +138,7 @@ void Controller::generateSphere(const string& id, bool isFilled, float radius, f
         cloud->generateShape();
 
         model.addCloud(cloud);
-        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getShape());
+        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getAreNormalsShown(), cloud->getShape());
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
@@ -124,7 +150,7 @@ void Controller::generateCylinder(const string& id, bool isFilled, float radius,
         cloud->generateShape();
 
         model.addCloud(cloud);
-        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getShape());
+        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getAreNormalsShown(), cloud->getShape());
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
@@ -136,7 +162,7 @@ void Controller::generateCone(const string& id, bool isFilled, float radius, flo
         cloud->generateShape();
 
         model.addCloud(cloud);
-        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getShape());
+        mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getAreNormalsShown(), cloud->getShape());
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }

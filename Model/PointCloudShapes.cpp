@@ -36,17 +36,14 @@ void IPointCloudShape::transformPointCloudBackToOriginal() {
 
 void IPointCloudShape::calculateNormals()
 {
+    cout << "CALCULATING NORMALS..." << endl;
     pcl::NormalEstimation<PointType, PointType> ne;
     ne.setInputCloud (shapePtr);
     pcl::search::KdTree<PointType>::Ptr tree { new pcl::search::KdTree<PointType> () };
     ne.setSearchMethod (tree);
-    ne.setRadiusSearch (2);
+    ne.setRadiusSearch (1.5);
     ne.compute (*shapePtr);
-
-    for (int i=0; i<shapePtr->size(); ++i)
-    {
-        cout << shapePtr->points[i].normal_x << " " << shapePtr->points[i].normal_y << " " << shapePtr->points[i].normal_z << endl;
-    }
+    cout << "CALCULATING NORMALS DONE" << endl;
 }
 
 bool IPointCloudShape::getAreNormalsShown() const { return areNormalsShown; }
@@ -100,7 +97,7 @@ void IPointCloudShape::setDensity(int density) { this->density = 1/static_cast<f
 
 void IPointCloudShape::setRotationAt(int ind, int value) { this->rotationValues[ind] = value; }
 
-void IPointCloudShape::setShape(PointCloudT::Ptr shape) { this->shapePtr = std::move(shape); }
+void IPointCloudShape::setShape(PointCloudT::Ptr shape) { shapePtr->clear();  pcl::copyPointCloud(*shape, *shapePtr); }
 
 void IPointCloudShape::addToTranslationValues(const Eigen::Vector3f& offSet) { translationValues += offSet; }
 
@@ -282,9 +279,9 @@ SpherePointCloudShape::SpherePointCloudShape(const string& id, bool iF, float r,
     this->dimensions = {r};
 }
 
-void SpherePointCloudShape::generateShape() {
+void SpherePointCloudShape::generateShape()
+{
     shapePtr->points.clear();
-
     float degreeIntensity = 360*density / 20;
     for (float i = 0; i <= 180.0f; i += degreeIntensity) {
         for (float j = 0; j < 360.0f; j += degreeIntensity) {

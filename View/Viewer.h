@@ -36,7 +36,7 @@ public:
     Viewer();
     void run();
 
-    void addCloud(const std::string&, PointCloudT::ConstPtr);
+    void addCloud(const std::string&, bool, PointCloudT::ConstPtr);
     void addNormals(const std::string&, PointCloudT::ConstPtr);
     void updateCloud(const std::string&, bool, PointCloudT::ConstPtr);
     void removeCloud(const std::string&, bool);

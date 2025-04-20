@@ -17,7 +17,7 @@ class MainWindow;
 QT_END_NAMESPACE
 
 using EventImportListener = std::function<void(const std::string&,const std::string&)>;
-using EventExportListener = std::function<void(const std::string&)>;
+using EventFromFilePathListener = std::function<void(const std::string&)>;
 using EventOneInputListener = std::function<void(const std::string&,bool,float)>;
 using EventTwoInputListener = std::function<void(const std::string&,bool,float,float)>;
 using EventThreeInputListener = std::function<void(const std::string&,bool,float,float,float)>;
@@ -35,8 +35,10 @@ class MainWindow : public QMainWindow
 public:
     Viewer pclEditorView;
 
+    static EventFromFilePathListener importProjectEventListener;
     static EventImportListener importEventListener;
-    static EventExportListener exportEventListener;
+    static EventFromFilePathListener exportProjectEventListener;
+    static EventFromFilePathListener exportEventListener;
     static EventOneInputListener addSquareEventListener;
     static EventOneInputListener addCubeEventListener;
     static EventOneInputListener addCircleEventListener;
@@ -62,9 +64,12 @@ public:
 private:
     Ui::MainWindow *ui;
     std::shared_ptr<HelpDialogBox> helpDialogBox;
+    void blockAllEditSignals(bool);
 private slots:
+    void onImportProjectButtonClicked();
     void onImportCloudButtonClicked();
     void onExportButtonClicked();
+    void onExportProjectButtonClicked();
     void onAddSquareButtonClicked();
     void onRectangleButtonClicked();
     void onAddCircleButtonClicked();

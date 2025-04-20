@@ -8,6 +8,24 @@ Model::Model() :
     selectedCloud {-1}
 {}
 
+shared_ptr<IPointCloudShape> Model::createPointCloudShape(const string& type, const string& name, bool isFilled, float x, float y, float z, float d) {
+    if (type == "RectanglePointCloudShape")
+        return make_shared<RectanglePointCloudShape>(name, isFilled, x, y, d);
+    else if (type == "CuboidPointCloudShape")
+        return make_shared<CuboidPointCloudShape>(name, isFilled, x, y, z, d);
+    else if (type == "CirclePointCloudShape")
+        return make_shared<CirclePointCloudShape>(name, isFilled, x, d);
+    else if (type == "SpherePointCloudShape")
+        return make_shared<SpherePointCloudShape>(name, isFilled, x, d);
+    else if (type == "CylinderPointCloudShape")
+        return make_shared<CylinderPointCloudShape>(name, isFilled, x, y, d);
+    else if (type == "ConePointCloudShape")
+        return make_shared<ConePointCloudShape>(name, isFilled, x, y, d);
+    else
+        throw std::runtime_error("Unknown point cloud shape type: " + type);
+}
+
+
 void Model::addCloud(const shared_ptr<IPointCloudShape>& cloud_shape) {
     if (cloud_shape->getId() == "BBOX") throw runtime_error("ID already exists or conflicts with to be generated ones!");
     for (int i = 0; i < clouds.size(); i++) {
@@ -16,6 +34,28 @@ void Model::addCloud(const shared_ptr<IPointCloudShape>& cloud_shape) {
     }
 
     clouds.push_back(cloud_shape);
+}
+
+void Model::importProject(const string& filePath) {
+    auto database = Database::getInstance(filePath);
+    for (const string& cloudName : database->getPointCloudNamesFromDatabase()) {
+        EditCloudData data { database->getPointCloudPropertiesFromDatabase(cloudName) };
+        shared_ptr<IPointCloudShape> shape {
+            createPointCloudShape(database->getPointCloudTypeByName(cloudName), cloudName, data.isFilled, data.dim[0], data.dim[1], data.dim[2], data.density)
+        };
+        shape->setShape(database->getPointCloudFromDatabase(cloudName));
+        shape->setRotationAt(0, data.rotation[0]);
+        shape->setRotationAt(1, data.rotation[1]);
+        shape->setRotationAt(2, data.rotation[2]);
+        shape->setColor({static_cast<std::uint8_t>(data.rgb[0]), static_cast<std::uint8_t>(data.rgb[1]), static_cast<std::uint8_t>(data.rgb[2])});
+        shape->setAreNormalsShown(data.areNormalsShown);
+
+        tuple<Eigen::Vector3f, Eigen::Affine3f> transFormation = database->getPointCloudTransformationFromDatabase(cloudName);
+        shape->addToTranslationValues(get<0>(transFormation));
+        shape->addToRotationMatrix(get<1>(transFormation));
+
+        clouds.push_back(shape);
+    }
 }
 
 void Model::exportClouds(const string& newFilePath) {
@@ -31,6 +71,16 @@ void Model::exportClouds(const string& newFilePath) {
         throw runtime_error("Failed to save file :" + newFilePath);
 }
 
+void Model::exportProject(const string& newFilePath) {
+    for (shared_ptr<IPointCloudShape> cloud : clouds) {
+        string typeName = typeid(*cloud).name();
+        Database::getInstance(newFilePath)->addPointCloudNameToDatabase(cloud->getId(), typeName.substr(2));
+        Database::getInstance(newFilePath)->addPointCloudToDatabase(cloud->getId(), cloud->getShape());
+        Database::getInstance(newFilePath)->addPointCloudPropertiesToDatabase(cloud->getId(), getEditCloudData(cloud->getId()));
+        Database::getInstance(newFilePath)->addPointCloudTransformationToDatabase(cloud->getId(), cloud->getTranslationValues(), cloud->getCurrentRotation());
+    }
+}
+
 void Model::updateSelectedCloudDimensions(float x, float y, float z) {
     if (selectedCloud == -1) return;
 
@@ -39,14 +89,12 @@ void Model::updateSelectedCloudDimensions(float x, float y, float z) {
 
 void Model::updateSelectedCloudDensity(int density) {
     if (selectedCloud == -1) return;
-
     clouds[selectedCloud]->setDensity(density);
     clouds[selectedCloud]->generateShape();
 }
 
 void Model::updateSelectedCloudIsFilled(bool isFilled) {
     if (selectedCloud == -1) return;
-
     clouds[selectedCloud]->setIsFilled(isFilled);
     clouds[selectedCloud]->generateShape();
 }
@@ -110,7 +158,6 @@ BoundingBoxData Model::getBoundingBoxDataAroundSelectedCloud()
     bboxData.width = maxPoint.x - minPoint.x;
     bboxData.height = maxPoint.y - minPoint.y;
     bboxData.depth = maxPoint.z - minPoint.z;
-
     return bboxData;
 }
 
@@ -155,26 +202,38 @@ void Model::rotateSelectedCloud(int angle, char axis, Eigen::Affine3f& fullTrans
     clouds[selectedCloud]->addToRotationMatrix(rotation);
 }
 
-EditCloudData Model::getEditCloudData()
+EditCloudData Model::getEditCloudData(const string& name)
 {
-    if (selectedCloud == -1) return EditCloudData();
+    int i = 0;
+    for (i = 0; i < clouds.size(); i++)
+        if (clouds[i]->getId() == name) break;
+    if (i == clouds.size()) return EditCloudData();
 
     EditCloudData data;
-    data.name = getSelectedCloudName();
-    data.rgb = { clouds[selectedCloud]->getColor().r, clouds[selectedCloud]->getColor().g, clouds[selectedCloud]->getColor().b };
-    data.isFilled = clouds[selectedCloud]->getIsFilled();
-    data.areNormalsShown = clouds[selectedCloud]->getAreNormalsShown();
-    data.dim = clouds[selectedCloud]->getDimensions();
-    data.labels = clouds[selectedCloud]->getLabels();
-    data.density = clouds[selectedCloud]->getDensity();
+    data.name = clouds[i]->getId();
+    data.rgb = { clouds[i]->getColor().r, clouds[i]->getColor().g, clouds[i]->getColor().b };
+    data.rotation = { clouds[i]->getRotationAt(0), clouds[i]->getRotationAt(1), clouds[i]->getRotationAt(2) };
+    data.isFilled = clouds[i]->getIsFilled();
+    data.areNormalsShown = clouds[i]->getAreNormalsShown();
+    data.dim = clouds[i]->getDimensions();
+    data.density = clouds[i]->getDensity();
 
-    data.showFilledEdit = clouds[selectedCloud]->getIsFillable();
-    data.showColorEdit = clouds[selectedCloud]->getIsColorable();
-    data.showDensityEdit = clouds[selectedCloud]->getIsDensitable();
-    data.showLabels = clouds[selectedCloud]->getShowLabels();
-
+    data.labels = clouds[i]->getLabels();
+    data.showFilledEdit = clouds[i]->getIsFillable();
+    data.showColorEdit = clouds[i]->getIsColorable();
+    data.showDensityEdit = clouds[i]->getIsDensitable();
+    data.showLabels = clouds[i]->getShowLabels();
     return data;
 }
+
+vector<string> Model::getCloudNames() const {
+    vector<string> names;
+    for (int i = 0; i < clouds.size(); i++)
+        names.emplace_back(clouds[i]->getId());
+    return names;
+}
+
+vector<shared_ptr<IPointCloudShape>> Model::getClouds() { return clouds; }
 
 PointCloudT::ConstPtr Model::getSelectedCloudShape() {
     if (selectedCloud == -1) return nullptr;

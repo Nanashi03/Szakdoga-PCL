@@ -479,6 +479,13 @@
        <property name="sizeConstraint">
         <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
        </property>
+       <item>
+        <widget class="QPushButton" name="ImportProjectButton">
+         <property name="text">
+          <string>Import Project</string>
+         </property>
+        </widget>
+       </item>
        <item alignment="Qt::AlignmentFlag::AlignTop">
         <widget class="QLabel" name="ImportCloudLabel">
          <property name="sizePolicy">
@@ -683,9 +690,16 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="ExportProjectButton">
+         <property name="text">
+          <string>Export Project</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="ExportButton">
          <property name="text">
-          <string>Export</string>
+          <string>Export .pcd</string>
          </property>
         </widget>
        </item>
@@ -819,7 +833,7 @@
              <number>1</number>
             </property>
             <property name="maximum">
-             <number>10</number>
+             <number>5</number>
             </property>
             <property name="orientation">
              <enum>Qt::Orientation::Horizontal</enum>

@@ -6,21 +6,19 @@
 #define EDITCLOUDDATA_H
 
 #include <string>
+#include <iostream>
 
 struct EditCloudData
 {
     std::string name;
-    bool isFilled, areNormalsShown;
-    std::vector<int> rgb, rotation;
 
-    std::vector<float> dim;
+    bool isFilled, areNormalsShown, showFilledEdit, showColorEdit, showDensityEdit;
     float density;
-    std::vector<std::string> labels;
+    std::vector<int> rgb, rotation;
+    std::vector<float> dim;
 
+    std::vector<std::string> labels;
     std::vector<bool> showLabels;
-    bool showColorEdit;
-    bool showFilledEdit;
-    bool showDensityEdit;
 };
 
 #endif //EDITCLOUDDATA_H

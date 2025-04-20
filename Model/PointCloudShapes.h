@@ -72,7 +72,7 @@ class ImportedPointCloudShape : public IPointCloudShape {
 private:
     string filePath;
 public:
-    ImportedPointCloudShape(const string&, string );
+    ImportedPointCloudShape(const string&, string);
     void generateShape() override;
 };
 

@@ -1,8 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+EventFromFilePathListener MainWindow::importProjectEventListener = nullptr;
 EventImportListener MainWindow::importEventListener = nullptr;
-EventExportListener MainWindow::exportEventListener = nullptr;
+EventFromFilePathListener MainWindow::exportProjectEventListener = nullptr;
+EventFromFilePathListener MainWindow::exportEventListener = nullptr;
 EventOneInputListener MainWindow::addSquareEventListener = nullptr;
 EventOneInputListener MainWindow::addCubeEventListener = nullptr;
 EventOneInputListener MainWindow::addCircleEventListener = nullptr;
@@ -34,7 +36,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     ui->EditCloudsWidget->hide();
 
+    connect(ui->ImportProjectButton, &QPushButton::clicked, this, &MainWindow::onImportProjectButtonClicked);
     connect(ui->ImportCloudButton, &QPushButton::clicked, this, &MainWindow::onImportCloudButtonClicked);
+    connect(ui->ExportProjectButton, &QPushButton::clicked, this, &MainWindow::onExportProjectButtonClicked);
     connect(ui->ExportButton, &QPushButton::clicked, this, &MainWindow::onExportButtonClicked);
     connect(ui->AddSquareButton, &QPushButton::clicked, this, &MainWindow::onAddSquareButtonClicked);
     connect(ui->AddRectangleButton, &QPushButton::clicked, this, &MainWindow::onRectangleButtonClicked);
@@ -73,6 +77,21 @@ void MainWindow::showErrorMessageBox(const std::string& message)
     QMessageBox::critical(this, "Error", message.data());
 }
 
+void MainWindow::blockAllEditSignals(bool block) {
+    const auto children = ui->EditCloudsWidget->findChildren<QObject*>();
+    for (QObject* child : children) {
+        child->blockSignals(block);
+    }
+}
+
+void MainWindow::onImportProjectButtonClicked()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, "Open Project", QDir::homePath(), "Database (*.db)");
+    if (fileName.isNull()) return;
+
+    importProjectEventListener(fileName.toStdString());
+}
+
 void MainWindow::onImportCloudButtonClicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this, "Open a poinc cloud", QDir::homePath(), "Point CLoud (*.pcd)");
@@ -82,6 +101,17 @@ void MainWindow::onImportCloudButtonClicked()
     if (id.isNull()) return;
 
     importEventListener(id.toStdString(), fileName.toStdString());
+}
+
+void MainWindow::onExportProjectButtonClicked()
+{
+    QString newFilePath = QFileDialog::getSaveFileName(this, "Save Project", QDir::homePath() + "/untitled.db", "Database (*.db)");
+    if (newFilePath.isNull()) return;
+
+    if (!newFilePath.endsWith(".db", Qt::CaseInsensitive)) {
+        newFilePath += ".db";
+    }
+    exportProjectEventListener(newFilePath.toStdString());
 }
 
 void MainWindow::onExportButtonClicked()
@@ -237,7 +267,6 @@ void MainWindow::onDimensionChanged()
 void MainWindow::changeToEditShapeWidget(EditCloudData editData)
 {
     ui->AddCloudsWidget->hide();
-
     ui->xWidget->hide();
     ui->yWidget->hide();
     ui->zWidget->hide();
@@ -251,8 +280,16 @@ void MainWindow::changeToEditShapeWidget(EditCloudData editData)
     ui->ColorEdit3->hide();
     ui->BlueSlider->hide();
 
+    blockAllEditSignals(true);
+
     ui->EditedShapeName->setTitle(editData.name.data());
     ui->ShowNormals->setChecked(editData.areNormalsShown);
+    ui->RotXNumber->display(editData.rotation[0]);
+    ui->RotXSlider->setValue(editData.rotation[0]);
+    ui->RotYNumber->display(editData.rotation[1]);
+    ui->RotYSlider->setValue(editData.rotation[1]);
+    ui->RotZNumber->display(editData.rotation[2]);
+    ui->RotZSlider->setValue(editData.rotation[2]);
     if (editData.showLabels.at(0))
     {
         ui->xWidget->show();
@@ -304,7 +341,7 @@ void MainWindow::changeToEditShapeWidget(EditCloudData editData)
         ui->ColorEdit3->show();
         ui->BlueSlider->show();
     }
-
+    blockAllEditSignals(false);
     ui->EditCloudsWidget->show();
 }
 

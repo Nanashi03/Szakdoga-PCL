@@ -12,16 +12,20 @@
 
 #include "EditCloudData.h"
 #include "BoundingBoxData.h"
+#include "Database.h"
 #include "PointCloudShapes.h"
 
 class Model {
     private:
         vector<shared_ptr<IPointCloudShape>> clouds;
         int selectedCloud;
+        shared_ptr<IPointCloudShape> createPointCloudShape(const string&, const string&, bool, float, float, float, float);
     public:
         Model();
         void addCloud(const shared_ptr<IPointCloudShape>&);
+        void importProject(const string&);
         void exportClouds(const string&);
+        void exportProject(const string&);
 
         void selectCloud(const string&);
         void deSelectCloud();
@@ -35,9 +39,11 @@ class Model {
         void translateSelectedCloud(float,float,float,Eigen::Affine3f&);
         void rotateSelectedCloud(int,char,Eigen::Affine3f&);
 
-        EditCloudData getEditCloudData();
+        EditCloudData getEditCloudData(const string&);
         BoundingBoxData getBoundingBoxDataAroundSelectedCloud();
 
+        vector<string> getCloudNames() const;
+        vector<shared_ptr<IPointCloudShape>> getClouds();
         PointCloudT::ConstPtr getSelectedCloudShape();
         string getSelectedCloudName();
         string getSelectedCloudNormalsName();
