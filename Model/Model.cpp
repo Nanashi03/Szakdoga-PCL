@@ -21,6 +21,8 @@ shared_ptr<IPointCloudShape> Model::createPointCloudShape(const string& type, co
         return make_shared<CylinderPointCloudShape>(name, isFilled, x, y, d);
     else if (type == "ConePointCloudShape")
         return make_shared<ConePointCloudShape>(name, isFilled, x, y, d);
+    else if (type == "ImportedPointCloudShape")
+        return make_shared<ImportedPointCloudShape>(name, "");
     else
         throw std::runtime_error("Unknown point cloud shape type: " + type);
 }
@@ -47,8 +49,10 @@ void Model::importProject(const string& filePath) {
         shape->setRotationAt(0, data.rotation[0]);
         shape->setRotationAt(1, data.rotation[1]);
         shape->setRotationAt(2, data.rotation[2]);
-        shape->setColor({static_cast<std::uint8_t>(data.rgb[0]), static_cast<std::uint8_t>(data.rgb[1]), static_cast<std::uint8_t>(data.rgb[2])});
         shape->setAreNormalsShown(data.areNormalsShown);
+        if (shape->getIsColorable() && data.rgb.size() == 3)
+            shape->setColor({static_cast<std::uint8_t>(data.rgb[0]), static_cast<std::uint8_t>(data.rgb[1]), static_cast<std::uint8_t>(data.rgb[2])});
+
 
         tuple<Eigen::Vector3f, Eigen::Affine3f> transFormation = database->getPointCloudTransformationFromDatabase(cloudName);
         shape->addToTranslationValues(get<0>(transFormation));
@@ -129,8 +133,7 @@ void Model::selectCloud(const string& name) {
     }
 }
 
-BoundingBoxData Model::getBoundingBoxDataAroundSelectedCloud()
-{
+BoundingBoxData Model::getBoundingBoxDataAroundSelectedCloud() {
     if (selectedCloud == -1) return BoundingBoxData();
 
     PointCloudT::Ptr cloudPCAprojection (new PointCloudT);
@@ -202,8 +205,7 @@ void Model::rotateSelectedCloud(int angle, char axis, Eigen::Affine3f& fullTrans
     clouds[selectedCloud]->addToRotationMatrix(rotation);
 }
 
-EditCloudData Model::getEditCloudData(const string& name)
-{
+EditCloudData Model::getEditCloudData(const string& name) {
     int i = 0;
     for (i = 0; i < clouds.size(); i++)
         if (clouds[i]->getId() == name) break;

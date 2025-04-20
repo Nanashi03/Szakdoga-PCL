@@ -111,6 +111,7 @@ ImportedPointCloudShape::ImportedPointCloudShape(const string& id, string  fileP
 {
     this->isFillable = false;
     this->isDensitable = false;
+    this->isColorable = false;
     this->labels = {};
     this->showLabels = {false, false, false};
     this->dimensions = {};
