@@ -39,7 +39,7 @@ target_link_libraries(core
 
 #APP
 
-add_executable(src1
+add_executable(PointCloudEditor
         main.cpp
         View/mainwindow.cpp
         View/Viewer.cpp
@@ -58,14 +58,14 @@ add_executable(src1
         Controller/Controller.h
 )
 
-target_include_directories(src1 PRIVATE
+target_include_directories(PointCloudEditor PRIVATE
         ${CMAKE_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/Forms
         ${CMAKE_CURRENT_SOURCE_DIR}/View
         ${CMAKE_CURRENT_SOURCE_DIR}/Controller
 )
 
-target_link_libraries(src1
+target_link_libraries(PointCloudEditor
         core
         Qt5::Widgets
         Qt5::OpenGL
@@ -75,18 +75,18 @@ target_link_libraries(src1
 add_definitions(${PCL_DEFINITIONS})
 
 #TESTSUITE
-add_executable(test_src1
+add_executable(PointCloudEditorTestSuite
         Tests/PointCloudShapesTest.cc
         Tests/ModelTest.cc
 )
 
-target_include_directories(test_src1 PRIVATE
+target_include_directories(PointCloudEditorTestSuite PRIVATE
         core
         ${CMAKE_CURRENT_SOURCE_DIR}/Tests/Data
         ${GTEST_INCLUDE_DIRS}
 )
 
-target_link_libraries(test_src1
+target_link_libraries(PointCloudEditorTestSuite
         core
         GTest::GTest
         GTest::Main

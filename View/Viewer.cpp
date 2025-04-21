@@ -84,8 +84,6 @@ void Viewer::addNormals(const std::string& normalsId, PointCloudT::ConstPtr clou
 void Viewer::updateCloud(const std::string& id, bool areNormalsShown, PointCloudT::ConstPtr cloud) {
     removeCloud(id, areNormalsShown);
     addCloud(id, areNormalsShown, cloud);
-    if (areNormalsShown)
-        addNormals(id + "_normals", cloud);
 }
 
 void Viewer::removeCloud(const std::string& id, bool areNormalsShown) {

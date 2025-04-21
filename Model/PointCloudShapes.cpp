@@ -21,16 +21,23 @@ IPointCloudShape::IPointCloudShape(const string& id_, bool iF = false, float d =
 {  }
 
 void IPointCloudShape::transformPointCloudToCenter() {
-    Eigen::Vector4f centroid;
-    pcl::compute3DCentroid(*shapePtr, centroid);
+    /*Eigen::Vector4f center;
+    pcl::compute3DCentroid(*shapePtr, center);
+    translation.translation() << -center[0], -center[1], -center[2];*/
+    Eigen::Vector4f minPt, maxPt;
+    pcl::getMinMax3D(*shapePtr, minPt, maxPt);
+    Eigen::Vector3f center = (minPt.head<3>() + maxPt.head<3>()) * 0.5f;
     Eigen::Affine3f translation = Eigen::Affine3f::Identity();
-    translation.translation() << -centroid[0], -centroid[1], -centroid[2];
+    translation.translation() << -center[0], -center[1], -center[2];
     pcl::transformPointCloud(*shapePtr, *shapePtr, translation);
 }
 
 void IPointCloudShape::transformPointCloudBackToOriginal() {
     Eigen::Affine3f backToCentroid = Eigen::Affine3f::Identity();
     backToCentroid.translate(getTranslationValues());
+
+    cout << "TRANSLATION BACK TO ORIGINAL BY: (" << translationValues[0] << ", " << translationValues[1] << ", " << translationValues[2] << ")" << endl;
+
     Eigen::Affine3f fullTransform = backToCentroid * currentRotation;
     pcl::transformPointCloud(*shapePtr, *shapePtr, fullTransform);
 }
