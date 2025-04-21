@@ -13,6 +13,7 @@ IPointCloudShape::IPointCloudShape(const string& id_, bool iF = false, float d =
     color { 255, 255, 255 },
     isFilled { iF },
     areNormalsShown { false },
+    isBoundingBoxDataCalculated {false},
     density { d },
     isColorable { true },
     isDensitable { true },
@@ -46,15 +47,70 @@ void IPointCloudShape::calculateNormals()
     cout << "CALCULATING NORMALS DONE" << endl;
 }
 
+void IPointCloudShape::calculateBoundingBoxData() {
+    if (isBoundingBoxDataCalculated) return;
+    /*PointCloudT::Ptr cloudPCAprojection (new PointCloudT);
+    pcl::PCA<PointType> pca;
+    pca.setInputCloud(shapePtr);
+    pca.project(*shapePtr, *cloudPCAprojection);
+
+    Eigen::Matrix3f eigenVectorsPCA = pca.getEigenVectors();
+    eigenVectorsPCA.col(2) = eigenVectorsPCA.col(0).cross(eigenVectorsPCA.col(1));
+
+    Eigen::Matrix4f projectionTransform(Eigen::Matrix4f::Identity());
+    projectionTransform.block<3,3>(0,0) = eigenVectorsPCA.transpose();
+    projectionTransform.block<3,1>(0,3) = -1.f * (projectionTransform.block<3,3>(0,0) * pca.getEigenValues().head<3>());
+
+    PointCloudT::Ptr cloudPointsProjected (new PointCloudT);
+    pcl::transformPointCloud(*shapePtr, *cloudPointsProjected, projectionTransform);
+
+    PointType minPoint, maxPoint;
+    pcl::getMinMax3D(*cloudPointsProjected, minPoint, maxPoint);
+    const Eigen::Vector3f meanDiagonal = 0.5f*(maxPoint.getVector3fMap() + minPoint.getVector3fMap());
+
+    boundingBoxData.bboxQuaternion = eigenVectorsPCA;
+    boundingBoxData.bboxTransform = eigenVectorsPCA * meanDiagonal + pca.getEigenValues().head<3>();
+    boundingBoxData.width = maxPoint.x - minPoint.x;
+    boundingBoxData.height = maxPoint.y - minPoint.y;
+    boundingBoxData.depth = maxPoint.z - minPoint.z;*/
+    float minX = FLT_MAX, maxX = -FLT_MAX;
+    float minY = FLT_MAX, maxY = -FLT_MAX;
+    float minZ = FLT_MAX, maxZ = -FLT_MAX;
+    BoundingBoxData newBboxData;
+    cout << "CALCULATING BOUNDING BOX DATA..." << endl;
+    for (PointType p : shapePtr->points) {
+        if (p.x > maxX) maxX = p.x;
+        if (p.y > maxY) maxY = p.y;
+        if (p.z > maxZ) maxZ = p.z;
+        if (p.x < minX) minX = p.x;
+        if (p.y < minY) minY = p.y;
+        if (p.z < minZ) minZ = p.z;
+    }
+
+    newBboxData.width = maxX - minX;
+    newBboxData.height = maxY - minY;
+    newBboxData.depth = maxZ - minZ;
+
+    newBboxData.bboxQuaternion = Eigen::Affine3f::Identity(); //JUST TO BE SURE
+    boundingBoxData = newBboxData;
+    isBoundingBoxDataCalculated = true;
+    cout << "CALCULATING BOUNDING BOX DATA DONE" << endl;
+}
+
 bool IPointCloudShape::getAreNormalsShown() const { return areNormalsShown; }
 
 bool IPointCloudShape::getIsFilled() const { return isFilled; }
 
-string IPointCloudShape::getId() const { return id; }
+const string& IPointCloudShape::getId() const { return id; }
 
 string IPointCloudShape::getNormalId() const { return id + "_normals"; }
 
 PointCloudT::Ptr IPointCloudShape::getShape() const { return shapePtr; }
+
+const BoundingBoxData& IPointCloudShape::getBoundingBoxData() {
+    boundingBoxData.bboxTransform = translationValues;
+    return boundingBoxData;
+}
 
 const Eigen::Vector3f& IPointCloudShape::getTranslationValues() const { return translationValues; }
 
@@ -81,6 +137,7 @@ pcl::RGB IPointCloudShape::getColor() const { return color; }
 void IPointCloudShape::generateShape() { }
 
 void IPointCloudShape::setColor(pcl::RGB color) {
+    if (!isColorable) return;
     this->color = color;
     for (int i=0; i<shapePtr->size(); i++) {
         shapePtr->points[i].r = color.r;
@@ -101,7 +158,11 @@ void IPointCloudShape::setShape(PointCloudT::Ptr shape) { shapePtr->clear();  pc
 
 void IPointCloudShape::addToTranslationValues(const Eigen::Vector3f& offSet) { translationValues += offSet; }
 
-void IPointCloudShape::addToRotationMatrix(const Eigen::Affine3f& deltaRotation) { currentRotation = deltaRotation * currentRotation; }
+void IPointCloudShape::addToRotationMatrix(const Eigen::Affine3f& deltaRotation)
+{
+    currentRotation = deltaRotation * currentRotation;
+    boundingBoxData.bboxQuaternion = deltaRotation * boundingBoxData.bboxQuaternion;
+}
 
 void IPointCloudShape::scale(float x, float y, float z) { }
 /*********************************************IMPORTED_CLOUD***********************************************************/
@@ -148,6 +209,11 @@ void ImportedPointCloudShape::generateShape() {
 
     transformPointCloudToCenter();
     if (!constainNormals) calculateNormals();
+    calculateBoundingBoxData();
+}
+
+void ImportedPointCloudShape::scale(float x,float y,float z) {
+    return;
 }
 /******************************************RECTANGLE*******************************************************************/
 RectanglePointCloudShape::RectanglePointCloudShape(const string& id, bool iF, float w, float h, float d) :
@@ -162,9 +228,6 @@ RectanglePointCloudShape::RectanglePointCloudShape(const string& id, bool iF, fl
 
 void RectanglePointCloudShape::generateShape() {
     shapePtr->points.clear();
-
-    cout << "width: " << width << endl;
-    cout << "height: " << height << endl;
 
     for (float i = 0; i <= width; i += density) {
         for (float j = 0; j <= height; j += density) {
@@ -181,11 +244,13 @@ void RectanglePointCloudShape::generateShape() {
     transformPointCloudToCenter();
     transformPointCloudBackToOriginal();
     calculateNormals();
+    calculateBoundingBoxData();
 }
 
 void RectanglePointCloudShape::scale(float width, float height, float z) {
     this->width = width;
     this->height = height;
+    this->isBoundingBoxDataCalculated = false;
     this->generateShape();
     this->dimensions = {this->width,this->height};
 }
@@ -221,12 +286,14 @@ void CuboidPointCloudShape::generateShape() {
     transformPointCloudToCenter();
     transformPointCloudBackToOriginal();
     calculateNormals();
+    calculateBoundingBoxData();
 }
 
 void CuboidPointCloudShape::scale(float width, float height, float length) {
     this->width = width;
     this->height = height;
     this->length = length;
+    this->isBoundingBoxDataCalculated = false;
     this->generateShape();
     this->dimensions = {this->width,this->height,this->length};
 }
@@ -263,10 +330,12 @@ void CirclePointCloudShape::generateShape() {
     transformPointCloudToCenter();
     transformPointCloudBackToOriginal();
     calculateNormals();
+    calculateBoundingBoxData();
 }
 
 void CirclePointCloudShape::scale(float radius, float y, float z) {
     this->radius = radius;
+    this->isBoundingBoxDataCalculated = false;
     this->generateShape();
     this->dimensions = {this->radius};
 }
@@ -301,10 +370,12 @@ void SpherePointCloudShape::generateShape()
     transformPointCloudToCenter();
     transformPointCloudBackToOriginal();
     calculateNormals();
+    calculateBoundingBoxData();
 }
 
 void SpherePointCloudShape::scale(float radius, float y, float z) {
     this->radius = radius;
+    this->isBoundingBoxDataCalculated = false;
     this->generateShape();
     this->dimensions = {this->radius};
 }
@@ -354,11 +425,13 @@ void CylinderPointCloudShape::generateShape() {
     transformPointCloudToCenter();
     transformPointCloudBackToOriginal();
     calculateNormals();
+    calculateBoundingBoxData();
 }
 
 void CylinderPointCloudShape::scale(float radius, float height, float z) {
     this->radius = radius;
     this->height = height;
+    this->isBoundingBoxDataCalculated = false;
     this->generateShape();
     this->dimensions = {this->radius, this->height};
 }
@@ -415,6 +488,7 @@ void ConePointCloudShape::generateShape() {
     transformPointCloudToCenter();
     transformPointCloudBackToOriginal();
     calculateNormals();
+    calculateBoundingBoxData();
 }
 
 void ConePointCloudShape::scale(float radius, float height, float z) {
@@ -432,6 +506,7 @@ void ConePointCloudShape::scale(float radius, float height, float z) {
     pcl::transformPointCloud(*shapePtr, *shapePtr, fullTransform);*/
     this->radius = radius;
     this->height = height;
+    this->isBoundingBoxDataCalculated = false;
     this->generateShape();
     this->dimensions = {this->radius, this->height};
 }

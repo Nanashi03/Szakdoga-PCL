@@ -92,13 +92,13 @@ void Model::updateSelectedCloudDimensions(float x, float y, float z) {
 }
 
 void Model::updateSelectedCloudDensity(int density) {
-    if (selectedCloud == -1) return;
+    if (selectedCloud == -1 || !clouds[selectedCloud]->getIsDensitable()) return;
     clouds[selectedCloud]->setDensity(density);
     clouds[selectedCloud]->generateShape();
 }
 
 void Model::updateSelectedCloudIsFilled(bool isFilled) {
-    if (selectedCloud == -1) return;
+    if (selectedCloud == -1 || !clouds[selectedCloud]->getIsFillable()) return;
     clouds[selectedCloud]->setIsFilled(isFilled);
     clouds[selectedCloud]->generateShape();
 }
@@ -116,7 +116,7 @@ void Model::removeSelectedCloud() {
 }
 
 void Model::colorSelectedCloud(pcl::RGB color) {
-    if (selectedCloud == -1) return;
+    if (selectedCloud == -1 || !clouds[selectedCloud]->getIsColorable()) return;
     clouds[selectedCloud]->setColor(color);
 }
 
@@ -133,35 +133,9 @@ void Model::selectCloud(const string& name) {
     }
 }
 
-BoundingBoxData Model::getBoundingBoxDataAroundSelectedCloud() {
+BoundingBoxData Model::getBoundingBoxDataAroundSelectedCloud() const {
     if (selectedCloud == -1) return BoundingBoxData();
-
-    PointCloudT::Ptr cloudPCAprojection (new PointCloudT);
-    pcl::PCA<PointType> pca;
-    pca.setInputCloud(clouds[selectedCloud]->getShape());
-    pca.project(*clouds[selectedCloud]->getShape(), *cloudPCAprojection);
-
-    Eigen::Matrix3f eigenVectorsPCA = pca.getEigenVectors();
-    eigenVectorsPCA.col(2) = eigenVectorsPCA.col(0).cross(eigenVectorsPCA.col(1));
-
-    Eigen::Matrix4f projectionTransform(Eigen::Matrix4f::Identity());
-    projectionTransform.block<3,3>(0,0) = eigenVectorsPCA.transpose();
-    projectionTransform.block<3,1>(0,3) = -1.f * (projectionTransform.block<3,3>(0,0) * pca.getEigenValues().head<3>());
-
-    PointCloudT::Ptr cloudPointsProjected (new PointCloudT);
-    pcl::transformPointCloud(*clouds[selectedCloud]->getShape(), *cloudPointsProjected, projectionTransform);
-
-    PointType minPoint, maxPoint;
-    pcl::getMinMax3D(*cloudPointsProjected, minPoint, maxPoint);
-    const Eigen::Vector3f meanDiagonal = 0.5f*(maxPoint.getVector3fMap() + minPoint.getVector3fMap());
-
-    BoundingBoxData bboxData;
-    bboxData.bboxQuaternion = eigenVectorsPCA;
-    bboxData.bboxTransform = eigenVectorsPCA * meanDiagonal + pca.getEigenValues().head<3>();
-    bboxData.width = maxPoint.x - minPoint.x;
-    bboxData.height = maxPoint.y - minPoint.y;
-    bboxData.depth = maxPoint.z - minPoint.z;
-    return bboxData;
+    return clouds[selectedCloud]->getBoundingBoxData();
 }
 
 void Model::translateSelectedCloud(float x, float y, float z, Eigen::Affine3f& transform) {

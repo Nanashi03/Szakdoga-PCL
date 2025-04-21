@@ -5,7 +5,10 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/common/transforms.h>
 #include <pcl/PCLPointCloud2.h>
+#include <pcl/common/pca.h>
 #include <cmath>
+
+#include "BoundingBoxData.h"
 
 using PointType = pcl::PointXYZRGBNormal;
 using PointCloudT = pcl::PointCloud<PointType>;
@@ -14,56 +17,57 @@ using namespace std;
 
 class IPointCloudShape {
 protected:
-    PointCloudT::Ptr shapePtr;
-    Eigen::Vector3f translationValues;
-    Eigen::Vector3i rotationValues;
-    Eigen::Affine3f currentRotation;
-    pcl::RGB color;
-
     string id;
+    PointCloudT::Ptr shapePtr;
+    BoundingBoxData boundingBoxData;
+    Eigen::Vector3f translationValues;
+    Eigen::Affine3f currentRotation;
+    vector<float> dimensions;
+    Eigen::Vector3i rotationValues;
+    pcl::RGB color;
     float density;
 
-    bool isFilled;
-    bool areNormalsShown;
+    bool isFilled, areNormalsShown, isBoundingBoxDataCalculated;
 
     bool isColorable, isFillable, isDensitable;
     vector<string> labels;
     vector<bool> showLabels;
-    vector<float> dimensions;
 
     IPointCloudShape(const string&,bool,float);
     void transformPointCloudToCenter();
     void transformPointCloudBackToOriginal();
     void calculateNormals();
+    void calculateBoundingBoxData();
 public:
     virtual void generateShape();
     virtual void scale(float,float,float);
 
-    void setColor(pcl::RGB);
     void setShape(PointCloudT::Ptr);
-    void addToTranslationValues(const Eigen::Vector3f&);
     void addToRotationMatrix(const Eigen::Affine3f&);
+    void addToTranslationValues(const Eigen::Vector3f&);
+    void setRotationAt(int,int);
+    void setColor(pcl::RGB);
+    void setDensity(int);
     void setIsFilled(bool);
     void setAreNormalsShown(bool);
-    void setDensity(int);
-    void setRotationAt(int,int);
 
-    vector<bool> getShowLabels() const;
-    vector<string> getLabels() const;
-    vector<float> getDimensions() const;
+    const string& getId() const;
+    string getNormalId() const;
     PointCloudT::Ptr getShape() const;
+    const BoundingBoxData& getBoundingBoxData();
     const Eigen::Vector3f& getTranslationValues() const;
     const Eigen::Affine3f& getCurrentRotation() const;
-    pcl::RGB getColor() const;
-    string getId() const;
-    string getNormalId() const;
-    float getDensity() const;
+    vector<float> getDimensions() const;
     int getRotationAt(int) const;
+    pcl::RGB getColor() const;
+    float getDensity() const;
+    bool getIsFilled() const;
+    bool getAreNormalsShown() const;
     bool getIsColorable() const;
     bool getIsFillable() const;
     bool getIsDensitable() const;
-    bool getAreNormalsShown() const;
-    bool getIsFilled() const;
+    vector<string> getLabels() const;
+    vector<bool> getShowLabels() const;
 
     virtual ~IPointCloudShape() = default;
 };
@@ -74,6 +78,7 @@ private:
 public:
     ImportedPointCloudShape(const string&, string);
     void generateShape() override;
+    void scale(float,float,float) override;
 };
 
 class RectanglePointCloudShape : public IPointCloudShape {

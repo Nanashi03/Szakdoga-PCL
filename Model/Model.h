@@ -8,7 +8,6 @@
 #include <vector>
 #include <memory>
 #include <pcl/common/common.h>
-#include <pcl/common/pca.h>
 
 #include "EditCloudData.h"
 #include "BoundingBoxData.h"
@@ -40,7 +39,7 @@ class Model {
         void rotateSelectedCloud(int,char,Eigen::Affine3f&);
 
         EditCloudData getEditCloudData(const string&);
-        BoundingBoxData getBoundingBoxDataAroundSelectedCloud();
+        BoundingBoxData getBoundingBoxDataAroundSelectedCloud() const;
 
         vector<string> getCloudNames() const;
         vector<shared_ptr<IPointCloudShape>> getClouds();

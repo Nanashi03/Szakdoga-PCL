@@ -40,7 +40,6 @@ void Controller::selectCloud(const string& cloudName) {
     } else if (model.isCloudSelected()) {
         model.deSelectCloud();
         mainWindow.pclEditorView.removeBoundingBoxCube();
-
         model.selectCloud(cloudName);
         mainWindow.pclEditorView.addBoundingBoxCube(model.getBoundingBoxDataAroundSelectedCloud());
         mainWindow.changeToEditShapeWidget(model.getEditCloudData(model.getSelectedCloudName()));

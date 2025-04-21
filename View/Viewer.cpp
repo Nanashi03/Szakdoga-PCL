@@ -99,7 +99,8 @@ void Viewer::removeNormals(const std::string& normalsId) {
 }
 
 void Viewer::addBoundingBoxCube(const BoundingBoxData& data) {
-    viewer->addCube(data.bboxTransform, data.bboxQuaternion, data.width, data.height, data.depth, data.NAME);
+    Eigen::Quaternionf rotation { data.bboxQuaternion.rotation() };
+    viewer->addCube(data.bboxTransform, rotation, data.width, data.height, data.depth, data.NAME);
     viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION,
                                              pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME,
                                         data.NAME);

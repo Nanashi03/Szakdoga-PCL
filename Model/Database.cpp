@@ -4,8 +4,6 @@
 
 #include "Database.h"
 
-#include "Controller.h"
-
 string Database::filePath = "point_cloud_database.db";
 shared_ptr<Database> Database::instance = nullptr;
 
