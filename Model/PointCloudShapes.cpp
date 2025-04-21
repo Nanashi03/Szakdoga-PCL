@@ -154,7 +154,12 @@ void IPointCloudShape::setDensity(int density) { this->density = 1/static_cast<f
 
 void IPointCloudShape::setRotationAt(int ind, int value) { this->rotationValues[ind] = value; }
 
-void IPointCloudShape::setShape(PointCloudT::Ptr shape) { shapePtr->clear();  pcl::copyPointCloud(*shape, *shapePtr); }
+void IPointCloudShape::setShape(PointCloudT::Ptr shape)
+{
+    shapePtr->clear();  pcl::copyPointCloud(*shape, *shapePtr);
+    isBoundingBoxDataCalculated = false;
+    calculateBoundingBoxData();
+}
 
 void IPointCloudShape::addToTranslationValues(const Eigen::Vector3f& offSet) { translationValues += offSet; }
 

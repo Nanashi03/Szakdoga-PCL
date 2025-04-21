@@ -1,12 +1,13 @@
 #ifndef POINTCLOUDSHAPES_H
 #define POINTCLOUDSHAPES_H
 
+#include <cmath>
+#include <cfloat>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/common/transforms.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/common/pca.h>
-#include <cmath>
 
 #include "BoundingBoxData.h"
 
