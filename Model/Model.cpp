@@ -39,13 +39,12 @@ void Model::addCloud(const shared_ptr<IPointCloudShape>& cloud_shape) {
 }
 
 void Model::importProject(const string& filePath) {
-    auto database = Database::getInstance(filePath);
+    auto database = Database::getInstance(filePath, "import");
     for (const string& cloudName : database->getPointCloudNamesFromDatabase()) {
         EditCloudData data { database->getPointCloudPropertiesFromDatabase(cloudName) };
         shared_ptr<IPointCloudShape> shape {
             createPointCloudShape(database->getPointCloudTypeByName(cloudName), cloudName, data.isFilled, data.dim[0], data.dim[1], data.dim[2], data.density)
         };
-        shape->setShape(database->getPointCloudFromDatabase(cloudName));
         shape->setRotationAt(0, data.rotation[0]);
         shape->setRotationAt(1, data.rotation[1]);
         shape->setRotationAt(2, data.rotation[2]);
@@ -57,6 +56,8 @@ void Model::importProject(const string& filePath) {
         tuple<Eigen::Vector3f, Eigen::Affine3f> transFormation = database->getPointCloudTransformationFromDatabase(cloudName);
         shape->addToTranslationValues(get<0>(transFormation));
         shape->addToRotationMatrix(get<1>(transFormation));
+
+        shape->setShape(database->getPointCloudFromDatabase(cloudName));
 
         clouds.push_back(shape);
     }
@@ -76,12 +77,13 @@ void Model::exportClouds(const string& newFilePath) {
 }
 
 void Model::exportProject(const string& newFilePath) {
+    auto database = Database::getInstance(newFilePath, "export");
     for (shared_ptr<IPointCloudShape> cloud : clouds) {
         string typeName = typeid(*cloud).name();
-        Database::getInstance(newFilePath)->addPointCloudNameToDatabase(cloud->getId(), typeName.substr(2));
-        Database::getInstance(newFilePath)->addPointCloudToDatabase(cloud->getId(), cloud->getShape());
-        Database::getInstance(newFilePath)->addPointCloudPropertiesToDatabase(cloud->getId(), getEditCloudData(cloud->getId()));
-        Database::getInstance(newFilePath)->addPointCloudTransformationToDatabase(cloud->getId(), cloud->getTranslationValues(), cloud->getCurrentRotation());
+        database->addPointCloudNameToDatabase(cloud->getId(), typeName.substr(2));
+        database->addPointCloudToDatabase(cloud->getId(), cloud->getShape());
+        database->addPointCloudPropertiesToDatabase(cloud->getId(), getEditCloudData(cloud->getId()));
+        database->addPointCloudTransformationToDatabase(cloud->getId(), cloud->getTranslationValues(), cloud->getCurrentRotation());
     }
 }
 

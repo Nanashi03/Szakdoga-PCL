@@ -64,6 +64,7 @@ void Controller::importProject(const string& filePath) {
     }
     for (shared_ptr<IPointCloudShape> cloud : model.getClouds()) {
         mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getAreNormalsShown(), cloud->getShape());
+        mainWindow.refreshView();
     }
 }
 
@@ -82,6 +83,7 @@ void Controller::importCloud(const string& id, const string& filePath) {
 
         model.addCloud(cloud);
         mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getAreNormalsShown(), cloud->getShape());
+        mainWindow.refreshView();
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
@@ -102,6 +104,7 @@ void Controller::generateRectangle(const string& id, bool isFilled, float width,
 
         model.addCloud(cloud);
         mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getAreNormalsShown(), cloud->getShape());
+        mainWindow.refreshView();
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
@@ -114,6 +117,7 @@ void Controller::generateCircle(const string& id, bool isFilled, float radius, f
 
         model.addCloud(cloud);
         mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getAreNormalsShown(), cloud->getShape());
+        mainWindow.refreshView();
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
@@ -126,6 +130,7 @@ void Controller::generateCube(const string & id, bool isFilled, float width, flo
 
         model.addCloud(cloud);
         mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getAreNormalsShown(), cloud->getShape());
+        mainWindow.refreshView();
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
@@ -138,6 +143,7 @@ void Controller::generateSphere(const string& id, bool isFilled, float radius, f
 
         model.addCloud(cloud);
         mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getAreNormalsShown(), cloud->getShape());
+        mainWindow.refreshView();
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
@@ -150,6 +156,7 @@ void Controller::generateCylinder(const string& id, bool isFilled, float radius,
 
         model.addCloud(cloud);
         mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getAreNormalsShown(), cloud->getShape());
+        mainWindow.refreshView();
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }
@@ -162,6 +169,7 @@ void Controller::generateCone(const string& id, bool isFilled, float radius, flo
 
         model.addCloud(cloud);
         mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getAreNormalsShown(), cloud->getShape());
+        mainWindow.refreshView();
     } catch (const std::exception& e) {
         mainWindow.showErrorMessageBox(e.what());
     }

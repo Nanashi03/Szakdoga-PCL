@@ -5,6 +5,7 @@
 #include "Database.h"
 
 string Database::filePath = "point_cloud_database.db";
+string Database::command = "";
 shared_ptr<Database> Database::instance = nullptr;
 
 Database::Database() {
@@ -13,56 +14,13 @@ Database::Database() {
     if (sqlite3_exec(db, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr) != SQLITE_OK)
         throw runtime_error("Failed to enable foreign key support: " + string(sqlite3_errmsg(db)));
 
-    string querry = "CREATE TABLE IF NOT EXISTS PointCloudNames (ind INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, type TEXT);";
-    if (sqlite3_exec(db, querry.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK)
-        throw runtime_error("Failed to open database: " + string(sqlite3_errmsg(db)));
+    if (command == "import")
+        checkDatabaseBeforeImporting();
+    else if (command == "export")
+        createBeforeExporting();
 
-    querry = "CREATE TABLE IF NOT EXISTS PointCloud ("
-                   "cloudId INTEGER, "
-                   "x REAL, "
-                   "y REAL, "
-                   "z REAL, "
-                   "r INTEGER, "
-                   "g INTEGER, "
-                   "b INTEGER, "
-                   "normal_x REAL, "
-                   "normal_y REAL, "
-                   "normal_z REAL, "
-                   "FOREIGN KEY(cloudId) REFERENCES PointCloudNames(ind));";
-    if (sqlite3_exec(db, querry.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK)
-        throw runtime_error("Failed to open database: " + string(sqlite3_errmsg(db)));
 
-    querry = "CREATE TABLE IF NOT EXISTS PointCloudProperties ("
-               "cloudId INTEGER, "
-               "isFilled INTEGER, "
-               "areNormalsShown INTEGER, "
-               "r INTEGER, "
-               "g INTEGER, "
-               "b INTEGER, "
-               "rot_x INTEGER, "
-               "rot_y INTEGER, "
-               "rot_z INTEGER, "
-               "dim_x INTEGER, "
-               "dim_y INTEGER, "
-               "dim_z INTEGER, "
-               "density REAL, "
-               "FOREIGN KEY(cloudId) REFERENCES PointCloudNames(ind));";
-    if (sqlite3_exec(db, querry.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK)
-        throw runtime_error("Failed to open database: " + string(sqlite3_errmsg(db)));
-
-    querry = "CREATE TABLE IF NOT EXISTS PointCloudTransformation ("
-           "cloudId INTEGER, "
-           "translationX REAL, "
-           "translationY REAL, "
-           "translationZ REAL, "
-           "rotMatrix00 REAL, rotMatrix01 REAL, rotMatrix02 REAL, rotMatrix03 REAL, "
-           "rotMatrix10 REAL, rotMatrix11 REAL, rotMatrix12 REAL, rotMatrix13 REAL, "
-           "rotMatrix20 REAL, rotMatrix21 REAL, rotMatrix22 REAL, rotMatrix23 REAL, "
-           "FOREIGN KEY(cloudId) REFERENCES PointCloudNames(ind));";
-    if (sqlite3_exec(db, querry.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK)
-        throw runtime_error("Failed to open database: " + string(sqlite3_errmsg(db)));
-
-    querry = "SELECT ind FROM PointCloudNames WHERE name = ?;";
+    string querry = "SELECT ind FROM PointCloudNames WHERE name = ?;";
     sqlite3_prepare_v2(db, querry.c_str(), -1, &getCloudIndexStmt, nullptr);
     querry = "INSERT INTO PointCloudNames (name, type) VALUES (?, ?);";
     sqlite3_prepare_v2(db, querry.c_str(), -1, &insertCloudIdStmt, nullptr);
@@ -89,6 +47,57 @@ Database::Database() {
     querry = "INSERT INTO PointCloudTransformation(cloudId, translationX, translationY, translationZ, rotMatrix00,  rotMatrix01,  rotMatrix02,  rotMatrix03,  rotMatrix10,  rotMatrix11,  rotMatrix12,  rotMatrix13,  rotMatrix20,  rotMatrix21,  rotMatrix22,  rotMatrix23) "
              "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
     sqlite3_prepare_v2(db, querry.c_str(), -1, &insertCloudTransformationStmt, nullptr);
+}
+
+void Database::checkDatabaseBeforeImporting() {
+    string sql = "SELECT sql FROM sqlite_master WHERE type='table' AND name = ?;";
+    sqlite3_stmt* stmt = nullptr;
+    sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+
+    for (const auto& pair : tableSchemes) {
+        sqlite3_bind_text(stmt, 1, pair.first.c_str(), -1, SQLITE_TRANSIENT);
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            string schema = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+            if (schema != pair.second)
+                throw runtime_error("Error while importing project: " + pair.first + " table is not in correct state");
+        } else {
+            throw runtime_error("Error while importing project: " + pair.first + " is not found");
+        }
+        sqlite3_reset(stmt);
+        sqlite3_clear_bindings(stmt);
+    }
+
+    sqlite3_finalize(stmt);
+}
+
+void Database::createBeforeExporting() {
+    dropExistingTables();
+    string querry = tableSchemes.at("PointCloudNames") + ";";
+    if (sqlite3_exec(db, querry.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK)
+        throw runtime_error("Failed to open database: " + string(sqlite3_errmsg(db)));
+
+    querry = tableSchemes.at("PointCloud") + ";";
+    if (sqlite3_exec(db, querry.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK)
+        throw runtime_error("Failed to open database: " + string(sqlite3_errmsg(db)));
+
+    querry = tableSchemes.at("PointCloudProperties") + ";";
+    if (sqlite3_exec(db, querry.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK)
+        throw runtime_error("Failed to open database: " + string(sqlite3_errmsg(db)));
+
+    querry = tableSchemes.at("PointCloudTransformation") + ";";
+    if (sqlite3_exec(db, querry.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK)
+        throw runtime_error("Failed to open database: " + string(sqlite3_errmsg(db)));
+
+}
+
+void Database::dropExistingTables() {
+    for (const auto& pair : tableSchemes) {
+        std::string sql = "DROP TABLE IF EXISTS \"" + pair.first + "\";";
+        int rc = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, nullptr);
+        if (rc != SQLITE_OK) {
+            throw std::runtime_error("Failed to setup new file.");
+        }
+    }
 }
 
 void Database::runAndHandleError(sqlite3_stmt*& stmt) {
@@ -164,9 +173,9 @@ PointCloudT::Ptr Database::getPointCloudFromDatabase(const string& name) const {
 
     PointCloudT::Ptr pointCloud { make_shared<PointCloudT>() };
     while (sqlite3_step(getCloudStmt) == SQLITE_ROW) {
-        PointType point { sqlite3_column_double(getCloudStmt, 0), sqlite3_column_double(getCloudStmt, 1), sqlite3_column_double(getCloudStmt, 2),
+        PointType point ( sqlite3_column_double(getCloudStmt, 0), sqlite3_column_double(getCloudStmt, 1), sqlite3_column_double(getCloudStmt, 2),
                           sqlite3_column_int(getCloudStmt, 3),    sqlite3_column_int(getCloudStmt, 4),    sqlite3_column_int(getCloudStmt, 5),
-                          sqlite3_column_double(getCloudStmt, 6), sqlite3_column_double(getCloudStmt, 7), sqlite3_column_double(getCloudStmt, 8)};
+                          sqlite3_column_double(getCloudStmt, 6), sqlite3_column_double(getCloudStmt, 7), sqlite3_column_double(getCloudStmt, 8));
         pointCloud->points.push_back(point);
     }
 
