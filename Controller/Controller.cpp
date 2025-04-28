@@ -53,7 +53,6 @@ void Controller::selectCloud(const string& cloudName) {
 void Controller::importProject(const string& filePath) {
     vector<string> cloudNames = model.getCloudNames();
     for (string name : cloudNames) {
-        cout << name << endl;
         model.selectCloud(name);
         removeSelectedCloud();
     }
@@ -78,7 +77,7 @@ void Controller::exportProject(const string& filePath) {
 /**********************************************GENERATION**************************************************************/
 void Controller::importCloud(const string& id, const string& filePath) {
     try {
-        shared_ptr<ImportedPointCloudShape> cloud {make_shared<ImportedPointCloudShape>(id, filePath)};
+        shared_ptr cloud {make_shared<ImportedPointCloudShape>(id, filePath)};
         cloud->generateShape();
 
         model.addCloud(cloud);
@@ -99,7 +98,7 @@ void Controller::exportCloud(const string& newFilePath) {
 
 void Controller::generateRectangle(const string& id, bool isFilled, float width, float height, float density) {
     try {
-        shared_ptr<RectanglePointCloudShape> cloud { make_shared<RectanglePointCloudShape>(id, isFilled, width, height, density) };
+        shared_ptr cloud { make_shared<RectanglePointCloudShape>(id, isFilled, width, height, density) };
         cloud->generateShape();
 
         model.addCloud(cloud);
@@ -112,7 +111,7 @@ void Controller::generateRectangle(const string& id, bool isFilled, float width,
 
 void Controller::generateCircle(const string& id, bool isFilled, float radius, float density) {
     try {
-        shared_ptr<CirclePointCloudShape> cloud { make_shared<CirclePointCloudShape>(id, isFilled, radius, density) };
+        shared_ptr cloud { make_shared<CirclePointCloudShape>(id, isFilled, radius, density) };
         cloud->generateShape();
 
         model.addCloud(cloud);
@@ -125,7 +124,7 @@ void Controller::generateCircle(const string& id, bool isFilled, float radius, f
 
 void Controller::generateCube(const string & id, bool isFilled, float width, float height, float length, float density) {
     try {
-        shared_ptr<CuboidPointCloudShape> cloud { make_shared<CuboidPointCloudShape>(id, isFilled, width, height, length, density) };
+        shared_ptr cloud { make_shared<CuboidPointCloudShape>(id, isFilled, width, height, length, density) };
         cloud->generateShape();
 
         model.addCloud(cloud);
@@ -138,7 +137,7 @@ void Controller::generateCube(const string & id, bool isFilled, float width, flo
 
 void Controller::generateSphere(const string& id, bool isFilled, float radius, float density) {
     try {
-        shared_ptr<SpherePointCloudShape> cloud  { make_shared<SpherePointCloudShape>(id, isFilled, radius, density) };
+        shared_ptr cloud  { make_shared<SpherePointCloudShape>(id, isFilled, radius, density) };
         cloud->generateShape();
 
         model.addCloud(cloud);
@@ -151,7 +150,7 @@ void Controller::generateSphere(const string& id, bool isFilled, float radius, f
 
 void Controller::generateCylinder(const string& id, bool isFilled, float radius, float height, float density) {
     try {
-        shared_ptr<CylinderPointCloudShape> cloud { make_shared<CylinderPointCloudShape>(id, isFilled, radius, height, density) };
+        shared_ptr cloud { make_shared<CylinderPointCloudShape>(id, isFilled, radius, height, density) };
         cloud->generateShape();
 
         model.addCloud(cloud);
@@ -164,7 +163,7 @@ void Controller::generateCylinder(const string& id, bool isFilled, float radius,
 
 void Controller::generateCone(const string& id, bool isFilled, float radius, float height, float density) {
     try {
-        shared_ptr<ConePointCloudShape> cloud { make_shared<ConePointCloudShape>(id, isFilled, radius, height, density) };
+        shared_ptr cloud { make_shared<ConePointCloudShape>(id, isFilled, radius, height, density) };
         cloud->generateShape();
 
         model.addCloud(cloud);

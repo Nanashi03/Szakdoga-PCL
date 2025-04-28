@@ -1,32 +1,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-EventFromFilePathListener MainWindow::importProjectEventListener = nullptr;
-EventImportListener MainWindow::importEventListener = nullptr;
-EventFromFilePathListener MainWindow::exportProjectEventListener = nullptr;
-EventFromFilePathListener MainWindow::exportEventListener = nullptr;
-EventOneInputListener MainWindow::addSquareEventListener = nullptr;
-EventOneInputListener MainWindow::addCubeEventListener = nullptr;
-EventOneInputListener MainWindow::addCircleEventListener = nullptr;
-EventOneInputListener MainWindow::addSphereEventListener = nullptr;
-EventTwoInputListener MainWindow::addRectangleEventListener = nullptr;
-EventTwoInputListener MainWindow::addCylinderEventListener = nullptr;
-EventTwoInputListener MainWindow::addConeEventListener = nullptr;
-EventThreeInputListener MainWindow::addCuboidEventListener = nullptr;
-EventDensitySliderListener MainWindow::densityChangedEventListener = nullptr;
-EventColorSliderChangedListener MainWindow::colorChangedEventListener = nullptr;
-EventRotationSliderChangedListener MainWindow::rotationChangedEventListener = nullptr;
-EventChangeShapeDimensions MainWindow::shapeChangedEventListener = nullptr;
-EventTickBoxChanged MainWindow::isFilledChangedEventListener = nullptr;
-EventTickBoxChanged MainWindow::showNormalsChangedEventListener = nullptr;
-EventRemoveCloud MainWindow::removeCloudEventListener = nullptr;
-
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui { new Ui::MainWindow },
     helpDialogBox { nullptr }
 {
     ui->setupUi(this);
-
     auto renderer = vtkSmartPointer<vtkRenderer>::New();
     auto renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
     renderWindow->AddRenderer(renderer);
@@ -209,9 +188,12 @@ void MainWindow::onAddConeButtonClicked()
 }
 
 void MainWindow::onHelpButtonClicked() {
+    std::cout << "HELP CLICK" << std::endl;
     if (!helpDialogBox) {
-        helpDialogBox = std::make_shared<HelpDialogBox>(this);
+        std::cout << "SHOWING HELP" << std::endl;
+        helpDialogBox = new HelpDialogBox(this);
         helpDialogBox->setModal(false);
+        connect(helpDialogBox, &HelpDialogBox::finished, this, [this]() { std::cout << "DELETING HELP" << std::endl;  delete helpDialogBox; helpDialogBox = nullptr; });
         helpDialogBox->show();
     } else {
         helpDialogBox->raise();
@@ -282,6 +264,8 @@ void MainWindow::changeToEditShapeWidget(EditCloudData editData)
 
     blockAllEditSignals(true);
 
+    auto numberValidator { std::make_shared<QRegExp>("([2-9][0-9]*)|([2-9][0-9]*\\.[0-9]{1,6})") };
+
     ui->EditedShapeName->setTitle(editData.name.data());
     ui->ShowNormals->setChecked(editData.areNormalsShown);
     ui->RotXNumber->display(editData.rotation[0]);
@@ -294,22 +278,22 @@ void MainWindow::changeToEditShapeWidget(EditCloudData editData)
     {
         ui->xWidget->show();
         ui->xLabel->setText(editData.labels.at(0).data());
-        ui->xInput->setValidator(new QDoubleValidator(2.0, 999999.99, 6));
-        ui->xInput->setText(std::to_string(editData.dim.at(0)).data());
+        ui->xInput->setValidator(new QRegExpValidator(*numberValidator));
+        ui->xInput->setText(std::format("{:.6f}", editData.dim.at(0)).data());
     }
     if (editData.showLabels.at(1))
     {
         ui->yWidget->show();
         ui->yLabel->setText(editData.labels.at(1).data());
-        ui->yInput->setValidator(new QDoubleValidator(2.0, 999999.99, 6));
-        ui->yInput->setText(std::to_string(editData.dim.at(1)).data());
+        ui->yInput->setValidator(new QRegExpValidator(*numberValidator));
+        ui->yInput->setText(std::format("{:.6f}", editData.dim.at(1)).data());
     }
     if (editData.showLabels.at(2))
     {
         ui->zWidget->show();
         ui->zLabel->setText(editData.labels.at(2).data());
-        ui->zInput->setValidator(new QDoubleValidator(2.0, 999999.99, 6));
-        ui->zInput->setText(std::to_string(editData.dim.at(2)).data());
+        ui->zInput->setValidator(new QRegExpValidator(*numberValidator));
+        ui->zInput->setText(std::format("{:.6f}", editData.dim.at(2)).data());
     }
     if (editData.showFilledEdit)
     {
@@ -353,5 +337,6 @@ void MainWindow::changeToAddShapeWidget()
 
 MainWindow::~MainWindow()
 {
+    if (helpDialogBox) delete helpDialogBox; 
     delete ui;
 }

@@ -13,7 +13,7 @@ IPointCloudShape::IPointCloudShape(const string& id_, bool iF = false, float d =
     color { 255, 255, 255 },
     isFilled { iF },
     areNormalsShown { false },
-    isBoundingBoxDataCalculated {false},
+    isBoundingBoxDataCalculated { false },
     density { d },
     isColorable { true },
     isDensitable { true },
@@ -45,13 +45,24 @@ void IPointCloudShape::transformPointCloudBackToOriginal() {
 void IPointCloudShape::calculateNormals()
 {
     cout << "CALCULATING NORMALS..." << endl;
-    pcl::NormalEstimation<PointType, PointType> ne;
-    ne.setInputCloud (shapePtr);
-    pcl::search::KdTree<PointType>::Ptr tree { new pcl::search::KdTree<PointType> () };
-    ne.setSearchMethod (tree);
-    ne.setRadiusSearch (1.5);
-    ne.compute (*shapePtr);
+    pcl::NormalEstimation<PointType, pcl::Normal> ne;
+    pcl::search::KdTree<PointType>::Ptr tree(new pcl::search::KdTree<PointType>());
+    tree->setInputCloud(shapePtr);
+
+    ne.setInputCloud(shapePtr);
+    ne.setSearchMethod(tree);
+    //ne.setRadiusSearch(1.5);
+    ne.setKSearch(20);
+
+    auto resultCloud(make_shared<pcl::PointCloud<pcl::Normal>>());
+    ne.compute(*resultCloud);
     cout << "CALCULATING NORMALS DONE" << endl;
+
+    for (int i = 0; i < resultCloud->size(); i++) {
+        shapePtr->points[i].normal_x = resultCloud->points[i].normal_x;
+        shapePtr->points[i].normal_y = resultCloud->points[i].normal_y;
+        shapePtr->points[i].normal_z = resultCloud->points[i].normal_z;
+    }
 }
 
 void IPointCloudShape::calculateBoundingBoxData() {
@@ -80,28 +91,18 @@ void IPointCloudShape::calculateBoundingBoxData() {
     boundingBoxData.width = maxPoint.x - minPoint.x;
     boundingBoxData.height = maxPoint.y - minPoint.y;
     boundingBoxData.depth = maxPoint.z - minPoint.z;*/
-    float minX = FLT_MAX, maxX = -FLT_MAX;
-    float minY = FLT_MAX, maxY = -FLT_MAX;
-    float minZ = FLT_MAX, maxZ = -FLT_MAX;
-    BoundingBoxData newBboxData;
-    cout << "CALCULATING BOUNDING BOX DATA..." << endl;
-    for (PointType p : shapePtr->points) {
-        if (p.x > maxX) maxX = p.x;
-        if (p.y > maxY) maxY = p.y;
-        if (p.z > maxZ) maxZ = p.z;
-        if (p.x < minX) minX = p.x;
-        if (p.y < minY) minY = p.y;
-        if (p.z < minZ) minZ = p.z;
-    }
+    Eigen::Vector4f minPt, maxPt;
+    pcl::getMinMax3D(*shapePtr, minPt, maxPt);
 
-    newBboxData.width = maxX - minX;
-    newBboxData.height = maxY - minY;
-    newBboxData.depth = maxZ - minZ;
+    BoundingBoxData newBboxData;
+    newBboxData.width = maxPt.x() - minPt.x();
+    newBboxData.height = maxPt.y() - minPt.y();
+    newBboxData.depth = maxPt.z() - minPt.z();
 
     newBboxData.bboxQuaternion = Eigen::Affine3f::Identity(); //JUST TO BE SURE
     boundingBoxData = newBboxData;
-    isBoundingBoxDataCalculated = true;
     cout << "CALCULATING BOUNDING BOX DATA DONE" << endl;
+    isBoundingBoxDataCalculated = true;
 }
 
 bool IPointCloudShape::getAreNormalsShown() const { return areNormalsShown; }
@@ -164,7 +165,6 @@ void IPointCloudShape::setRotationAt(int ind, int value) { this->rotationValues[
 void IPointCloudShape::setShape(PointCloudT::Ptr shape)
 {
     shapePtr->clear();  pcl::copyPointCloud(*shape, *shapePtr);
-    isBoundingBoxDataCalculated = false;
     calculateBoundingBoxData();
 }
 
@@ -206,20 +206,21 @@ void ImportedPointCloudShape::generateShape() {
     this->isColorable = !constainRGB;
 
     if (constainRGB && constainNormals) {
-        pcl::io::loadPCDFile<PointType>(filePath, *shapePtr);
+        if (pcl::io::loadPCDFile<PointType>(filePath, *shapePtr) != 0)
+            throw runtime_error("Error reading file: " + filePath);
     } else if (constainRGB) {
         pcl::PointCloud<pcl::PointXYZRGB> tmp;
-        pcl::io::loadPCDFile<pcl::PointXYZRGB>(filePath, tmp);
+        if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(filePath, tmp) != 0)
+            throw runtime_error("Error reading file: " + filePath);
         pcl::copyPointCloud(tmp, *shapePtr);
     } else {
-        cout << "IM HERE" << endl;
         pcl::PointCloud<pcl::PointXYZ> tmp;
-        pcl::io::loadPCDFile<pcl::PointXYZ> (filePath, tmp);
+        if (pcl::io::loadPCDFile<pcl::PointXYZ>(filePath, tmp) != 0)
+            throw runtime_error("Error reading file: " + filePath);
         pcl::copyPointCloud(tmp, *shapePtr);
         setColor({ color.r, color.g, color.b });
     }
 
-    transformPointCloudToCenter();
     if (!constainNormals) calculateNormals();
     calculateBoundingBoxData();
 }

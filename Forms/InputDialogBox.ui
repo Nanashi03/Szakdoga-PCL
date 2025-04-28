@@ -539,11 +539,11 @@
      <height>19</height>
     </rect>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Sides: </string>
-   </property>
-   <property name="visible">
-     <bool>false</bool>
    </property>
   </widget>
   <widget class="QLineEdit" name="InputBox1">
@@ -555,14 +555,14 @@
      <height>21</height>
     </rect>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
    <property name="inputMethodHints">
     <set>Qt::InputMethodHint::ImhDigitsOnly</set>
    </property>
    <property name="placeholderText">
-    <string>1.0</string>
-   </property>
-   <property name="visible">
-     <bool>false</bool>
+    <string>.</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
@@ -600,14 +600,14 @@
      <height>21</height>
     </rect>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
    <property name="inputMethodHints">
     <set>Qt::InputMethodHint::ImhDigitsOnly</set>
    </property>
    <property name="placeholderText">
     <string>1.0</string>
-   </property>
-   <property name="visible">
-     <bool>false</bool>
    </property>
   </widget>
   <widget class="QLabel" name="InputLabel2">
@@ -619,11 +619,11 @@
      <height>19</height>
     </rect>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Sides: </string>
-   </property>
-   <property name="visible">
-     <bool>false</bool>
    </property>
   </widget>
   <widget class="QLabel" name="InputLabel3">
@@ -635,11 +635,11 @@
      <height>19</height>
     </rect>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Sides: </string>
-   </property>
-   <property name="visible">
-     <bool>false</bool>
    </property>
   </widget>
   <widget class="QLineEdit" name="InputBox3">
@@ -651,14 +651,14 @@
      <height>21</height>
     </rect>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
    <property name="inputMethodHints">
     <set>Qt::InputMethodHint::ImhDigitsOnly</set>
    </property>
    <property name="placeholderText">
     <string>1.0</string>
-   </property>
-   <property name="visible">
-     <bool>false</bool>
    </property>
   </widget>
  </widget>

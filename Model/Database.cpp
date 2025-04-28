@@ -4,11 +4,7 @@
 
 #include "Database.h"
 
-string Database::filePath = "point_cloud_database.db";
-string Database::command = "";
-shared_ptr<Database> Database::instance = nullptr;
-
-Database::Database() {
+Database::Database(const string& filePath, const string& command) {
     if (sqlite3_open(filePath.c_str(), &db) != SQLITE_OK)
         throw runtime_error("Failed to open database: " + std::string(sqlite3_errmsg(db)));
     if (sqlite3_exec(db, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr) != SQLITE_OK)

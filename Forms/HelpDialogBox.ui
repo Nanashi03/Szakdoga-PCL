@@ -453,7 +453,7 @@
    </palette>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Help</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -477,7 +477,7 @@
          <string/>
         </property>
         <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
+         <set>Qt::AlignCenter</set>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>

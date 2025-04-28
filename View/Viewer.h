@@ -5,11 +5,14 @@
 #ifndef VIEWER_H
 #define VIEWER_H
 
-#include <pcl/visualization/pcl_visualizer.h>
-#include <vtkGenericOpenGLRenderWindow.h>
 #include <thread>
 #include <memory>
 #include <functional>
+#include <vtkSmartPointer.h>
+#include <vtkAxesActor.h>
+#include <vtkOrientationMarkerWidget.h>
+#include <vtkGenericOpenGLRenderWindow.h>
+#include <pcl/visualization/pcl_visualizer.h>
 
 #include "BoundingBoxData.h"
 
@@ -27,14 +30,14 @@ class Viewer {
 private:
     Eigen::Affine3f boundingBoxTransform;
     pcl::visualization::PCLVisualizer::Ptr viewer;
+    vtkSmartPointer<vtkOrientationMarkerWidget>  axesWidget;
     static void pointPickingEventOccurred (const pcl::visualization::PointPickingEvent&, void*);
     static void keyboardPressingEventOccurred (const pcl::visualization::KeyboardEvent&, void*);
 public:
-    static EventClickListener cloudSelectedEventListener;
-    static EventButtonListener selectedCloudTranslateLeftEventListener;
+    inline static EventClickListener cloudSelectedEventListener = nullptr;
+    inline static EventButtonListener selectedCloudTranslateLeftEventListener = nullptr;
 
     Viewer();
-    void run();
 
     void addCloud(const std::string&, bool, PointCloudT::ConstPtr);
     void addNormals(const std::string&, PointCloudT::ConstPtr);

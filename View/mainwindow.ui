@@ -760,7 +760,11 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="xInput"/>
+              <widget class="QLineEdit" name="xInput">
+               <property name="placeholderText">
+                <string>2.000000</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
@@ -776,7 +780,11 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="yInput"/>
+              <widget class="QLineEdit" name="yInput">
+               <property name="placeholderText">
+                <string>2.000000</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
@@ -792,7 +800,11 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="zInput"/>
+              <widget class="QLineEdit" name="zInput">
+               <property name="placeholderText">
+                <string>2.000000</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>

@@ -4,12 +4,14 @@
 
 #include "Viewer.h"
 
-EventClickListener Viewer::cloudSelectedEventListener = nullptr;
-EventButtonListener Viewer::selectedCloudTranslateLeftEventListener = nullptr;
-
 Viewer::Viewer() :
-    boundingBoxTransform {Eigen::Affine3f::Identity()}
+    boundingBoxTransform {Eigen::Affine3f::Identity()},
+    axesWidget { vtkSmartPointer<vtkOrientationMarkerWidget>::New() }
 {
+    vtkSmartPointer axesActor { vtkSmartPointer<vtkAxesActor>::New() };
+    axesActor->AxisLabelsOn();
+    axesActor->SetTotalLength(2.0, 2.0, 2.0); 
+    axesWidget->SetOrientationMarker(axesActor);
 }
 
 void Viewer::pointPickingEventOccurred(const pcl::visualization::PointPickingEvent& event, void* viewer_void) {
@@ -61,14 +63,6 @@ void Viewer::keyboardPressingEventOccurred(const pcl::visualization::KeyboardEve
     }
 }
 
-
-void Viewer::run() {
-    while (!viewer->wasStopped()) {
-        viewer->spinOnce(100);
-        std::this_thread::sleep_for(100ms);
-    }
-}
-
 void Viewer::addCloud(const std::string& id, bool areNormalsShown, PointCloudT::ConstPtr cloud) {
     const pcl::visualization::PointCloudColorHandlerRGBField<PointType> rgb { cloud };
     viewer->addPointCloud<PointType>(cloud, rgb, id);
@@ -78,7 +72,7 @@ void Viewer::addCloud(const std::string& id, bool areNormalsShown, PointCloudT::
 }
 
 void Viewer::addNormals(const std::string& normalsId, PointCloudT::ConstPtr cloud) {
-    viewer->addPointCloudNormals<PointType> (cloud, 10, 1, normalsId);
+    viewer->addPointCloudNormals<PointType> (cloud, 5, 0.5, normalsId);
 }
 
 void Viewer::updateCloud(const std::string& id, bool areNormalsShown, PointCloudT::ConstPtr cloud) {
@@ -135,6 +129,7 @@ void Viewer::init(vtkRenderer* renderer, vtkGenericOpenGLRenderWindow* renderWin
     viewer->initCameraParameters ();
     viewer->registerPointPickingCallback(pointPickingEventOccurred, (void*)&viewer);
     viewer->registerKeyboardCallback(keyboardPressingEventOccurred, (void*)&viewer);
+    viewer->setShowFPS(false);
 
     //viewer->resetCamera();
     //viewer->addCoordinateSystem (0.05);
@@ -147,5 +142,7 @@ vtkSmartPointer<vtkRenderWindow> Viewer::getRender() {
 
 void Viewer::setupInteractor(vtkRenderWindowInteractor* interactor, vtkRenderWindow* renderWindow) {
     viewer->setupInteractor(interactor, renderWindow);
-    viewer->addOrientationMarkerWidgetAxes(interactor);
+    axesWidget->SetInteractor(interactor);  
+    axesWidget->EnabledOn();                                 
+    axesWidget->InteractiveOff(); 
 }

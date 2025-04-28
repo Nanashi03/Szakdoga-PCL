@@ -43,11 +43,11 @@ class Model {
 
         vector<string> getCloudNames() const;
         vector<shared_ptr<IPointCloudShape>> getClouds();
-        PointCloudT::ConstPtr getSelectedCloudShape();
-        string getSelectedCloudName();
-        string getSelectedCloudNormalsName();
-        bool getSelectedCloudAreNormalsShown();
-        bool isCloudSelected();
+        PointCloudT::ConstPtr getSelectedCloudShape() const;
+        string getSelectedCloudName() const;
+        string getSelectedCloudNormalsName() const;
+        bool getSelectedCloudAreNormalsShown() const;
+        bool isCloudSelected() const;
 };
 
 #endif //MODEL_H

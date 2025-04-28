@@ -39,11 +39,11 @@ void Model::addCloud(const shared_ptr<IPointCloudShape>& cloud_shape) {
 }
 
 void Model::importProject(const string& filePath) {
-    auto database = Database::getInstance(filePath, "import");
-    for (const string& cloudName : database->getPointCloudNamesFromDatabase()) {
-        EditCloudData data { database->getPointCloudPropertiesFromDatabase(cloudName) };
+    Database database { filePath, "import" };
+    for (const string& cloudName : database.getPointCloudNamesFromDatabase()) {
+        EditCloudData data { database.getPointCloudPropertiesFromDatabase(cloudName) };
         shared_ptr<IPointCloudShape> shape {
-            createPointCloudShape(database->getPointCloudTypeByName(cloudName), cloudName, data.isFilled, data.dim[0], data.dim[1], data.dim[2], data.density)
+            createPointCloudShape(database.getPointCloudTypeByName(cloudName), cloudName, data.isFilled, data.dim[0], data.dim[1], data.dim[2], data.density)
         };
         shape->setRotationAt(0, data.rotation[0]);
         shape->setRotationAt(1, data.rotation[1]);
@@ -53,11 +53,11 @@ void Model::importProject(const string& filePath) {
             shape->setColor({static_cast<std::uint8_t>(data.rgb[0]), static_cast<std::uint8_t>(data.rgb[1]), static_cast<std::uint8_t>(data.rgb[2])});
 
 
-        tuple<Eigen::Vector3f, Eigen::Affine3f> transFormation = database->getPointCloudTransformationFromDatabase(cloudName);
+        tuple<Eigen::Vector3f, Eigen::Affine3f> transFormation = database.getPointCloudTransformationFromDatabase(cloudName);
         shape->addToTranslationValues(get<0>(transFormation));
         shape->addToRotationMatrix(get<1>(transFormation));
 
-        shape->setShape(database->getPointCloudFromDatabase(cloudName));
+        shape->setShape(database.getPointCloudFromDatabase(cloudName));
 
         clouds.push_back(shape);
     }
@@ -77,13 +77,13 @@ void Model::exportClouds(const string& newFilePath) {
 }
 
 void Model::exportProject(const string& newFilePath) {
-    auto database = Database::getInstance(newFilePath, "export");
+    Database database { newFilePath, "export" };
     for (shared_ptr<IPointCloudShape> cloud : clouds) {
         string typeName = typeid(*cloud).name();
-        database->addPointCloudNameToDatabase(cloud->getId(), typeName.substr(2));
-        database->addPointCloudToDatabase(cloud->getId(), cloud->getShape());
-        database->addPointCloudPropertiesToDatabase(cloud->getId(), getEditCloudData(cloud->getId()));
-        database->addPointCloudTransformationToDatabase(cloud->getId(), cloud->getTranslationValues(), cloud->getCurrentRotation());
+        database.addPointCloudNameToDatabase(cloud->getId(), typeName.substr(2));
+        database.addPointCloudToDatabase(cloud->getId(), cloud->getShape());
+        database.addPointCloudPropertiesToDatabase(cloud->getId(), getEditCloudData(cloud->getId()));
+        database.addPointCloudTransformationToDatabase(cloud->getId(), cloud->getTranslationValues(), cloud->getCurrentRotation());
     }
 }
 
@@ -213,26 +213,26 @@ vector<string> Model::getCloudNames() const {
 
 vector<shared_ptr<IPointCloudShape>> Model::getClouds() { return clouds; }
 
-PointCloudT::ConstPtr Model::getSelectedCloudShape() {
+PointCloudT::ConstPtr Model::getSelectedCloudShape() const {
     if (selectedCloud == -1) return nullptr;
     return clouds[selectedCloud]->getShape();
 }
 
-string Model::getSelectedCloudName() {
+string Model::getSelectedCloudName() const {
     if (selectedCloud == -1) return "";
     return clouds[selectedCloud]->getId();
 }
 
-string Model::getSelectedCloudNormalsName() {
+string Model::getSelectedCloudNormalsName() const {
     if (selectedCloud == -1) return "";
     return clouds[selectedCloud]->getNormalId();
 }
 
-bool Model::isCloudSelected() {
+bool Model::isCloudSelected() const {
     return selectedCloud != -1;
 }
 
-bool Model::getSelectedCloudAreNormalsShown() {
+bool Model::getSelectedCloudAreNormalsShown() const {
     if (selectedCloud == -1) return false;
     return clouds[selectedCloud]->getAreNormalsShown();
 }

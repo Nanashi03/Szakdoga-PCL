@@ -98,4 +98,4 @@ foreach(file ${PCD_FILES})
 endforeach()
 
 enable_testing()
-add_test(NAME TestSrc1 COMMAND test_src1)
+add_test(NAME PointCloudEditorTestSuite1 COMMAND PointCloudEditorTestSuite)
