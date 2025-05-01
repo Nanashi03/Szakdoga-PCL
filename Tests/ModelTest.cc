@@ -288,11 +288,12 @@ TEST(ModelTest, TestModelGetBoundingBoxDataAroundSelectedCloud) {
 
     model.selectCloud("asd");
     ASSERT_EQ(model.getBoundingBoxDataAroundSelectedCloud().NAME, "BBOX");
-    ASSERT_TRUE(model.getBoundingBoxDataAroundSelectedCloud().bboxQuaternion.isApprox(Eigen::Affine3f::Identity()));
-    ASSERT_TRUE(model.getBoundingBoxDataAroundSelectedCloud().bboxTransform.isApprox(Eigen::Vector3f::Zero()));
-    ASSERT_FLOAT_EQ(model.getBoundingBoxDataAroundSelectedCloud().width, 2.0f);
-    ASSERT_FLOAT_EQ(model.getBoundingBoxDataAroundSelectedCloud().height, 2.0f);
-    ASSERT_FLOAT_EQ(model.getBoundingBoxDataAroundSelectedCloud().depth, 0.0f);
+    ASSERT_FLOAT_EQ(model.getBoundingBoxDataAroundSelectedCloud().minX, -1.0f);
+    ASSERT_FLOAT_EQ(model.getBoundingBoxDataAroundSelectedCloud().minY, -1.0f);
+    ASSERT_FLOAT_EQ(model.getBoundingBoxDataAroundSelectedCloud().minZ, 0.0f);
+    ASSERT_FLOAT_EQ(model.getBoundingBoxDataAroundSelectedCloud().maxX, 1.0f);
+    ASSERT_FLOAT_EQ(model.getBoundingBoxDataAroundSelectedCloud().maxY, 1.0f);
+    ASSERT_FLOAT_EQ(model.getBoundingBoxDataAroundSelectedCloud().maxZ, 0.0f);
 }
 
 TEST(ModelTest, TestModelGetCloudNames) {
