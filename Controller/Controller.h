@@ -1,7 +1,3 @@
-//asdasd
-// Created by kristof on 2025.03.16..
-//
-
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
@@ -9,7 +5,6 @@
 #include "mainwindow.h"
 
 class Controller {
-private:
     Model model;
     MainWindow mainWindow;
 public:

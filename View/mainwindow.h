@@ -34,7 +34,9 @@ using EventRemoveCloud = std::function<void()>;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
+    Ui::MainWindow *ui;
+    HelpDialogBox* helpDialogBox;
+    void blockAllEditSignals(bool);
 public:
     Viewer pclEditorView;
 
@@ -64,10 +66,6 @@ public:
     void changeToEditShapeWidget(EditCloudData);
     void changeToAddShapeWidget();
     ~MainWindow();
-private:
-    Ui::MainWindow *ui;
-    HelpDialogBox* helpDialogBox;
-    void blockAllEditSignals(bool);
 private slots:
     void onImportProjectButtonClicked();
     void onImportCloudButtonClicked();

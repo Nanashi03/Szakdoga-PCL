@@ -1,7 +1,3 @@
-//asdasd
-// Created by kristof on 2025.03.17..
-//
-
 #ifndef VIEWER_H
 #define VIEWER_H
 
@@ -13,9 +9,7 @@
 #include <vtkOrientationMarkerWidget.h>
 #include <vtkGenericOpenGLRenderWindow.h>
 #include <pcl/visualization/pcl_visualizer.h>
-
 #include "BoundingBoxData.h"
-
 
 using PointType = pcl::PointXYZRGBNormal;
 using PointCloudT = pcl::PointCloud<PointType>;
@@ -27,7 +21,6 @@ using EventButtonListener = std::function<void(int,int,int)>;
 using namespace std::chrono_literals;
 
 class Viewer {
-private:
     Eigen::Affine3f boundingBoxTransform;
     pcl::visualization::PCLVisualizer::Ptr viewer;
     vtkSmartPointer<vtkOrientationMarkerWidget>  axesWidget;

@@ -7,7 +7,6 @@
 
 #include <unordered_map>
 #include <sqlite3.h>
-#include <boost/fusion/container/list/cons.hpp>
 #include <pcl/common/common.h>
 
 #include "EditCloudData.h"
@@ -18,7 +17,6 @@ using PointType = pcl::PointXYZRGBNormal;
 using PointCloudT = pcl::PointCloud<PointType>;
 
 class Database {
-private:
     inline static const unordered_map<string, string> tableSchemes = {
     {"PointCloudNames", "CREATE TABLE PointCloudNames (ind INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, type TEXT)"},
     {"PointCloud", "CREATE TABLE PointCloud (cloudId INTEGER, x REAL, y REAL, z REAL, r INTEGER, g INTEGER, b INTEGER, normal_x REAL, normal_y REAL, normal_z REAL, FOREIGN KEY(cloudId) REFERENCES PointCloudNames(ind))"},

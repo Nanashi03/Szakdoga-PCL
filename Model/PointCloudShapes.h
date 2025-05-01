@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <cfloat>
+#include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/common/transforms.h>
@@ -74,7 +75,6 @@ public:
 };
 
 class ImportedPointCloudShape : public IPointCloudShape {
-private:
     string filePath;
 public:
     ImportedPointCloudShape(const string&, string);
@@ -83,7 +83,6 @@ public:
 };
 
 class RectanglePointCloudShape : public IPointCloudShape {
-private:
     float width, height;
 public:
     RectanglePointCloudShape(const string&, bool,float,float,float);
@@ -92,7 +91,6 @@ public:
 };
 
 class CuboidPointCloudShape : public IPointCloudShape {
-private:
     float width, height, length;
 public:
     CuboidPointCloudShape(const string&, bool,float,float,float,float);
@@ -101,7 +99,6 @@ public:
 };
 
 class CirclePointCloudShape : public IPointCloudShape {
-private:
     float radius;
 public:
     CirclePointCloudShape(const string&, bool,float,float);
@@ -110,7 +107,6 @@ public:
 };
 
 class SpherePointCloudShape : public IPointCloudShape {
-private:
     float radius;
 public:
     SpherePointCloudShape(const string&, bool,float,float);
@@ -119,7 +115,6 @@ public:
 };
 
 class CylinderPointCloudShape : public IPointCloudShape {
-private:
     float radius, height;
 public:
     CylinderPointCloudShape(const string&, bool,float,float,float);
@@ -128,7 +123,6 @@ public:
 };
 
 class ConePointCloudShape : public IPointCloudShape {
-private:
     float radius, height;
 public:
     ConePointCloudShape(const string&, bool,float,float,float);

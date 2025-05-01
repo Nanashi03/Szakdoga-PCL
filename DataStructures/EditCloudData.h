@@ -1,12 +1,7 @@
-//
-// Created by kristof on 4/14/25.
-//
-
 #ifndef EDITCLOUDDATA_H
 #define EDITCLOUDDATA_H
 
 #include <string>
-#include <iostream>
 
 struct EditCloudData
 {

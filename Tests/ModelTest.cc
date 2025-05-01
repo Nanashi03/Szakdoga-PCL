@@ -317,7 +317,3 @@ TEST(ModelTest, TestModelSelectedCloudShape) {
     model.selectCloud("asd");
     ASSERT_EQ(model.getSelectedCloudShape()->points.size(), 9);
 }
-
-//importProject
-
-

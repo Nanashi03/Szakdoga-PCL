@@ -1,11 +1,5 @@
-//
-// Created by kristof on 4/15/25.
-//
-
 #ifndef BOUNDINGBOXDATA_H
 #define BOUNDINGBOXDATA_H
-
-#include <pcl/common/common.h>
 
 struct BoundingBoxData
 {

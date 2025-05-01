@@ -1,7 +1,3 @@
-//asdasd
-// Created by kristof on 2025.03.16..
-//
-
 #include "Controller.h"
 
 Controller::Controller() {

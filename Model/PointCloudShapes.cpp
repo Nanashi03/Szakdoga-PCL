@@ -1,7 +1,3 @@
-//
-// Created by kristof on 2025.03.23..
-//
-
 #include "PointCloudShapes.h"
 
 IPointCloudShape::IPointCloudShape(const string& id_, bool iF = false, float d = 1.0f) :
@@ -21,9 +17,6 @@ IPointCloudShape::IPointCloudShape(const string& id_, bool iF = false, float d =
 {  }
 
 void IPointCloudShape::transformPointCloudToCenter() {
-    /*Eigen::Vector4f center;
-    pcl::compute3DCentroid(*shapePtr, center);
-    translation.translation() << -center[0], -center[1], -center[2];*/
     Eigen::Vector4f minPt, maxPt;
     pcl::getMinMax3D(*shapePtr, minPt, maxPt);
     Eigen::Vector3f center = (minPt.head<3>() + maxPt.head<3>()) * 0.5f;
@@ -36,29 +29,23 @@ void IPointCloudShape::transformPointCloudToCenter() {
 void IPointCloudShape::transformPointCloudBackToOriginal() {
     Eigen::Affine3f backToCentroid = Eigen::Affine3f::Identity();
     backToCentroid.translate(getTranslationValues());
-
     cout << "TRANSLATION BACK TO ORIGINAL BY: (" << translationValues[0] << ", " << translationValues[1] << ", " << translationValues[2] << ")" << endl;
-
     Eigen::Affine3f fullTransform = backToCentroid * currentRotation;
     pcl::transformPointCloud(*shapePtr, *shapePtr, fullTransform);
 }
 
-void IPointCloudShape::calculateNormals()
-{
+void IPointCloudShape::calculateNormals() {
     cout << "CALCULATING NORMALS..." << endl;
     pcl::NormalEstimation<PointType, pcl::Normal> ne;
     pcl::search::KdTree<PointType>::Ptr tree(new pcl::search::KdTree<PointType>());
     tree->setInputCloud(shapePtr);
-
     ne.setInputCloud(shapePtr);
     ne.setSearchMethod(tree);
-    //ne.setRadiusSearch(1.5);
     ne.setKSearch(20);
 
     auto resultCloud(make_shared<pcl::PointCloud<pcl::Normal>>());
     ne.compute(*resultCloud);
     cout << "CALCULATING NORMALS DONE" << endl;
-
     for (int i = 0; i < resultCloud->size(); i++) {
         shapePtr->points[i].normal_x = resultCloud->points[i].normal_x;
         shapePtr->points[i].normal_y = resultCloud->points[i].normal_y;
@@ -140,14 +127,12 @@ void IPointCloudShape::setDensity(int density) { this->density = 1/static_cast<f
 
 void IPointCloudShape::setRotationAt(int ind, int value) { this->rotationValues[ind] = value; }
 
-void IPointCloudShape::setShape(PointCloudT::Ptr shape)
-{
+void IPointCloudShape::setShape(PointCloudT::Ptr shape) {
     shapePtr->clear();  pcl::copyPointCloud(*shape, *shapePtr);
     calculateBoundingBoxData();
 }
 
-void IPointCloudShape::addToTranslationValues(const Eigen::Vector3f& offSet)
-{
+void IPointCloudShape::addToTranslationValues(const Eigen::Vector3f& offSet) {
     translationValues += offSet;
 
     boundingBoxData.minX += offSet.x();
@@ -158,8 +143,7 @@ void IPointCloudShape::addToTranslationValues(const Eigen::Vector3f& offSet)
     boundingBoxData.maxZ += offSet.z();
 }
 
-void IPointCloudShape::addToRotationMatrix(const Eigen::Affine3f& deltaRotation)
-{
+void IPointCloudShape::addToRotationMatrix(const Eigen::Affine3f& deltaRotation) {
     currentRotation = deltaRotation * currentRotation;
     isBoundingBoxDataCalculated = false;
 }
@@ -493,18 +477,6 @@ void ConePointCloudShape::generateShape() {
 }
 
 void ConePointCloudShape::scale(float radius, float height, float z) {
-    /*float percent1 = radius / this->radius, percent2 = height / this->height;
-
-    Eigen::Affine3f scaling = Eigen::Affine3f::Identity();
-    scaling.scale(Eigen::Vector3f(percent1, percent1, percent2));
-
-    Eigen::Affine3f toOrigin = Eigen::Affine3f::Identity();
-    toOrigin.translate(-getTranslationValues());
-    Eigen::Affine3f backToCentroid = Eigen::Affine3f::Identity();
-    backToCentroid.translate(getTranslationValues());
-
-    Eigen::Affine3f fullTransform = backToCentroid * currentRotation * scaling * currentRotation.inverse() * toOrigin;
-    pcl::transformPointCloud(*shapePtr, *shapePtr, fullTransform);*/
     this->radius = radius;
     this->height = height;
     this->isBoundingBoxDataCalculated = false;

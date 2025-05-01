@@ -1,7 +1,3 @@
-//asd
-// Created by kristof on 2025.03.16..
-//
-
 #include "Model.h"
 
 Model::Model() :
@@ -34,7 +30,6 @@ void Model::addCloud(const shared_ptr<IPointCloudShape>& cloud_shape) {
         if (clouds[i]->getId() == cloud_shape->getId() || clouds[i]->getNormalId() == cloud_shape->getId())
             throw runtime_error("ID already exists or conflicts with to be generated ones!");
     }
-
     clouds.push_back(cloud_shape);
 }
 
@@ -52,11 +47,9 @@ void Model::importProject(const string& filePath) {
         if (shape->getIsColorable() && data.rgb.size() == 3)
             shape->setColor({static_cast<std::uint8_t>(data.rgb[0]), static_cast<std::uint8_t>(data.rgb[1]), static_cast<std::uint8_t>(data.rgb[2])});
 
-
         tuple<Eigen::Vector3f, Eigen::Affine3f> transFormation = database.getPointCloudTransformationFromDatabase(cloudName);
         shape->addToTranslationValues(get<0>(transFormation));
         shape->addToRotationMatrix(get<1>(transFormation));
-
         shape->setShape(database.getPointCloudFromDatabase(cloudName));
 
         clouds.push_back(shape);
@@ -70,7 +63,7 @@ void Model::exportClouds(const string& newFilePath) {
     }
     mergedCloud->width = mergedCloud->points.size();
     mergedCloud->height = 1;
-    mergedCloud->is_dense = true; //?????????????????????????????????????????????no NaN's
+    mergedCloud->is_dense = true;
 
     if (pcl::io::savePCDFileASCII(newFilePath, *mergedCloud) == -1)
         throw runtime_error("Failed to save file :" + newFilePath);
@@ -78,7 +71,7 @@ void Model::exportClouds(const string& newFilePath) {
 
 void Model::exportProject(const string& newFilePath) {
     Database database { newFilePath, "export" };
-    for (shared_ptr<IPointCloudShape> cloud : clouds) {
+    for (shared_ptr cloud : clouds) {
         string typeName = typeid(*cloud).name();
         database.addPointCloudNameToDatabase(cloud->getId(), typeName.substr(2));
         database.addPointCloudToDatabase(cloud->getId(), cloud->getShape());
@@ -89,7 +82,6 @@ void Model::exportProject(const string& newFilePath) {
 
 void Model::updateSelectedCloudDimensions(float x, float y, float z) {
     if (selectedCloud == -1) return;
-
     clouds[selectedCloud]->scale(x,y,z);
 }
 
@@ -107,7 +99,6 @@ void Model::updateSelectedCloudIsFilled(bool isFilled) {
 
 void Model::updateSelectedCloudAreNormalsShown(bool areNormalsShown) {
     if (selectedCloud == -1) return;
-
     clouds[selectedCloud]->setAreNormalsShown(areNormalsShown);
 }
 

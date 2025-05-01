@@ -1,7 +1,3 @@
-//
-// Created by kristof on 4/14/25.
-//
-
 #ifndef INPUTFORMDATA_H
 #define INPUTFORMDATA_H
 

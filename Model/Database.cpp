@@ -1,7 +1,3 @@
-//
-// Created by kristof on 4/19/25.
-//
-
 #include "Database.h"
 
 Database::Database(const string& filePath, const string& command) {
@@ -289,4 +285,3 @@ Database::~Database() {
     if (getCloudTransformationStmt) sqlite3_finalize(getCloudTransformationStmt);
     sqlite3_close(db);
 }
-

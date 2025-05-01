@@ -326,7 +326,3 @@ TEST_F(Fixture, TestIPointCloudShapeSetDensity) {
     cloud->setDensity(exectedensity);
     ASSERT_FLOAT_EQ(cloud->getDensity(), exectedensity);
 }
-
-//SetCloudShape
-//AddToRotationMatrix
-//SCALE FUNCTIONS
