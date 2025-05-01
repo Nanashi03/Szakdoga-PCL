@@ -69,7 +69,6 @@ void Viewer::addCloud(const std::string& id, bool areNormalsShown, PointCloudT::
     viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, id);
     if (areNormalsShown)
         addNormals(id + "_normals", cloud);
-    viewer->resetCamera();
 }
 
 void Viewer::addNormals(const std::string& normalsId, PointCloudT::ConstPtr cloud) {

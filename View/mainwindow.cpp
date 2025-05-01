@@ -264,7 +264,7 @@ void MainWindow::changeToEditShapeWidget(EditCloudData editData)
 
     blockAllEditSignals(true);
 
-    auto numberValidator { std::make_shared<QRegExp>("([2-9][0-9]*)|([2-9][0-9]*\\.[0-9]{1,6})") };
+    auto numberValidator { std::make_shared<QRegExp>("(([1-9][0-9]{1,2})|([2-9]))|((([1-9][0-9]{1,2})|([2-9]))\\.[0-9]{1,6})") };
 
     ui->EditedShapeName->setTitle(editData.name.data());
     ui->ShowNormals->setChecked(editData.areNormalsShown);
