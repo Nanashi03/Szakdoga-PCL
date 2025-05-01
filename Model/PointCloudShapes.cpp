@@ -29,6 +29,7 @@ void IPointCloudShape::transformPointCloudToCenter() {
     Eigen::Vector3f center = (minPt.head<3>() + maxPt.head<3>()) * 0.5f;
     Eigen::Affine3f translation = Eigen::Affine3f::Identity();
     translation.translation() << -center[0], -center[1], -center[2];
+    cout << "TRANSLATION BACK TO ZERO BY: (" << -center[0] << ", " << -center[1] << ", " << -center[2] << ")" << endl;
     pcl::transformPointCloud(*shapePtr, *shapePtr, translation);
 }
 
@@ -67,40 +68,17 @@ void IPointCloudShape::calculateNormals()
 
 void IPointCloudShape::calculateBoundingBoxData() {
     if (isBoundingBoxDataCalculated) return;
-    /*PointCloudT::Ptr cloudPCAprojection (new PointCloudT);
-    pcl::PCA<PointType> pca;
-    pca.setInputCloud(shapePtr);
-    pca.project(*shapePtr, *cloudPCAprojection);
-
-    Eigen::Matrix3f eigenVectorsPCA = pca.getEigenVectors();
-    eigenVectorsPCA.col(2) = eigenVectorsPCA.col(0).cross(eigenVectorsPCA.col(1));
-
-    Eigen::Matrix4f projectionTransform(Eigen::Matrix4f::Identity());
-    projectionTransform.block<3,3>(0,0) = eigenVectorsPCA.transpose();
-    projectionTransform.block<3,1>(0,3) = -1.f * (projectionTransform.block<3,3>(0,0) * pca.getEigenValues().head<3>());
-
-    PointCloudT::Ptr cloudPointsProjected (new PointCloudT);
-    pcl::transformPointCloud(*shapePtr, *cloudPointsProjected, projectionTransform);
-
-    PointType minPoint, maxPoint;
-    pcl::getMinMax3D(*cloudPointsProjected, minPoint, maxPoint);
-    const Eigen::Vector3f meanDiagonal = 0.5f*(maxPoint.getVector3fMap() + minPoint.getVector3fMap());
-
-    boundingBoxData.bboxQuaternion = eigenVectorsPCA;
-    boundingBoxData.bboxTransform = eigenVectorsPCA * meanDiagonal + pca.getEigenValues().head<3>();
-    boundingBoxData.width = maxPoint.x - minPoint.x;
-    boundingBoxData.height = maxPoint.y - minPoint.y;
-    boundingBoxData.depth = maxPoint.z - minPoint.z;*/
     Eigen::Vector4f minPt, maxPt;
+    cout << "CALCULATING BOUNDING BOX DATA..." << endl;
     pcl::getMinMax3D(*shapePtr, minPt, maxPt);
 
-    BoundingBoxData newBboxData;
-    newBboxData.width = maxPt.x() - minPt.x();
-    newBboxData.height = maxPt.y() - minPt.y();
-    newBboxData.depth = maxPt.z() - minPt.z();
+    boundingBoxData.minX = minPt.x();
+    boundingBoxData.minY = minPt.y();
+    boundingBoxData.minZ = minPt.z();
+    boundingBoxData.maxX = maxPt.x();
+    boundingBoxData.maxY = maxPt.y();
+    boundingBoxData.maxZ = maxPt.z();
 
-    newBboxData.bboxQuaternion = Eigen::Affine3f::Identity(); //JUST TO BE SURE
-    boundingBoxData = newBboxData;
     cout << "CALCULATING BOUNDING BOX DATA DONE" << endl;
     isBoundingBoxDataCalculated = true;
 }
@@ -116,7 +94,7 @@ string IPointCloudShape::getNormalId() const { return id + "_normals"; }
 PointCloudT::Ptr IPointCloudShape::getShape() const { return shapePtr; }
 
 const BoundingBoxData& IPointCloudShape::getBoundingBoxData() {
-    boundingBoxData.bboxTransform = translationValues;
+    calculateBoundingBoxData();
     return boundingBoxData;
 }
 
@@ -168,12 +146,22 @@ void IPointCloudShape::setShape(PointCloudT::Ptr shape)
     calculateBoundingBoxData();
 }
 
-void IPointCloudShape::addToTranslationValues(const Eigen::Vector3f& offSet) { translationValues += offSet; }
+void IPointCloudShape::addToTranslationValues(const Eigen::Vector3f& offSet)
+{
+    translationValues += offSet;
+
+    boundingBoxData.minX += offSet.x();
+    boundingBoxData.minY += offSet.y();
+    boundingBoxData.minZ += offSet.z();
+    boundingBoxData.maxX += offSet.x();
+    boundingBoxData.maxY += offSet.y();
+    boundingBoxData.maxZ += offSet.z();
+}
 
 void IPointCloudShape::addToRotationMatrix(const Eigen::Affine3f& deltaRotation)
 {
     currentRotation = deltaRotation * currentRotation;
-    boundingBoxData.bboxQuaternion = deltaRotation * boundingBoxData.bboxQuaternion;
+    isBoundingBoxDataCalculated = false;
 }
 
 void IPointCloudShape::scale(float x, float y, float z) { }

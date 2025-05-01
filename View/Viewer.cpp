@@ -69,6 +69,7 @@ void Viewer::addCloud(const std::string& id, bool areNormalsShown, PointCloudT::
     viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, id);
     if (areNormalsShown)
         addNormals(id + "_normals", cloud);
+    viewer->resetCamera();
 }
 
 void Viewer::addNormals(const std::string& normalsId, PointCloudT::ConstPtr cloud) {
@@ -91,11 +92,10 @@ void Viewer::removeNormals(const std::string& normalsId) {
 }
 
 void Viewer::addBoundingBoxCube(const BoundingBoxData& data) {
-    Eigen::Quaternionf rotation { data.bboxQuaternion.rotation() };
-    viewer->addCube(data.bboxTransform, rotation, data.width, data.height, data.depth, data.NAME);
+    viewer->addCube(data.minX, data.maxX, data.minY, data.maxY, data.minZ, data.maxZ, 255,255,255, data.NAME);
     viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION,
-                                             pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME,
-                                        data.NAME);
+                                         pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME,
+                                         data.NAME);
 }
 
 void Viewer::removeBoundingBoxCube() {

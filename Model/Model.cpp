@@ -168,6 +168,7 @@ void Model::rotateSelectedCloud(int angle, char axis, Eigen::Affine3f& fullTrans
         rotation.rotate(Eigen::AngleAxisf(offsetRad, Eigen::Vector3f::UnitZ()));
         clouds[selectedCloud]->setRotationAt(2, angle);
     }
+    clouds[selectedCloud]->addToRotationMatrix(rotation);
 
     Eigen::Affine3f toOrigin = Eigen::Affine3f::Identity();
     toOrigin.translate(-clouds[selectedCloud]->getTranslationValues());
@@ -177,8 +178,6 @@ void Model::rotateSelectedCloud(int angle, char axis, Eigen::Affine3f& fullTrans
     fullTransform = backToCentroid * rotation * toOrigin;
 
     pcl::transformPointCloud(*clouds[selectedCloud]->getShape(), *clouds[selectedCloud]->getShape(), fullTransform);
-
-    clouds[selectedCloud]->addToRotationMatrix(rotation);
 }
 
 EditCloudData Model::getEditCloudData(const string& name) {

@@ -61,7 +61,7 @@ void Controller::importProject(const string& filePath) {
     } catch (const exception& e){
         mainWindow.showErrorMessageBox(e.what());
     }
-    for (shared_ptr<IPointCloudShape> cloud : model.getClouds()) {
+    for (shared_ptr cloud : model.getClouds()) {
         mainWindow.pclEditorView.addCloud(cloud->getId(), cloud->getAreNormalsShown(), cloud->getShape());
         mainWindow.refreshView();
     }

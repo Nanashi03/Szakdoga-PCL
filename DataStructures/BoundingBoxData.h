@@ -10,9 +10,8 @@
 struct BoundingBoxData
 {
     std::string NAME = "BBOX";
-    Eigen::Affine3f bboxQuaternion = Eigen::Affine3f::Identity(); //must reset after scaling/regenerating point cloud
-    Eigen::Vector3f bboxTransform;
-    double width, height, depth;
+    float minX, minY, minZ;
+    float maxX, maxY, maxZ;
 };
 
 #endif //BOUNDINGBOXDATA_H
